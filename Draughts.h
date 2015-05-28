@@ -53,10 +53,10 @@ typedef char** board_t;
 typedef unsigned char bool;
 
 // Saperate between board line (char*) and a regular string.
-typedef char* string; 
+typedef char* string;
 
 
-// Massages 
+// Massages
 #define WELCOME_TO_DRAUGHTS "Welcome to Draughts!\n"
 #define ENTER_SETTINGS "Enter game settings:\n" 
 #define WRONG_MINIMAX_DEPTH "Wrong value for minimax depth. The value should be between 1 to 6\n"
@@ -70,7 +70,7 @@ typedef char* string;
 //Macros
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
-#define alpha_to_num(character) (character - 48)
+#define alpha_to_num(character) (character - 97)
 
 
 //Externs
@@ -81,6 +81,7 @@ extern state_e State;
 //Infrastructure Functions
 void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
 void init_board(char board[BOARD_SIZE][BOARD_SIZE]);
+int parsing(char* line);
 int main_loop();
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
@@ -100,4 +101,4 @@ int scoring();                  //Uses the global board
 void best_path();
 
 
-#endif  
+#endif
