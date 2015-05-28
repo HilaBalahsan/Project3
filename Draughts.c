@@ -3,21 +3,10 @@
 // Defauld values
 Minimax_Depth = 1;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 //Initialization
-
-
-=======
->>>>>>> parent of 4ff0071... changes
-int main()
-{
-	init_board(game_board);
-=======
-
-
->>>>>>> parent of 2b16f0a... unite
-
+board_t game_board[BOARD_SIZE][BOARD_SIZE] = { NULL };
+player_a = 1;
+player_b = 0;
 
 int main()
 {
@@ -28,7 +17,7 @@ int main()
 	// Initialization
 	line = NULL;
 	pars_succeed = 1;
-	char board[BOARD_SIZE][BOARD_SIZE];
+	init_board(game_board);
 
 	printf(WELCOME_TO_DRAUGHTS);
 	while (TRUE)
@@ -39,40 +28,21 @@ int main()
 			free(line);
 			break;
 		}
-
 		pars_succeed = parsing(line);
 		if (pars_succeed == -1)
 		{
 			//
 		}
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-	
-	print_board(game_board);
-=======
-	char board[BOARD_SIZE][BOARD_SIZE];
-	init_board(board);
-	print_board(board);
->>>>>>> parent of 4ff0071... changes
-=======
-	init_board(board);
-	print_board(board);
->>>>>>> parent of 2b16f0a... unite
-	print_message(WRONG_MINIMAX_DEPTH);
-	perror_message("TEST");
-	return 0;
 
+	print_board(game_board);
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-////////////////////////////////////////////
-=======
 
 int remove_disc(int row, int col){
 
-	if (row > 10 || row < 0 || col < 0 || col > 10){
+	if (row > 10 || row < 0 || col < 0 || col > 10)
+	{
 		printf("Invalid position on the board\n");
 		return -1;
 	}
@@ -96,14 +66,10 @@ int clear(){
 	return 1;
 
 }
->>>>>>> parent of 2b16f0a... unite
 
-=======
->>>>>>> parent of 4ff0071... changes
 char* readline(void) {
 
 	// Varibles
-
 	int currentlen;
 	char* line, *linep;
 	size_t maxlen, len;    //size_t is an unsigned integer type of at least 16 bit 
@@ -115,8 +81,8 @@ char* readline(void) {
 	spaceFlag = FALSE;
 	maxlen = 10;
 	len = maxlen;
-	line = (char*)malloc(10),
-		linep = line;
+	line = (char*)malloc(10);
+	linep = line;
 
 
 	if (line == NULL)
@@ -172,17 +138,15 @@ int parsing(char* input){
 
 	// Varibles
 	int i, depth, row, col;
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	char* userinput[4] = { 0 }, *inputCopy, *token, *color, *type;
-=======
+
 	char* userinput[4] = { 0 }, *inputCopy, *token;
 	color_e color;
 	type_e type;
->>>>>>> parent of 4ff0071... changes
-=======
+
 	char* userinput[4] = { 0 }, *inputCopy, *token, *color;
->>>>>>> parent of 2b16f0a... unite
+
 
 	// Initialize
 	depth = 1;
@@ -215,17 +179,15 @@ int parsing(char* input){
 		return 1;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	if (strstr(userinput[0], "minmax_depth") != NULL){
-=======
+
 	if (strstr (userinput[0],"minmax_depth") != NULL){
->>>>>>> parent of 2b16f0a... unite
+
 		depth = (int)userinput[1];
-=======
+
 	if (userinput[0] == "minmax_depth"){
 		depth = alpha_to_num(userinput[1]);
->>>>>>> parent of 4ff0071... changes
 		//	Minimax_Depth = set_minimax_depth(depth); // calculate depth
 	}
 
@@ -234,7 +196,6 @@ int parsing(char* input){
 		//set_user_color(color); // calculate depth
 	}
 
-<<<<<<< HEAD
 	else if (strstr(userinput[0], "clear") != NULL){
 		clear();
 	}
@@ -264,11 +225,12 @@ int parsing(char* input){
 
 	}
 
-	else if (strstr(userinput[0], "rm") != NULL){
+	else if (strstr(userinput[0], "rm") != NULL)
+	{
 		row = alpha_to_num((int)userinput[1][1]);
 		col = (int)userinput[1][3];
-<<<<<<< HEAD
-=======
+	}
+
 	else if (userinput[0] == "clear"){
 		//clear();
 	}
@@ -284,11 +246,10 @@ int parsing(char* input){
 	else if (userinput[0] == "rm"){
 		row = userinput[1][1];
 		col = userinput[1][3];
->>>>>>> parent of 4ff0071... changes
+
 		//remove_disc(row, col);
-=======
+
 		remove_disc(row, col);
->>>>>>> parent of 2b16f0a... unite
 	}
 
 	else if (userinput[0] == "get_moves"){
@@ -299,7 +260,7 @@ int parsing(char* input){
 		//start();
 	}
 
-<<<<<<< HEAD
+
 	else if (strstr(userinput[0], "print") != NULL){
 		print_board(game_board);
 	}
@@ -307,11 +268,10 @@ int parsing(char* input){
 	else if (strstr(userinput[0], "move") != NULL){
 		//start();
 	}
-=======
->>>>>>> parent of 4ff0071... changes
-	return 1;
 
+	return 1;
 }
+
 void print_line(){
 	int i;
 	printf("  |");
@@ -364,3 +324,39 @@ void init_board(char board[BOARD_SIZE][BOARD_SIZE]){
 		}
 	}
 }
+////////////////////////////////////////////////////////
+
+void set_minimax_depth(int depth){
+	if ((depth > 6) || (depth < 1))
+	{
+		printf(WRONG_MINIMAX_DEPTH);
+	}
+	else
+	{
+		Minimax_Depth = depth;
+		player_a = (depth / 2) + 1;
+		player_b = (depth / 2);
+	}
+}
+
+void set_user_color(color_e color)
+{
+	switch (color)
+	{
+	case BLACK:
+		//user.minimax_depth = player_b;
+		//user.color = BLACK;
+		break;
+
+	default:
+		;
+		//user.minimax_depth = player_a;
+		//user.color = WHITE;
+	}
+}
+
+void set_disc(char char_on_board, int col, int row)
+{
+	game_board[(row)][col] = char_on_board;
+}
+
