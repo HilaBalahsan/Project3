@@ -14,6 +14,7 @@
 #define TRUE		(1)
 #define FALSE		(0)
 #define DEBUG		(TRUE)
+#define WHITESPACE  (" ")
 
 //type definition
 typedef struct path {
@@ -84,6 +85,7 @@ void init_board(char board[BOARD_SIZE][BOARD_SIZE]);
 char* readline(void);
 int parsing(char* line);
 int main_loop();
+int main();
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color

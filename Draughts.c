@@ -1,5 +1,10 @@
 #include "Draughts.h"
 
+// Defauld values
+Minimax_Depth = 1;
+
+
+
 int main()
 {
 	// Varibles
@@ -15,9 +20,18 @@ int main()
 	while (TRUE)
 	{
 		line = readline();
+		if ((strcmp(line, "quit")) == 0) // zero for equal.
+		{
+			free(line);
+			break;
+		}
+
+		pars_succeed = parsing(line);
+		if (pars_succeed == -1)
+		{
+			//
+		}
 	}
-
-
 	char board[BOARD_SIZE][BOARD_SIZE];
 	init_board(board);
 	print_board(board);
@@ -98,17 +112,13 @@ char* readline(void) {
 int parsing(char* input){
 
 	// Varibles
-
 	int i, depth, row, col;
-	const char * whitespace = " ";
-	char* userinput[5] = { 0 }, *inputCopy, *token;
+	char* userinput[4] = { 0 }, *inputCopy, *token;
 	color_e color;
 	type_e type;
 
 	// Initialize
-
 	depth = 1;
-	Minimax_Depth = 1;
 	color = WHITE;
 
 	inputCopy = (char*)malloc(sizeof(char)*(strlen(input) + 1));
@@ -121,13 +131,13 @@ int parsing(char* input){
 	strncpy(inputCopy, input, strlen(input));
 	inputCopy[strlen(input)] = '\0';
 
-	token = strtok(inputCopy, whitespace);
+	token = strtok(inputCopy, WHITESPACE);
 	i = 0;
 	while ((token != NULL)) {
-		if (i < 5) {
+		if (i < 4) {
 			userinput[i] = token;
 		}
-		token = strtok(NULL, whitespace);
+		token = strtok(NULL, WHITESPACE);
 		i++;
 	}
 
@@ -141,7 +151,7 @@ int parsing(char* input){
 
 	if (userinput[0] == "minmax_depth"){
 		depth = alpha_to_num(userinput[1]);
-		//	Minimax_Depth = set_minimax_depth(depth); // calculate deoth
+		//	Minimax_Depth = set_minimax_depth(depth); // calculate depth
 	}
 
 	else if (userinput[0] == "user_color"){
@@ -161,10 +171,6 @@ int parsing(char* input){
 		//set_disc(color, type, row, col); // add row, col
 	}
 
-	else if (userinput[0] == "quit"){
-		//quit();
-	}
-
 	else if (userinput[0] == "rm"){
 		row = userinput[1][1];
 		col = userinput[1][3];
@@ -179,7 +185,7 @@ int parsing(char* input){
 		//start();
 	}
 
-	return 0;
+	return 1;
 
 }
 void print_line(){
