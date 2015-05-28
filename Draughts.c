@@ -4,7 +4,7 @@
 Minimax_Depth = 1;
 /////////////////
 //Initialization
-board_t game_board[BOARD_SIZE][BOARD_SIZE] = { NULL };
+char game_board[BOARD_SIZE][BOARD_SIZE] = { NULL };
 player_a = 1;
 player_b = 0;
 
@@ -36,6 +36,8 @@ int main()
 	}
 
 	print_board(game_board);
+
+	return 1;
 }
 
 
@@ -141,13 +143,6 @@ int parsing(char* input){
 
 	char* userinput[4] = { 0 }, *inputCopy, *token, *color, *type;
 
-	char* userinput[4] = { 0 }, *inputCopy, *token;
-	color_e color;
-	type_e type;
-
-	char* userinput[4] = { 0 }, *inputCopy, *token, *color;
-
-
 	// Initialize
 	depth = 1;
 
@@ -179,20 +174,13 @@ int parsing(char* input){
 		return 1;
 	}
 
-
-	if (strstr(userinput[0], "minmax_depth") != NULL){
-
-	if (strstr (userinput[0],"minmax_depth") != NULL){
-
-		depth = (int)userinput[1];
-
 	if (userinput[0] == "minmax_depth"){
 		depth = alpha_to_num(userinput[1]);
 		//	Minimax_Depth = set_minimax_depth(depth); // calculate depth
 	}
 
 	else if (userinput[0] == "user_color"){
-		color = (color_e)userinput[1];
+		color = userinput[1];
 		//set_user_color(color); // calculate depth
 	}
 
@@ -227,29 +215,15 @@ int parsing(char* input){
 
 	else if (strstr(userinput[0], "rm") != NULL)
 	{
+
 		row = alpha_to_num((int)userinput[1][1]);
 		col = (int)userinput[1][3];
+
+		remove_disc(row, col);
 	}
 
 	else if (userinput[0] == "clear"){
 		//clear();
-	}
-
-	else if (userinput[0] == "set"){
-		color = (color_e)userinput[2];
-		type = (type_e)userinput[3];
-		row = userinput[1][1];
-		col = userinput[1][3];
-		//set_disc(color, type, row, col); // add row, col
-	}
-
-	else if (userinput[0] == "rm"){
-		row = userinput[1][1];
-		col = userinput[1][3];
-
-		//remove_disc(row, col);
-
-		remove_disc(row, col);
 	}
 
 	else if (userinput[0] == "get_moves"){
