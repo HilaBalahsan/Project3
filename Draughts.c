@@ -2,7 +2,7 @@
 
 // Defauld values
 Minimax_Depth = 1;
-
+/////////////////
 //Initialization
 board_t game_board[BOARD_SIZE][BOARD_SIZE] = { NULL };
 player_a = 1;

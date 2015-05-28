@@ -1,6 +1,6 @@
 #ifndef DRAUGHTS_
 #define DRAUGHTS_
-//
+//////////////////
 #include<stdio.h>
 
 //Defines
