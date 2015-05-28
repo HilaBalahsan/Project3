@@ -1,6 +1,6 @@
 #ifndef DRAUGHTS_
 #define DRAUGHTS_
-
+//
 #include<stdio.h>
 
 //Defines
@@ -84,7 +84,6 @@ typedef char* string;
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
 #define alpha_to_num(character) (character - 97)
-#define num_to_num(character) (character - 48)
 
 
 //Externs
@@ -92,12 +91,13 @@ extern int Minimax_Depth;
 extern state_e State;
 //extern board_t game_board;
 extern char game_board[BOARD_SIZE][BOARD_SIZE];
-
+extern int player_a;
+extern int player_b;
 
 
 //Infrastructure Functions
-void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
-board_t init_board(board_t board);
+void print_board(board_t game_board);
+void init_board(board_t game_board);
 char* readline(void);
 int parsing(char* line);
 int main_loop();
