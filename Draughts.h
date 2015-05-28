@@ -17,18 +17,6 @@
 #define WHITESPACE  (" ")
 
 //type definition
-typedef struct path {
-	int path_weight;
-	struct path* next_move;
-}path_t;
-
-
-typedef struct move {
-	// current position
-	int row;
-	int col;
-	struct path* path_start;
-} move_t;
 
 typedef enum color {
 	WHITE,
@@ -49,6 +37,30 @@ typedef enum player {
 	USER,
 	COMPUTER
 } player_e;
+
+typedef struct user{
+	int minimax_depth;
+	color_e color;
+}user_t;
+
+typedef struct computer{
+	int minimax_depth;
+	color_e color;
+}computer_t;
+
+typedef struct path {
+	int path_weight;
+	int lenght;
+	struct move* head_position;
+}path_t;
+
+
+typedef struct moves {
+	// current position
+	int row;
+	int col;
+	struct move* next_move;
+} moves_t;
 
 typedef char** board_t;
 typedef unsigned char bool;
@@ -72,16 +84,20 @@ typedef char* string;
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
 #define alpha_to_num(character) (character - 97)
+#define num_to_num(character) (character - 48)
 
 
 //Externs
 extern int Minimax_Depth;
 extern state_e State;
+//extern board_t game_board;
+extern char game_board[BOARD_SIZE][BOARD_SIZE];
+
 
 
 //Infrastructure Functions
 void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
-void init_board(char board[BOARD_SIZE][BOARD_SIZE]);
+board_t init_board(board_t board);
 char* readline(void);
 int parsing(char* line);
 int main_loop();
@@ -94,9 +110,9 @@ bool is_valid_initialization();            //empty, disc of one color , more the
 //Settings Functions
 void set_minimax_depth(int x);
 void set_user_color(color_e color);
-void clear();
-void remove_disc(int row, int col);
-void set_disc(color_e color, type_e type, int row, int col);
+int clear();
+int remove_disc(int row, int col);
+void set_disc(char char_on_board, int row, int col);
 
 
 //Game Functions
