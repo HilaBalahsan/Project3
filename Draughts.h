@@ -81,6 +81,7 @@ extern state_e State;
 //Infrastructure Functions
 void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
 void init_board(char board[BOARD_SIZE][BOARD_SIZE]);
+char* readline(void);
 int parsing(char* line);
 int main_loop();
 bool check_win(color_e color);
