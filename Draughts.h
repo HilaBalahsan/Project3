@@ -84,18 +84,20 @@ typedef char* string;
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
 #define alpha_to_num(character) (character - 97)
+#define num_to_num(character) (character - 48)
+
 
 //Externs
 extern int Minimax_Depth;
 extern state_e State;
 //extern board_t game_board;
-extern int player_a;
-extern int player_b;
+extern char game_board[BOARD_SIZE][BOARD_SIZE];
+
 
 
 //Infrastructure Functions
-void print_board(board_t game_board);
-void init_board(board_t game_board);
+void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
+board_t init_board(board_t board);
 char* readline(void);
 int parsing(char* line);
 int main_loop();
@@ -110,7 +112,8 @@ void set_minimax_depth(int x);
 void set_user_color(color_e color);
 int clear();
 int remove_disc(int row, int col);
-void set_disc(char char_ob_board, int col, int row);
+void set_disc(char char_on_board, int row, int col);
+
 
 //Game Functions
 int scoring();                  //Uses the global board
