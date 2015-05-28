@@ -2,6 +2,7 @@
 
 int main()
 {
+	
 	char board[BOARD_SIZE][BOARD_SIZE];
 	init_board(board);
 	print_board(board);
@@ -98,32 +99,43 @@ int parsing(char* input){
 	}
 
 	if (userinput[0] == "minmax_depth"){
-		depth = alpha_to_num(userinput[1]) - 97;
-		Minimax_Depth = set_minimax_depth(depth); // calculate deoth
+		depth = alpha_to_num(userinput[1]);
+	//	Minimax_Depth = set_minimax_depth(depth); // calculate deoth
 	}
 
 	else if (userinput[0] == "user_color"){
-		color = userinput[1];
-		set_user_color(color); // calculate depth
+		color = (color_e)userinput[1];
+		//set_user_color(color); // calculate depth
 	}
 
 	else if (userinput[0] == "clear"){
-		clear();
+		//clear();
 	}
 
 	else if (userinput[0] == "set"){
-		color = userinput[2];
-		type = userinput[3];
-
-		set_disc(color, type, row, col); // add row, col
+		color = (color_e)userinput[2];
+		type = (type_e) userinput[3];
+		row = userinput[1][1];
+		col = userinput[1][3];
+		//set_disc(color, type, row, col); // add row, col
 	}
 
-	else if (userinput[0] == "print"){
-		print_board(board_t);
+	else if (userinput[0] == "quit"){
+		//quit();
 	}
 
-	else{
+	else if (userinput[0] == "rm"){
+		row = userinput[1][1];
+		col = userinput[1][3];
+		//remove_disc(row, col);
+	}
 
+	else if (userinput[0] == "get_moves"){
+		//get_moves();
+	}
+
+	else if (userinput[0] == "start"){
+		//start();
 	}
 
 	return 0;
