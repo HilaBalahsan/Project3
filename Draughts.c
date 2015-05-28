@@ -27,7 +27,6 @@ int main()
 
 }
 
-<<<<<<< HEAD
 char* readline(void) {
 
 	// Varibles
@@ -98,13 +97,11 @@ char* readline(void) {
 
 
 
-=======
->>>>>>> parent of 3ed05dc... Second Commit
 
 void print_line(){
 	int i;
 	printf("  |");
-	for (i = 1; i < BOARD_SIZE*4; i++){
+	for (i = 1; i < BOARD_SIZE * 4; i++){
 		printf("-");
 	}
 	printf("|\n");
@@ -112,11 +109,11 @@ void print_line(){
 
 void print_board(char board[BOARD_SIZE][BOARD_SIZE])
 {
-	int i,j;
+	int i, j;
 	print_line();
-	for (j = BOARD_SIZE-1; j >= 0 ; j--)
+	for (j = BOARD_SIZE - 1; j >= 0; j--)
 	{
-		printf((j < 9 ? " %d" : "%d"), j+1);
+		printf((j < 9 ? " %d" : "%d"), j + 1);
 		for (i = 0; i < BOARD_SIZE; i++){
 			printf("| %c ", board[i][j]);
 		}
@@ -133,7 +130,7 @@ void print_board(char board[BOARD_SIZE][BOARD_SIZE])
 
 
 void init_board(char board[BOARD_SIZE][BOARD_SIZE]){
-	int i,j;
+	int i, j;
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++){
 			if ((i + j) % 2 == 0){
@@ -153,4 +150,3 @@ void init_board(char board[BOARD_SIZE][BOARD_SIZE]){
 		}
 	}
 }
-
