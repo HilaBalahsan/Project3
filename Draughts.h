@@ -73,7 +73,6 @@ typedef char* string;
 #define alpha_to_num(character) (character - 97)
 
 
-
 //Externs
 extern int Minimax_Depth;
 extern state_e State;
@@ -82,6 +81,7 @@ extern state_e State;
 //Infrastructure Functions
 void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
 void init_board(char board[BOARD_SIZE][BOARD_SIZE]);
+char* readline(void);
 int parsing(char* line);
 int main_loop();
 bool check_win(color_e color);
@@ -90,11 +90,9 @@ bool is_valid_initialization();            //empty, disc of one color , more the
 
 
 //Settings Functions
-int set_minimax_depth(int x);
+void set_minimax_depth(int x);
 void set_user_color(color_e color);
 void clear();
-void quit();
-void start();
 void remove_disc(int row, int col);
 void set_disc(color_e color, type_e type, int row, int col);
 
@@ -102,7 +100,6 @@ void set_disc(color_e color, type_e type, int row, int col);
 //Game Functions
 int scoring();                  //Uses the global board
 void best_path();
-void get_moves();
 
 
 #endif

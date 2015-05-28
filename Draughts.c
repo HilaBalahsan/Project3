@@ -2,22 +2,48 @@
 
 int main()
 {
-	
+	// Varibles
+	int pars_succeed;
+	char* line;
+
+	// Initialization
+	line = NULL;
+	pars_succeed = 1;
+
+
+	printf(WELCOME_TO_DRAUGHTS);
+	while (TRUE)
+	{
+		line = readline();
+	}
+
+
 	char board[BOARD_SIZE][BOARD_SIZE];
 	init_board(board);
 	print_board(board);
 	print_message(WRONG_MINIMAX_DEPTH);
 	perror_message("TEST");
 	return 0;
+
 }
 
 char* readline(void) {
 
-	int currentlen = 0;
-	char* line = (char*)malloc(10), *linep = line;
-	size_t maxlen = 10, len = maxlen;
+	// Varibles
+
+	int currentlen;
+	char* line, *linep;
+	size_t maxlen, len;    //size_t is an unsigned integer type of at least 16 bit 
 	int ch;
-	int whiteFlag = 0;
+	bool spaceFlag;
+
+	//Initialization
+	currentlen = 0;
+	spaceFlag = FALSE;
+	maxlen = 10;
+	len = maxlen;
+	line = (char*)malloc(10),
+		linep = line;
 
 
 	if (line == NULL)
@@ -27,7 +53,7 @@ char* readline(void) {
 
 	while (EOF != (ch = fgetc(stdin)) && (ch != '\n'))
 	{
-		if (--len == 0)
+		if (--len == 0)   //Condition for resizing.
 		{
 			len = maxlen;
 
@@ -42,9 +68,25 @@ char* readline(void) {
 
 			linep = linen;
 		}
+		if (ch == 32)
+		{
+			if (!spaceFlag)
+			{
+				*line++ = ch;
+				currentlen++;
+			}
+			spaceFlag = TRUE;
+		}
+		else
+		{
+			spaceFlag = FALSE;
+		}
 
-		*line++ = ch;
-		currentlen++;
+		if (!spaceFlag)
+		{
+			*line++ = ch;
+			currentlen++;
+		}
 	}
 	*line = '\0';
 
@@ -54,93 +96,7 @@ char* readline(void) {
 }
 
 
-int parsing(char* input){
 
-	// Varibles
-
-	int i, depth, row, col;
-	const char * whitespace = " ";
-	char* userinput[5] = { 0 }, *inputCopy, *token;
-	color_e color;
-	type_e type;
-
-	// Initialize
-
-	depth = 1;
-	Minimax_Depth = 1;
-	color = WHITE;
-
-	inputCopy = (char*)malloc(sizeof(char)*(strlen(input) + 1));
-	if (inputCopy == NULL)
-	{
-		printf("Error: standard function malloc failed, exiting.");
-		return -1;
-	}
-
-	strncpy(inputCopy, input, strlen(input));
-	inputCopy[strlen(input)] = '\0';
-
-	token = strtok(inputCopy, whitespace);
-	i = 0;
-	while ((token != NULL)) {
-		if (i < 5) {
-			userinput[i] = token;
-		}
-		token = strtok(NULL, whitespace);
-		i++;
-	}
-
-	/*input check*/
-	if (i == 0)
-	{
-		free(input);
-		free(inputCopy);
-		return 1;
-	}
-
-	if (userinput[0] == "minmax_depth"){
-		depth = alpha_to_num(userinput[1]);
-	//	Minimax_Depth = set_minimax_depth(depth); // calculate deoth
-	}
-
-	else if (userinput[0] == "user_color"){
-		color = (color_e)userinput[1];
-		//set_user_color(color); // calculate depth
-	}
-
-	else if (userinput[0] == "clear"){
-		//clear();
-	}
-
-	else if (userinput[0] == "set"){
-		color = (color_e)userinput[2];
-		type = (type_e) userinput[3];
-		row = userinput[1][1];
-		col = userinput[1][3];
-		//set_disc(color, type, row, col); // add row, col
-	}
-
-	else if (userinput[0] == "quit"){
-		//quit();
-	}
-
-	else if (userinput[0] == "rm"){
-		row = userinput[1][1];
-		col = userinput[1][3];
-		//remove_disc(row, col);
-	}
-
-	else if (userinput[0] == "get_moves"){
-		//get_moves();
-	}
-
-	else if (userinput[0] == "start"){
-		//start();
-	}
-
-	return 0;
-
-}
 
 void print_line(){
 	int i;
