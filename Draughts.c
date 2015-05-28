@@ -8,9 +8,12 @@ Minimax_Depth = 1;
 player_a = 1;
 player_b = 0;
 
+<<<<<<< HEAD
 //Initialization
 
 
+=======
+>>>>>>> parent of 4ff0071... changes
 int main()
 {
 	init_board(game_board);
@@ -46,16 +49,25 @@ int main()
 			//
 		}
 	}
+<<<<<<< HEAD
 	
 	print_board(game_board);
+=======
+	char board[BOARD_SIZE][BOARD_SIZE];
+	init_board(board);
+	print_board(board);
+>>>>>>> parent of 4ff0071... changes
 	print_message(WRONG_MINIMAX_DEPTH);
 	perror_message("TEST");
 	return 0;
 
 }
 
+<<<<<<< HEAD
 ////////////////////////////////////////////
 
+=======
+>>>>>>> parent of 4ff0071... changes
 char* readline(void) {
 
 	// Varibles
@@ -127,7 +139,13 @@ int parsing(char* input){
 
 	// Varibles
 	int i, depth, row, col;
+<<<<<<< HEAD
 	char* userinput[4] = { 0 }, *inputCopy, *token, *color, *type;
+=======
+	char* userinput[4] = { 0 }, *inputCopy, *token;
+	color_e color;
+	type_e type;
+>>>>>>> parent of 4ff0071... changes
 
 	// Initialize
 	depth = 1;
@@ -161,16 +179,22 @@ int parsing(char* input){
 		return 1;
 	}
 
+<<<<<<< HEAD
 	if (strstr(userinput[0], "minmax_depth") != NULL){
 		depth = (int)userinput[1];
+=======
+	if (userinput[0] == "minmax_depth"){
+		depth = alpha_to_num(userinput[1]);
+>>>>>>> parent of 4ff0071... changes
 		//	Minimax_Depth = set_minimax_depth(depth); // calculate depth
 	}
 
-	else if (strstr(userinput[0], "user_color") != NULL){
-		color = userinput[1];
+	else if (userinput[0] == "user_color"){
+		color = (color_e)userinput[1];
 		//set_user_color(color); // calculate depth
 	}
 
+<<<<<<< HEAD
 	else if (strstr(userinput[0], "clear") != NULL){
 		//clear();
 	}
@@ -186,17 +210,35 @@ int parsing(char* input){
 	else if (strstr(userinput[0], "rm") != NULL){
 		row = alpha_to_num((int)userinput[1][1]);
 		col = (int)userinput[1][3];
+=======
+	else if (userinput[0] == "clear"){
+		//clear();
+	}
+
+	else if (userinput[0] == "set"){
+		color = (color_e)userinput[2];
+		type = (type_e)userinput[3];
+		row = userinput[1][1];
+		col = userinput[1][3];
+		//set_disc(color, type, row, col); // add row, col
+	}
+
+	else if (userinput[0] == "rm"){
+		row = userinput[1][1];
+		col = userinput[1][3];
+>>>>>>> parent of 4ff0071... changes
 		//remove_disc(row, col);
 	}
 
-	else if (strstr(userinput[0], "get_moves") != NULL){
+	else if (userinput[0] == "get_moves"){
 		//get_moves();
 	}
 
-	else if (strstr(userinput[0], "start") != NULL){
+	else if (userinput[0] == "start"){
 		//start();
 	}
 
+<<<<<<< HEAD
 	else if (strstr(userinput[0], "print") != NULL){
 		//print_board()
 	}
@@ -204,6 +246,8 @@ int parsing(char* input){
 	else if (strstr(userinput[0], "move") != NULL){
 		//start();
 	}
+=======
+>>>>>>> parent of 4ff0071... changes
 	return 1;
 
 }
