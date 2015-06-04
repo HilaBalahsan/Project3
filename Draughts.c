@@ -20,6 +20,8 @@ int main()
 	init_board(game_board);
 
 	printf(WELCOME_TO_DRAUGHTS);
+	print_board(game_board);
+	//printf(game_board[2][1]);
 	while (TRUE)
 	{
 		line = readline();
@@ -29,6 +31,7 @@ int main()
 			break;
 		}
 		pars_succeed = parsing(line);
+		print_board(game_board);
 		if (pars_succeed == -1)
 		{
 			//
@@ -43,13 +46,19 @@ int main()
 
 int remove_disc(int row, int col){
 
-	if (row > 10 || row < 0 || col < 0 || col > 10)
+	if (is_valid_position(row,col) == FALSE)
 	{
-		printf("Invalid position on the board\n");
+		printf(WRONG_POSITION);
 		return -1;
 	}
 
-	game_board[row][col] = EMPTY;
+//	printf(game_board[row][col]);
+	if (game_board[col - 1][row - 1] != EMPTY){
+		game_board[col - 1][row - 1] = EMPTY;
+	}
+	else{
+		printf(WRONG_POSITION);
+	}
 
 	return 1;
 }
@@ -59,8 +68,8 @@ int clear(){
 	
 	int i, j;
 
-	for (i = 0; i < BOARD_SIZE; i++){
-		for (j = 0; j < BOARD_SIZE; j++){
+	for (i = 0; i < BOARD_SIZE ; i++){
+		for (j = BOARD_SIZE; j >= 0 ; j--){
 			game_board[i][j] = EMPTY;
 		}
 	}
@@ -139,9 +148,10 @@ char* readline(void) {
 int parsing(char* input){
 
 	// Varibles
-	int i, depth, row, col;
+	int i, depth, row, col, check_if_10;
 
-	char* userinput[4] = { 0 }, *inputCopy, *token, *color, *type;
+	char* userinput[4] = { 0 }, *inputCopy, *token, *type;
+	color_e color;
 
 	// Initialize
 	depth = 1;
@@ -174,14 +184,15 @@ int parsing(char* input){
 		return 1;
 	}
 
-	if (userinput[0] == "minmax_depth"){
-		depth = alpha_to_num(userinput[1]);
-		//	Minimax_Depth = set_minimax_depth(depth); // calculate depth
+	if (strstr(userinput[0], "minmax_depth") != NULL){
+		depth = (int)userinput[1];
+		int m = depth;
+		set_minimax_depth(depth); // calculate depth
 	}
 
-	else if (userinput[0] == "user_color"){
-		color = userinput[1];
-		//set_user_color(color); // calculate depth
+	else if (strstr(userinput[0], "user_color") != NULL){
+//		color = userinput[1];
+	//	set_user_color(color); // calculate depth
 	}
 
 	else if (strstr(userinput[0], "clear") != NULL){
@@ -190,8 +201,14 @@ int parsing(char* input){
 
 	else if (strstr(userinput[0], "set") != NULL){
 
-		row = alpha_to_num((int)userinput[1][1]);
-		col = (int)userinput[1][3];
+		col = alpha_to_num((int)userinput[1][1]); // <x>
+		check_if_10 = (int)userinput[1][4] - 48;
+		if (check_if_10 == 0){
+			row = 10;
+		}
+		else{
+			row = (int)userinput[1][3] - 48; // <y>
+		}
 
 		if (strstr(userinput[2],"black")){
 			if (strstr(userinput[3], "M")){
@@ -216,8 +233,15 @@ int parsing(char* input){
 	else if (strstr(userinput[0], "rm") != NULL)
 	{
 
-		row = alpha_to_num((int)userinput[1][1]);
-		col = (int)userinput[1][3];
+		col = alpha_to_num((int)userinput[1][1]); // <x>
+		check_if_10 = (int)userinput[1][4] - 48;
+		if (check_if_10 == 0){
+			row = 10;
+		}
+		else{
+			row = (int)userinput[1][3] - 48; // <y>
+		}
+			
 
 		remove_disc(row, col);
 	}
@@ -300,7 +324,7 @@ void init_board(char board[BOARD_SIZE][BOARD_SIZE]){
 }
 ////////////////////////////////////////////////////////
 
-void set_minimax_depth(int depth){
+int set_minimax_depth(int depth){
 	if ((depth > 6) || (depth < 1))
 	{
 		printf(WRONG_MINIMAX_DEPTH);
@@ -329,8 +353,35 @@ void set_user_color(color_e color)
 	}
 }
 
-void set_disc(char char_on_board, int col, int row)
+int set_disc(char char_on_board, int col, int row)
 {
-	game_board[(row)][col] = char_on_board;
+	if (is_valid_position(row, col) == FALSE)
+	{
+		printf(WRONG_POSITION);
+		return -1;
+	}
+
+	game_board[(row-1)][col-1] = char_on_board;
+
+	return 1;
+}
+
+bool is_valid_position(int row, int col){
+
+	bool b;
+	b = TRUE;
+
+	//if (((col % 2 == 1) && (row % 2 == 1)))
+	if (((col % 2 == 1) && (row % 2 == 0)) || ((col % 2 == 0) && (row % 2 == 1)))
+	{
+		b = FALSE;
+	}
+
+	if ((row > 10) || (row < 0) || (col > 10) || (col < 0))
+	{
+		b = FALSE;
+	}
+
+	return b;
 }
 

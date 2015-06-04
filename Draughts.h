@@ -83,7 +83,7 @@ typedef char* string;
 //Macros
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
-#define alpha_to_num(character) (character - 97)
+#define alpha_to_num(character) (character - 96)
 
 
 //Externs
@@ -108,11 +108,11 @@ bool is_valid_initialization();            //empty, disc of one color , more the
 
 
 //Settings Functions
-void set_minimax_depth(int x);
+int set_minimax_depth(int x);
 void set_user_color(color_e color);
 int clear();
 int remove_disc(int row, int col);
-void set_disc(char char_on_board, int row, int col);
+int set_disc(char char_on_board, int row, int col);
 
 
 //Game Functions
