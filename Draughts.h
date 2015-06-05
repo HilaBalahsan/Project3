@@ -56,7 +56,6 @@ typedef struct path {
 }path_t;
 
 
-
 typedef struct computer{
 	int minimax_depth;
 	color_e color;

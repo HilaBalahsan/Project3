@@ -2,48 +2,58 @@
 
 // Defauld values
 Minimax_Depth = 1;
-/////////////////
+State = SETTINGS_STATE;
+turn = COMPUTER;                // defalt: first player is the computer
+paths_arr = NULL;
+user_t user = NULL;
+computer_t computer = NULL;
+
 //Initialization
 char game_board[BOARD_SIZE][BOARD_SIZE] = { NULL };
 player_a = 1;
 player_b = 0;
-State = SETTINGS_STATE;
-computer_t computer = NULL;
-user_t user = NULL;
 
-int main()
-{
+int main(){
 	// Varibles
 	int pars_succeed;
-	char* line;
+	string line;
 
 	// Initialization
 	line = NULL;
 	pars_succeed = 1;
 	init_board(game_board);
-
+	
 	printf(WELCOME_TO_DRAUGHTS);
-	print_board(game_board);
-	//printf(game_board[2][1]);
-	while (TRUE)
+
+	switch (State)
 	{
-		line = readline();
-		if ((strcmp(line, "quit")) == 0) // zero for equal.
-		{
-			free(line);
-			break;
-		}
-		pars_succeed = parsing(line);
-		print_board(game_board);
-		if (pars_succeed == -1)
-		{
-			//
-		}
+	case GAME_STATE:
+	{
+		main_loop();
 	}
+		break;
 
-	print_board(game_board);
-
-	return 1;
+	default:
+	{
+		while (TRUE)
+		{
+			line = readline();
+			if ((strcmp(line, "quit")) == 0) // zero for equal.
+			{
+				free(line);
+				break;
+			}
+			pars_succeed = parsing(line);
+			if (pars_succeed == -1)
+			{
+				//
+			}
+		}
+		break;
+	}
+		print_board(game_board);
+		return 1;
+	}
 }
 
 
@@ -55,8 +65,6 @@ int remove_disc(int row, int col){
 		printf(WRONG_POSITION);
 		return -1;
 	}
-
-//	printf(game_board[row][col]);
 	if (game_board[col - 1][row - 1] != EMPTY){
 		game_board[col - 1][row - 1] = EMPTY;
 	}
@@ -65,6 +73,34 @@ int remove_disc(int row, int col){
 	}
 
 	return 1;
+}
+
+int update_paths_list(){
+	// allocating memory ,crating a node , joining to the linkedlist.
+}
+
+int free_linked_list(){
+	//Frees the memory
+}
+
+int main_loop(){
+	string line;
+	switch (turn)
+	{
+		case(USER) :
+		{
+			line = readline();		
+			turn = COMPUTER;
+		}
+		break;
+
+		default:
+		{
+			minMax();
+			turn = USER;
+		}
+		break;
+	}
 }
 
 // clearing the board
@@ -378,15 +414,22 @@ void set_user_color(color_e color)
 {
 	switch (color)
 	{
-	case BLACK:
-		//user.minimax_depth = player_b;
-		//user.color = BLACK;
+	case WHITE:
+		color_e comp_color = BLACK;
+		user.minimax_depth = player_a;
+		user.color = color;
+		computer.color = comp_color;
+		computer.minimax_depth = player_b;
+		turn = USER;                          //The user is the first player
 		break;
 
 	default:
-		;
-		//user.minimax_depth = player_a;
-		//user.color = WHITE;
+		color_e comp_color = WHITE;
+		user.minimax_depth = player_b;
+		user.color = color;
+		computer.color = comp_color;
+		computer.minimax_depth = player_a;
+		break;
 	}
 }
 
