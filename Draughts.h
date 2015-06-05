@@ -38,29 +38,43 @@ typedef enum player {
 	COMPUTER
 } player_e;
 
-typedef struct user{
-	int minimax_depth;
-	color_e color;
-}user_t;
-
-typedef struct computer{
-	int minimax_depth;
-	color_e color;
-}computer_t;
+typedef struct koordinate {
+	// current position
+	int row;
+	int col;
+	int length;
+	struct koordinate* next_koordinate;
+	struct koordinate* previous_koordinate;
+} koordinate_t;
 
 typedef struct path {
 	int path_weight;
 	int lenght;
-	struct move* head_position;
+	koordinate_t* eatten_kings_koordinate;
+	koordinate_t* eatten_men_coordinate;
+	struct path* head_position;
 }path_t;
 
 
-typedef struct moves {
-	// current position
-	int row;
-	int col;
-	struct move* next_move;
-} moves_t;
+
+typedef struct computer{
+	int minimax_depth;
+	color_e color;
+	koordinate_t* kings_koordinate;
+	koordinate_t* men_coordinate;
+	int num_of_men;
+	int num_of_kings;
+}computer_t;
+
+typedef struct user{
+	int minimax_depth;
+	color_e color;
+	koordinate_t* kings_koordinate;
+	koordinate_t* men_coordinate;
+	int num_of_men;
+	int num_of_kings;
+}user_t;
+
 
 typedef char** board_t;
 typedef unsigned char bool;
@@ -93,6 +107,10 @@ extern state_e State;
 extern char game_board[BOARD_SIZE][BOARD_SIZE];
 extern int player_a;
 extern int player_b;
+extern player_e turn;
+extern path_t* paths_list;
+extern int scoring_white;
+extern int scoring_black;
 
 
 //Infrastructure Functions
@@ -105,7 +123,10 @@ int main();
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
-
+int free_linked_list();
+int update_paths_list();
+int initializing_computer_board();       //Initializing the tool struct as well.
+int delete_node(koordinate_t* tool_to_delete);
 
 //Settings Functions
 int set_minimax_depth(int x);
@@ -113,11 +134,14 @@ void set_user_color(color_e color);
 int clear();
 int remove_disc(int row, int col);
 int set_disc(char char_on_board, int row, int col);
+int start();
 
 
 //Game Functions
 int scoring();                  //Uses the global board
-void best_path();
+void moves(koordinate_t tool);
+void minMax();
+bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
 
 
 #endif

@@ -7,6 +7,9 @@ Minimax_Depth = 1;
 char game_board[BOARD_SIZE][BOARD_SIZE] = { NULL };
 player_a = 1;
 player_b = 0;
+State = SETTINGS_STATE;
+computer_t computer = NULL;
+user_t user = NULL;
 
 int main()
 {
@@ -44,6 +47,7 @@ int main()
 }
 
 
+// removes the solider from the board
 int remove_disc(int row, int col){
 
 	if (is_valid_position(row,col) == FALSE)
@@ -63,7 +67,7 @@ int remove_disc(int row, int col){
 	return 1;
 }
 
-
+// clearing the board
 int clear(){
 	
 	int i, j;
@@ -75,9 +79,9 @@ int clear(){
 	}
 
 	return 1;
-
 }
 
+// reads what the user typed
 char* readline(void) {
 
 	// Varibles
@@ -155,6 +159,7 @@ int parsing(char* input){
 
 	// Initialize
 	depth = 1;
+	color = WHITE;
 
 	inputCopy = (char*)malloc(sizeof(char)*(strlen(input) + 1));
 	if (inputCopy == NULL)
@@ -184,87 +189,121 @@ int parsing(char* input){
 		return 1;
 	}
 
-	if (strstr(userinput[0], "minmax_depth") != NULL){
-		depth = (int)userinput[1];
-		int m = depth;
+	if (strstr(userinput[0], "minmax_depth") != NULL)
+	{
+
+		if (strstr(userinput[1], "2") != NULL )
+		{
+			depth = 2;
+		}
+		else if (strstr(userinput[1], "3") != NULL) 
+		{
+			depth = 3;
+		}
+		else if (strstr(userinput[1], "4") != NULL) 
+		{
+			depth = 4;
+		}
+		else if (strstr(userinput[1], "5") != NULL) 
+		{
+			depth = 5;
+		}
+		else if (strstr(userinput[1], "6") != NULL) 
+		{
+			depth = 6;
+		}
+
 		set_minimax_depth(depth); // calculate depth
 	}
 
-	else if (strstr(userinput[0], "user_color") != NULL){
-//		color = userinput[1];
-	//	set_user_color(color); // calculate depth
+	else if (strstr(userinput[0], "user_color") != NULL)
+	{
+		if ((strstr(userinput[1], "black") != NULL) || (strstr(userinput[1], "Black") != NULL) || (strstr(userinput[1], "BLACK") != NULL))
+		{
+			color = BLACK;
+		}
+
+		set_user_color(color); // calculate depth
 	}
 
-	else if (strstr(userinput[0], "clear") != NULL){
+	else if (strstr(userinput[0], "clear") != NULL)
+	{
 		clear();
 	}
 
-	else if (strstr(userinput[0], "set") != NULL){
-
+	else if (strstr(userinput[0], "set") != NULL)
+	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
+
 		check_if_10 = (int)userinput[1][4] - 48;
-		if (check_if_10 == 0){
+		if (check_if_10 == 0)
+		{
 			row = 10;
 		}
-		else{
+		if (check_if_10 != 0)
+		{
 			row = (int)userinput[1][3] - 48; // <y>
 		}
 
-		if (strstr(userinput[2],"black")){
-			if (strstr(userinput[3], "M")){
+		if (strstr(userinput[2],"black"))
+		{
+			if (strstr(userinput[3], "M"))
+			{
 				set_disc(BLACK_M, row, col);
 			}
-			else{
+			else
+			{
 				set_disc(BLACK_K, row, col);
 			}
 		}
 
-		else{
-			if (strstr(userinput[3], "m")){
+		else
+		{
+			if (strstr(userinput[3], "m"))
+			{
 				set_disc(WHITE_M, row, col);
 			}
-			else{
+			else
+			{
 				set_disc(WHITE_K, row, col);
 			}
 		}
-
 	}
 
 	else if (strstr(userinput[0], "rm") != NULL)
 	{
-
 		col = alpha_to_num((int)userinput[1][1]); // <x>
+
 		check_if_10 = (int)userinput[1][4] - 48;
-		if (check_if_10 == 0){
+		if (check_if_10 == 0)
+		{
 			row = 10;
 		}
-		else{
+		else
+		{
 			row = (int)userinput[1][3] - 48; // <y>
 		}
-			
-
 		remove_disc(row, col);
 	}
 
-	else if (userinput[0] == "clear"){
-		//clear();
-	}
-
-	else if (userinput[0] == "get_moves"){
+	else if (strstr(userinput[0], "get_moves") != NULL)
+	{
 		//get_moves();
 	}
 
-	else if (userinput[0] == "start"){
-		//start();
+	else if (strstr(userinput[0], "start") != NULL)
+	{
+		start();
 	}
 
-
-	else if (strstr(userinput[0], "print") != NULL){
+	else if (strstr(userinput[0], "print") != NULL)
+	{
 		print_board(game_board);
 	}
 
-	else if (strstr(userinput[0], "move") != NULL){
-		//start();
+	else if (strstr(userinput[0], "move") != NULL)
+	{
+		//move...
 	}
 
 	return 1;
@@ -298,8 +337,6 @@ void print_board(char board[BOARD_SIZE][BOARD_SIZE])
 	}
 	printf("\n");
 }
-
-
 
 void init_board(char board[BOARD_SIZE][BOARD_SIZE]){
 	int i, j;
@@ -366,12 +403,15 @@ int set_disc(char char_on_board, int col, int row)
 	return 1;
 }
 
+// checks if the position is legal ( not empty )
 bool is_valid_position(int row, int col){
 
+	// define
 	bool b;
+
+	// initalize
 	b = TRUE;
 
-	//if (((col % 2 == 1) && (row % 2 == 1)))
 	if (((col % 2 == 1) && (row % 2 == 0)) || ((col % 2 == 0) && (row % 2 == 1)))
 	{
 		b = FALSE;
@@ -384,4 +424,65 @@ bool is_valid_position(int row, int col){
 
 	return b;
 }
+
+// checks if the borad is OK - not empty, 20 discs for each color
+bool is_valid_initialization()
+{
+	// define
+	bool b;
+	int num_of_white, num_of_black, total_discs, num_of_kings, i, j;
+
+	// initalize
+	b = TRUE;
+	num_of_white = 0;
+	num_of_black = 0;
+	total_discs = 0;
+	num_of_kings = 0;
+
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			if (game_board[i][j] == WHITE_M)
+			{
+				num_of_white++;
+				total_discs++;
+			}
+			else if (game_board[i][j] == BLACK_M)
+			{
+				num_of_black++;
+				total_discs++;
+			}
+
+			else if ((game_board[i][j] == BLACK_K) || (game_board[i][j] == WHITE_K))
+			{
+				num_of_kings++;
+			}
+		}
+	}
+
+	if ((num_of_white != 20) || (num_of_black != 20) || (num_of_kings != 0) || (total_discs != 40 ))
+	{
+		b = FALSE;
+		
+	}
+
+	return b;
+}
+
+int start()
+{
+	//bool valid;
+
+	if (is_valid_initialization() == FALSE)
+	{
+		printf(WROND_BOARD_INITIALIZATION);
+		return -1;
+	}
+
+	State = GAME_STATE;
+	return 1;
+}
+
+
 
