@@ -359,11 +359,11 @@ void init_board(){
 
 				if (computer.color == WHITE)
 				{
-					head_linkedList = creat_linkedList_pointer(MAN, COMPUTER, i, j);
+					head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
 				}
 				else
 				{
-					head_linkedList = creat_linkedList_pointer(MAN, USER, i, j);
+					head_linkedList = creat_linkedList_pointer(MAN, USER);
 				}
 				updating_listList(i, j, head_linkedList);
 			}
@@ -478,7 +478,7 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 	coordinate_t *temp_linkedlist;
 	int return_val;
 
-	if (! is_valid_position(row, col))
+	if ((!is_valid_position(row, col)) || (!is_empty_position(row , col)))
 	{
 		printf(WRONG_POSITION);
 		return -1;
@@ -593,6 +593,16 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate ){
 	return 1;
 }
 
+bool is_empty_position(int row, int col)
+{
+	bool empty = TRUE;
+	if (game_board[row][col] != EMPTY)
+	{
+		empty = FALSE;
+	}
+	return empty;
+}
+
 bool is_valid_position(int row, int col){
 
 	// define
@@ -603,7 +613,7 @@ bool is_valid_position(int row, int col){
 
 	//if (((col % 2 == 1) && (row % 2 == 0)) || ((col % 2 == 0) && (row % 2 == 1)))
 
-	if (((row + col)% 2 != 0) && (game_board[row][col] != EMPTY))        //assamption: indexes starts from ziro
+	if ((row + col)% 2 != 0)      //assamption: indexes starts from ziro
 	{
 		b = FALSE;
 	}
@@ -718,14 +728,14 @@ bool is_become_king(int row, int col){
 
 	if (mine == WHITE)
 	{
-		if ((row == BOARD_SIZE - 1) && (is_valid_position(row , col)))
+		if (((row == BOARD_SIZE - 1) && (is_empty_position(row, col)) && (is_valid_position(row , col))))
 		{
 			king = TRUE;
 		}
 	}
 	else
 	{
-		if ((row == 0) && (is_valid_position(row, col)))
+		if (((row == 0) && (is_empty_position(row, col)) (is_valid_position(row, col))))
 		{
 			king = TRUE;
 		}
@@ -747,7 +757,7 @@ int* adjacent_slot_is_enemy(int row, int col){
 	{
 		enemy_color = user.color;
 	}
-
+	//Not good need to check one more slot
 	if (is_enemy_position(row + 1 , col + 1))
 	{
 		four_diraction[0] == TRUE;
@@ -800,6 +810,30 @@ int update_paths_array(path_t* new_path)
 	return 1;
 }
 
+void print_path_arr(){
+	int i;
+
+	for (i = 0; i < paths_number; i++)
+	{
+		print_single_path(paths_arr[i]);
+	}
+}
+
+void print_single_path(path_t* path){
+	coordinate_t *iterator;
+	iterator = path->head_position;
+	printf("move <%d,%d> to <%d,%d>[", path->head_position->row, path->head_position->col,
+		path->last_coordinate[0], path->last_coordinate[1]);
+	while (iterator->next_coordinate != NULL)
+	{
+		iterator = iterator->next_coordinate;
+		printf("<%d,%d> ", iterator->row, iterator->col);
+	}
+	printf("\n");
+}
+
+
+
 void clone_linkedline(coordinate_t *iterator, coordinate_t *clone){
 	int check_clone;
 
@@ -823,16 +857,22 @@ void clone_linkedline(coordinate_t *iterator, coordinate_t *clone){
 
 int clone_path(path_t* original_path)
 {
-	int chech_eatten_king, check_eatten_men, check_cloned_positions;
+	bool check_cloned_positions;
 	path_t* cloned_path;
 	coordinate_t  *positions_iterate, *cloned_positions;
+
+	cloned_path = (path_t*)malloc(sizeof(path_t));
+	if (cloned_path == NULL)
+	{
+		printf("clone_path function - Failed to allocated memory");
+		return -1;
+	}
 
 	cloned_path->path_weight = original_path->path_weight;
 	positions_iterate = original_path->head_position;
 	clone_linkedline(positions_iterate, cloned_positions);
 
 	return 1;
-
 }
 
 int get_moves(){
@@ -847,10 +887,10 @@ int get_moves(){
 	}
 	capacity = BOARD_SIZE;
 	
-	iterator = creat_linkedList_pointer(MAN);
+	iterator = creat_linkedList_pointer(MAN, turn);
 	get_move_helper(iterator, MAN);
 
-	iterator = creat_linkedList_pointer(KING);
+	iterator = creat_linkedList_pointer(KING , turn);
 	get_move_helper(iterator, KING);
 
 	//printf(paths_list);
@@ -893,6 +933,8 @@ int get_men_moves(int curr_row, int curr_col){
 		printf("get_move function - Failed to allocated memory");
 		return -1;
 	}
+	new_path->last_coordinate[0] = curr_row;
+	new_path->last_coordinate[1] = curr_col;
 
 	return_val = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (return_val == -1)
@@ -925,6 +967,18 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 	int returnval1, returnval2, returnval3;
 
 	//Halting conditions
+	if ((!is_valid_position(next_row, next_col) && new_path->head_position != NULL))
+	{
+		new_path->last_coordinate[0] = next_row;
+		new_path->last_coordinate[1] = next_col;
+		returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
+		if (returnval1 == -1)
+		{
+			return -1;
+		}
+		return 1;
+	}
+
 	if (is_become_king(next_row, next_col))
 	{
 		returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
@@ -981,6 +1035,10 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 			{
 				return -1;
 			}
+
+			new_path->last_coordinate[0] = next_row;
+			new_path->last_coordinate[1] = next_col;
+
 			returnval1 = update_paths_array(new_path);
 			if (returnval1 == -1)
 			{
@@ -1161,6 +1219,18 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 	int returnval1, returnval2, returnval3;
 
 	//Halting conditions
+	if ((!is_valid_position(next_row, next_col) && new_path->head_position != NULL))
+	{
+		new_path->last_coordinate[0] = next_row;
+		new_path->last_coordinate[1] = next_col;
+		returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
+		if (returnval1 == -1)
+		{
+			return -1;
+		}
+		return 1;
+	}
+	
 	if ((step.is_first_step == TRUE) && (step.is_potntial_step == FALSE))
 	{
 		//arrive here if it first step or the previous slot is free
@@ -1169,6 +1239,8 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 		if (is_enemy_position(next_row, next_col))
 		{
 			step.is_potntial_step == TRUE;
+			new_path->last_coordinate[0] = next_row;
+			new_path->last_coordinate[1] = next_col;
 			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (returnval1 == -1)
 			{
@@ -1202,6 +1274,8 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 		// The slot is not belongs to enemy
 		else if (is_valid_position(next_row, next_col))
 		{
+			new_path->last_coordinate[0] = next_row;
+			new_path->last_coordinate[1] = next_col;
 			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (returnval1 == -1)
 			{
@@ -1250,9 +1324,9 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 	return 1;
 }
 
-int* scoring()
-{
-	int* score_arr[2] = { 0 }; // scoer array - computer, user
+int* scoring(){
+
+	int score_arr[2] = { 0 }; // scoer array - computer, user
 	int scoring_computer, scoring_user;
 
 	scoring_computer = 0;

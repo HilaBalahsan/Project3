@@ -17,6 +17,9 @@
 #define WHITESPACE  (" ")
 
 //type definition
+typedef char** board_t;
+typedef unsigned char bool;
+
 
 typedef enum color {
 	WHITE,
@@ -38,7 +41,7 @@ typedef enum player {
 	COMPUTER
 } player_e;
 
-typedef enum previous_direction {
+typedef enum direction {
 	UPRIGHT , UPLEFT,
 	DOWNRIGHT , DOWNLEFT
 } direction_e;
@@ -62,6 +65,7 @@ typedef struct coordinate {
 typedef struct path {
 	int path_weight;
 	int score_board_after_path;
+	int last_coordinate[2];
 	coordinate_t * head_position;  
 } path_t;
 
@@ -94,9 +98,6 @@ typedef struct tree{
 	node_t root;
 } tree_t;
 
-
-typedef char** board_t;
-typedef unsigned char bool;
 
 // Saperate between board line (char*) and a regular string.
 typedef char* string;
@@ -165,13 +166,13 @@ void set_user_color(color_e color);
 
 
 //Game Functions
-int scoring();                  //Uses the global board
+int* scoring();                  //Uses the global board
 void moves(coordinate_t tool);
 void minMax();
 bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
 int get_moves();
 void get_move_helper(coordinate_t *itereting_node, type_e tool);
-int get_men_moves(int curr_row, int curr_col, step_t step);
+int get_men_moves(int curr_row, int curr_col);
 int get_men_moves_helper(direction_e dir, int next_row,int next_col, step_t step, coordinate_t *moves_coor);
 
 
@@ -179,5 +180,8 @@ int* adjacent_slot_is_enemy(int row, int col , type_e player);
 bool is_become_king(int row, int col);
 void print_path(path_t *path);
 void initialize_step(step_t step);
+void print_path_arr();
+void print_single_path(path_t* path);
+
 
 #endif
