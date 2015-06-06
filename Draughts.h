@@ -185,6 +185,8 @@ void print_path(path_t *path);
 void initialize_step(step_t step);
 void print_path_arr();
 void print_single_path(path_t* path);
+void free_paths_arr();
+bool is_empty_position(int row, int col);
 
 
 #endif

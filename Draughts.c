@@ -420,8 +420,26 @@ void free_linked_list(coordinate_t *linkedlist){
 
 void free_path(path_t* path)
 {
-	free_linked_list(path->head_position);
+	if (path->head_position != NULL)
+	{
+		free_linked_list(path->head_position);
+	}
 	free(path);
+}
+
+void free_paths_arr()
+{
+	int i;
+
+	if (paths_number > 0)
+	{
+		for (i = 0; i < paths_number; i++)
+		{
+			free_path(paths_arr[i]);
+		}
+	}
+	paths_number = 0;
+	free(paths_arr);
 }
 
 int clear(){
@@ -455,8 +473,6 @@ int set_minimax_depth(int depth){
 
 void set_user_color(color_e color)                                                      
 {
-	
-
 	if (color == WHITE)
 	{
 		user.minimax_depth = player_a;
@@ -594,8 +610,7 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate ){
 	return 1;
 }
 
-bool is_empty_position(int row, int col)
-{
+bool is_empty_position(int row, int col){
 	bool empty = TRUE;
 	if (game_board[row][col] != EMPTY)
 	{
@@ -736,7 +751,7 @@ bool is_become_king(int row, int col){
 	}
 	else
 	{
-		if (((row == 0) && (is_empty_position(row, col)) (is_valid_position(row, col))))
+		if (((row == 0) && (is_empty_position(row, col)) && (is_valid_position(row, col))))
 		{
 			king = TRUE;
 		}
@@ -866,6 +881,8 @@ int clone_path(path_t* original_path)
 		printf("clone_path function - Failed to allocated memory");
 		return -1;
 	}
+	cloned_path = NULL;
+	cloned_positions = NULL;
 
 	cloned_path->path_weight = original_path->path_weight;
 	positions_iterate = original_path->head_position;
@@ -877,6 +894,9 @@ int clone_path(path_t* original_path)
 int get_moves(){
 
 	coordinate_t *iterator;
+
+	//releast the previouse arr.
+	free_paths_arr(paths_arr);
 
 	paths_arr = (path_t**)malloc(sizeof(path_t*) * BOARD_SIZE);
 	if (paths_arr == NULL)
