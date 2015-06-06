@@ -39,15 +39,14 @@ typedef enum player {
 } player_e;
 
 typedef enum previous_direction {
-	UPRIGHT, UPLEFT,
-	DOWNRIGHT, DOWNLEFT
+	UPRIGHT , UPLEFT,
+	DOWNRIGHT , DOWNLEFT
 } direction_e;
 
 typedef struct step {
 	bool is_first_step;
 	bool is_potntial_step;    //comes after eatting
-	type_e tool_to_eat;
-}step_t;
+} step_t;
 
 
 typedef struct coordinate {
@@ -62,39 +61,39 @@ typedef struct coordinate {
 
 typedef struct path {
 	int path_weight;
-	int score;
-	coordinate_t * head_position;
-}path_t;
+	int score_board_after_path;
+	coordinate_t * head_position;  
+} path_t;
 
 
-typedef struct computer{
+typedef struct computer {
 	int minimax_depth;
 	color_e color;
 	coordinate_t* kings_coordinate;
 	coordinate_t* men_coordinate;
 	int num_of_men;
 	int num_of_kings;
-}computer_t;
+} computer_t;
 
-typedef struct user{
+typedef struct user {
 	int minimax_depth;
 	color_e color;
 	coordinate_t* kings_coordinate;
 	coordinate_t* men_coordinate;
 	int num_of_men;
 	int num_of_kings;
-}user_t;
+} user_t;
 
-typedef struct node
-{
+typedef struct node {
 	int score;
 	path_t path;
 	struct node *children;
-}node_t;
+} node_t;
 
 typedef struct tree{
 	node_t root;
-}tree_t;
+} tree_t;
+
 
 typedef char** board_t;
 typedef unsigned char bool;
@@ -123,12 +122,9 @@ typedef char* string;
 //Externs
 extern int Minimax_Depth;
 extern state_e State;
-//extern board_t game_board;
 extern char game_board[BOARD_SIZE][BOARD_SIZE];
 extern int player_a;
 extern int player_b;
-extern player_e turn;
-extern path_t* paths_list;
 extern int scoring_white;
 extern int scoring_black;
 extern int capacity;
@@ -138,51 +134,50 @@ extern path_t* possible_user_paths;
 extern path_t** paths_arr;
 extern user_t user;
 extern computer_t computer;
-//extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
+
+
 
 //Infrastructure Functions
-void print_board(board_t game_board);
-void init_board(board_t game_board);
+void print_board();
+void init_board();
 char* readline(void);
 int parsing(char* line);
 int main_loop();
 int main();
-bool check_win(color_e color);
-bool is_valid_position(int row, int col);   //not a white square , ranges
-bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
-int update_paths_list();
-int initializing_computer_board();       //Initializing the tool struct as well.
+int updating_linked_list(player_e player, int row, int col);
 int delete_node(coordinate_t* tool_to_delete);
-int updating_tool_list(player_e player, int row, int col, type_e type);
-coordinate_t * creat_linkedList_pointer(type_e type, player_e player, int row, int col);
+coordinate_t * creat_linkedList_pointer(type_e type);
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
 void free_path(path_t path);
 void free_linked_list(coordinate_t *linkedlist);
 
+
+
 //Settings Functions
 int set_minimax_depth(int x);
-void set_user_color(color_e color);
 int clear();
 int remove_disc(int row, int col);
-int set_disc(char char_on_board, int row, int col);
+int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e tool_type);
 int start();
+void set_user_color(color_e color);
 
 
 //Game Functions
-int* scoring();                  //Uses the global board
+int scoring();                  //Uses the global board
 void moves(coordinate_t tool);
-int minMax();
+void minMax();
 bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
-bool is_free_coordinate(int row, int col);
-get_moves();
+int get_moves();
 void get_move_helper(coordinate_t *itereting_node, type_e tool);
 int get_men_moves(int curr_row, int curr_col, step_t step);
-int get_men_moves_helper(direction_e dir, int next_row,
-int next_col, step_t step, coordinate_t *moves_coor);
-int* is_there_an_enemy(int row, int col);
-bool is_become_king(int row, int col);
+int get_men_moves_helper(direction_e dir, int next_row,int next_col, step_t step, coordinate_t *moves_coor);
 
+
+int* adjacent_slot_is_enemy(int row, int col , type_e player);
+bool is_become_king(int row, int col);
+void print_path(path_t *path);
+void initialize_step(step_t step);
 
 #endif
