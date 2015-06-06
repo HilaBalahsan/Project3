@@ -38,29 +38,40 @@ typedef enum player {
 	COMPUTER
 } player_e;
 
-typedef struct koordinate {
+typedef enum previous_direction {
+	UPRIGHT, UPLEFT,
+	DOWNRIGHT, DOWNLEFT
+} direction_e;
+
+typedef struct step {
+	bool is_first_step;
+	bool is_potntial_step;    //comes after eatting
+	type_e tool_to_eat;
+}step_t;
+
+
+typedef struct coordinate {
 	// current position
 	int row;
 	int col;
-	int length;
-	struct koordinate* next_koordinate;
-	struct koordinate* previous_koordinate;
-} koordinate_t;
+	int val;
+	struct coordinate * next_coordinate;
+	struct coordinate * previous_coordinate;
+} coordinate_t;
+
 
 typedef struct path {
 	int path_weight;
-	int lenght;
-	koordinate_t* eatten_kings_koordinate;
-	koordinate_t* eatten_men_coordinate;
-	struct path* head_position;
+	int score;
+	coordinate_t * head_position;
 }path_t;
 
 
 typedef struct computer{
 	int minimax_depth;
 	color_e color;
-	koordinate_t* kings_koordinate;
-	koordinate_t* men_coordinate;
+	coordinate_t* kings_coordinate;
+	coordinate_t* men_coordinate;
 	int num_of_men;
 	int num_of_kings;
 }computer_t;
@@ -68,12 +79,22 @@ typedef struct computer{
 typedef struct user{
 	int minimax_depth;
 	color_e color;
-	koordinate_t* kings_koordinate;
-	koordinate_t* men_coordinate;
+	coordinate_t* kings_coordinate;
+	coordinate_t* men_coordinate;
 	int num_of_men;
 	int num_of_kings;
 }user_t;
 
+typedef struct node
+{
+	int score;
+	path_t path;
+	struct node *children;
+}node_t;
+
+typedef struct tree{
+	node_t root;
+}tree_t;
 
 typedef char** board_t;
 typedef unsigned char bool;
@@ -110,7 +131,14 @@ extern player_e turn;
 extern path_t* paths_list;
 extern int scoring_white;
 extern int scoring_black;
-
+extern int capacity;
+extern int paths_number;
+extern player_e turn;
+extern path_t* possible_user_paths;
+extern path_t** paths_arr;
+extern user_t user;
+extern computer_t computer;
+extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
 
 //Infrastructure Functions
 void print_board(board_t game_board);
@@ -122,10 +150,16 @@ int main();
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
-int free_linked_list();
 int update_paths_list();
 int initializing_computer_board();       //Initializing the tool struct as well.
-int delete_node(koordinate_t* tool_to_delete);
+int delete_node(coordinate_t* tool_to_delete);
+int updating_tool_list(player_e player, int row, int col, type_e type);
+coordinate_t * creat_linkedList_pointer(type_e type, player_e player, int row, int col);
+bool check_win(color_e color);
+bool is_valid_position(int row, int col);   //not a white square , ranges
+bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
+void free_path(path_t path);
+void free_linked_list(coordinate_t *linkedlist);
 
 //Settings Functions
 int set_minimax_depth(int x);
@@ -137,10 +171,18 @@ int start();
 
 
 //Game Functions
-int scoring();                  //Uses the global board
-void moves(koordinate_t tool);
-void minMax();
+int* scoring();                  //Uses the global board
+void moves(coordinate_t tool);
+int minMax();
 bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
+bool is_free_coordinate(int row, int col);
+get_moves();
+void get_move_helper(coordinate_t *itereting_node, type_e tool);
+int get_men_moves(int curr_row, int curr_col, step_t step);
+int get_men_moves_helper(direction_e dir, int next_row,
+int next_col, step_t step, coordinate_t *moves_coor);
+int* is_there_an_enemy(int row, int col);
+bool is_become_king(int row, int col);
 
 
 #endif
