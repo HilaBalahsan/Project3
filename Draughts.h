@@ -15,6 +15,8 @@
 #define FALSE		(0)
 #define DEBUG		(TRUE)
 #define WHITESPACE  (" ")
+#define A  (-100)
+#define B  (100)
 
 //type definition
 typedef char** board_t;
@@ -124,14 +126,14 @@ typedef char* string;
 
 //Externs
 extern int Minimax_Depth;
-extern state_e State;
-extern char game_board[BOARD_SIZE][BOARD_SIZE];
 extern int player_a;
 extern int player_b;
 extern int scoring_white;
 extern int scoring_black;
 extern int capacity;
 extern int paths_number;
+extern char game_board[BOARD_SIZE][BOARD_SIZE];
+extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
 extern player_e turn;
 extern path_t* possible_user_paths;
 extern path_t** paths_arr;
@@ -139,7 +141,8 @@ extern user_t user;
 extern computer_t computer;
 extern coordinate_t* best_path;
 extern path_t mimmax_path;
-
+extern state_e State;
+extern bool use_tmp_board;
 
 //Infrastructure Functions
 void print_board();
@@ -163,7 +166,7 @@ void free_linked_list(coordinate_t *linkedlist);
 int set_minimax_depth(int x);
 int clear();
 int remove_disc(int row, int col);
-int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e tool_type);
+int set_disc(char char_on_board, int row,  int col, color_e tool_color, type_e tool_type);
 int start();
 void set_user_color(color_e color);
 
@@ -171,7 +174,7 @@ void set_user_color(color_e color);
 //Game Functions
 int* scoring();                  //Uses the global board
 void moves(coordinate_t tool);
-void minMax();
+coordinate_t* minMax(coordinate_t node, int depth, int a, int b, bool min_or_max);
 bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
 int get_moves();
 void get_move_helper(coordinate_t *itereting_node, type_e tool);

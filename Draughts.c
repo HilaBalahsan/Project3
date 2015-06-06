@@ -17,6 +17,7 @@ computer_t computer = { 0, WHITE, NULL, NULL, 0, 0 };
 tree_t minmax_tree = { NULL};
 char tmp_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
 coordinate_t* best_path = NULL;
+bool use_tmp_board = FALSE;
 
 int main(){
 	// Varibles
@@ -1395,14 +1396,34 @@ int path_score(path_t* path_pointer)
 			type = tmp_board[node->row][node->col];
 			if (strstr(type, "M") != NULL || strstr(type, "m") != NULL)
 			{
-				set_disc(type, path.head_position->next_coordinate->col, path.head_position->next_coordinate->row, tmp_board, MAN);
+				use_tmp_board = TRUE;
+				if (strstr(type, "M") != NULL)
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col,BLACK, MAN);
+				}
+				else
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, WHITE, MAN);
+				}
+				
+				
 			}
 			else
 			{
-				set_disc(type, path.head_position->next_coordinate->col, path.head_position->next_coordinate->row, tmp_board, KING);
+				use_tmp_board = TRUE;
+				if (strstr(type, "K") != NULL)
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, BLACK, KING);
+				}
+				else
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, WHITE, KING);
+				}
 			}
 			
+			
 		}
+		use_tmp_board = FALSE;
 	}
 	if (turn == COMPUTER)
 	{
