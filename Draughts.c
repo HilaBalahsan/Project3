@@ -12,9 +12,9 @@ int scoring_black = 0;
 state_e State = SETTINGS_STATE;
 player_e turn = COMPUTER;
 path_t** paths_arr = NULL;
-user_t user = { 0, BLACK, NULL ,NULL, 0 , 0 };
-computer_t computer = { 0, WHITE, NULL, NULL, 0, 0 };
-tree_t minmax_tree = { NULL};
+player_t user = { 0, BLACK, NULL, NULL, 0, 0 };
+player_t computer = { 0, WHITE, NULL, NULL, 0, 0 };
+tree_t minmax_tree = { NULL };
 char tmp_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
 coordinate_t* best_path = NULL;
 bool use_tmp_board = FALSE;
@@ -30,14 +30,14 @@ int main(){
 	init_board(game_board);
 
 	printf(WELCOME_TO_DRAUGHTS);
-
-	if (State == GAME_STATE)
+	while (TRUE)
 	{
-		main_loop();
-	}
-	else
-	{
-		while (TRUE)
+		if (State == GAME_STATE)
+		{
+			main_loop();
+			break;
+		}
+		else
 		{
 			line = readline();
 			if ((strcmp(line, "quit")) == 0) // zero for equal.
@@ -52,30 +52,39 @@ int main(){
 			}
 		}
 	}
-		print_board(game_board);
-		return 1;
+    //FUNCTION THAT FREES ALL	
+	print_board(game_board);
+	return 1;
 }
 
 int main_loop(){                     //I changed here.
 	string line;
-	if (turn == USER)
+	first_updating_MenKings_coordinate();
+	while (State == GAME_STATE)
 	{
-		printf(ENTER_YOUR_MOVE);
-		line = readline();
+		if (turn == USER)
+		{
+			printf(ENTER_YOUR_MOVE);
+			line = readline();
+			if ((strcmp(line, "quit")) == 0) // zero for equal.
+			{
+				free(line);
+				break;
+			}
+			print_board();
+			//	if (is_a_winnet)    //page 6 in the PDF
 
-		print_board();
-		//	if (is_a_winnet)    //page 6 in the PDF
-		
-		//else
-		turn = COMPUTER;
-	}
-	else
-	{
-		//minMax();
-		print_board();
-	//	if (is_a_winnet)    //page 6 in the PDF
+			//else
+			turn = COMPUTER;
+		}
+		else
+		{
+			//minMax();
+			print_board();
+			//	if (is_a_winnet)    //page 6 in the PDF
 
-		turn = USER;
+			turn = USER;
+		}
 	}
 }
 
@@ -244,10 +253,10 @@ int parsing(char* input){
 
 		if (strstr(userinput[2], "black"))
 		{
-			 tool_color = BLACK;
+			tool_color = BLACK;
 			if (strstr(userinput[3], "m"))
 			{
-				 tool_type = MAN;
+				tool_type = MAN;
 				set_disc(BLACK_M, row, col, tool_color, tool_type);
 			}
 			else
@@ -343,7 +352,6 @@ void print_board()
 
 void init_board(){
 	int i, j;
-	coordinate_t* head_linkedList;
 
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++){
@@ -352,25 +360,78 @@ void init_board(){
 				if (j <= 3){
 					game_board[i][j] = WHITE_M;
 				}
-				else if (j >= 6){
-					game_board[i][j] = BLACK_M;
-				}
-				else{
-					game_board[i][j] = EMPTY;
-				}
-
-				if (computer.color == WHITE)
+				else if (j >= 6)
 				{
-					head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
+					game_board[i][j] = BLACK_M;
 				}
 				else
 				{
-					head_linkedList = creat_linkedList_pointer(MAN, USER);
+					game_board[i][j] = EMPTY;
 				}
-				updating_listList(i, j, head_linkedList);
 			}
 			else{
 				game_board[i][j] = EMPTY;
+			}
+		}
+	}
+}
+
+void first_updating_MenKings_coordinate(){
+	coordinate_t* head_linkedList;
+	int i, j;
+	char slot;
+
+	for (i = 0; i < BOARD_SIZE; i++){
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			slot = game_board[i][j];
+			if (!is_empty_position(i, j))
+			{
+				if (slot == WHITE_M)
+				{
+					if (computer.color == WHITE)
+					{
+						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
+					}
+					else
+					{
+						head_linkedList = creat_linkedList_pointer(MAN, USER);
+					}
+				}
+				else if (slot == WHITE_K)
+				{
+					if (computer.color == WHITE)
+					{
+						head_linkedList = creat_linkedList_pointer(KING, COMPUTER);
+					}
+					else
+					{
+						head_linkedList = creat_linkedList_pointer(KING, USER);
+					}
+				}
+				else if (slot == BLACK_K)
+				{
+					if (computer.color == BLACK)
+					{
+						head_linkedList = creat_linkedList_pointer(KING, COMPUTER);
+					}
+					else
+					{
+						head_linkedList = creat_linkedList_pointer(KING, USER);
+					}
+				}
+				else
+				{
+					if (computer.color == BLACK)
+					{
+						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
+					}
+					else
+					{
+						head_linkedList = creat_linkedList_pointer(MAN, USER);
+					}
+				}
+				updating_listList(i, j, head_linkedList);
 			}
 		}
 	}
@@ -399,10 +460,9 @@ int remove_disc(int row, int col){                        //Problem
 	else
 	{
 		game_board[row][col] = EMPTY;
-		//we need to remove from the right linkkedlist as well
 	}
 	return 1;
-}               
+}
 
 void free_linked_list(coordinate_t *linkedlist){
 	coordinate_t *iterator;
@@ -472,7 +532,7 @@ int set_minimax_depth(int depth){
 	}
 }
 
-void set_user_color(color_e color)                                                      
+void set_user_color(color_e color)
 {
 	if (color == WHITE)
 	{
@@ -480,7 +540,7 @@ void set_user_color(color_e color)
 		user.color = color;
 		computer.color = BLACK;
 		computer.minimax_depth = player_b;
-		turn = USER;                          
+		turn = USER;
 	}
 	else
 	{
@@ -496,7 +556,7 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 	coordinate_t *temp_linkedlist;
 	int return_val;
 
-	if ((!is_valid_position(row, col)) || (!is_empty_position(row , col)))
+	if ((!is_valid_position(row, col)) || (!is_empty_position(row, col)))
 	{
 		printf(WRONG_POSITION);
 		return -1;
@@ -505,22 +565,38 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 	if (user.color == tool_color)
 	{
 		temp_linkedlist = creat_linkedList_pointer(tool_type, USER);
+		if (tool_type == KING)
+		{
+			user.num_of_kings++;
+		}
+		else
+		{
+			user.num_of_men++;
+		}
 	}
 	else
 	{
 		temp_linkedlist = creat_linkedList_pointer(tool_type, COMPUTER);
+		if (tool_type == KING)
+		{
+			computer.num_of_kings++;
+		}
+		else
+		{
+			computer.num_of_men++;
+		}
 	}
-	
+
 	return_val = updating_linked_list(row, col, temp_linkedlist);
-	if(return_val == -1)
+	if (return_val == -1)
 	{
 		return -1;
 	}
 	return 1;
-}            
+}
 
 //Craeting pointer to the list we're updating
-coordinate_t * creat_linkedList_pointer(type_e type , player_e player){
+coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 	// player_e is for the setting stage
 
 	coordinate_t *head_coordinate;
@@ -530,12 +606,10 @@ coordinate_t * creat_linkedList_pointer(type_e type , player_e player){
 		if (player == COMPUTER)
 		{
 			head_coordinate = computer.men_coordinate;
-			computer.num_of_men++;
 		}
 		else
 		{
 			head_coordinate = user.men_coordinate;
-			user.num_of_men++;
 		}
 	}
 	else
@@ -543,19 +617,48 @@ coordinate_t * creat_linkedList_pointer(type_e type , player_e player){
 		if (player == COMPUTER)
 		{
 			head_coordinate = computer.kings_coordinate;
-			computer.kings_coordinate++;
 		}
 		else
 		{
 			head_coordinate = user.kings_coordinate;
-			user.num_of_kings++;
 		}
 	}
-
 	return head_coordinate;
 }
 
-int updating_linked_list(int row, int col, coordinate_t *head_coordinate ){
+bool delete_link_from_linked_list(coordinate_t* node_to_delete){
+	if (node_to_delete->previous_coordinate == NULL)
+	{
+		if (node_to_delete->next_coordinate == NULL)
+			//Only element in list
+		{
+			free(node_to_delete);
+			return TRUE;
+		}
+		else
+		{
+			node_to_delete->col = node_to_delete->next_coordinate->col;
+			node_to_delete->next_coordinate = node_to_delete->next_coordinate->next_coordinate;
+			node_to_delete->row = node_to_delete->next_coordinate->row;
+			node_to_delete->val = node_to_delete->next_coordinate->val;
+			delete_link_from_linked_list(node_to_delete->next_coordinate);
+		}
+	}
+	else if (node_to_delete->next_coordinate == NULL)
+	{
+		node_to_delete->previous_coordinate->next_coordinate = NULL;
+		free(node_to_delete);
+	}
+	else
+	{
+		node_to_delete->previous_coordinate->next_coordinate = node_to_delete->next_coordinate;
+		node_to_delete->next_coordinate->previous_coordinate = node_to_delete->previous_coordinate;
+		free(node_to_delete);
+	}
+	return FALSE;
+}
+
+int updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 
 	// Variables
 	path_t* new_coor_list;
@@ -582,7 +685,7 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate ){
 	current_coordinate->next_coordinate = NULL;
 	current_coordinate->previous_coordinate = NULL;
 
-	
+
 	if (head_coordinate == NULL)
 	{
 		head_coordinate = current_coordinate;
@@ -620,6 +723,36 @@ bool is_empty_position(int row, int col){
 	return empty;
 }
 
+bool is_a_winner(){
+	bool winner = FALSE;
+	coordinate_t* temp_king , *temp_man;
+
+	if (turn == COMPUTER)
+	{
+		temp_king = creat_linkedList_pointer(KING, COMPUTER);
+		temp_man = creat_linkedList_pointer(MAN, COMPUTER);
+	}
+	else
+	{
+		temp_king = creat_linkedList_pointer(KING, MAN);
+		temp_man = creat_linkedList_pointer(MAN, MAN);
+	}
+	if ((temp_king == NULL) && (temp_man == NULL))
+	{
+		winner == TRUE;
+	}
+	else
+	{
+		get_moves(turn);
+		if (paths_arr[0] == NULL)
+		{
+			winner == TRUE;
+		}
+	}
+}
+
+
+
 bool is_valid_position(int row, int col){
 
 	// define
@@ -630,7 +763,7 @@ bool is_valid_position(int row, int col){
 
 	//if (((col % 2 == 1) && (row % 2 == 0)) || ((col % 2 == 0) && (row % 2 == 1)))
 
-	if ((row + col)% 2 != 0)      //assamption: indexes starts from ziro
+	if ((row + col) % 2 != 0)      //assamption: indexes starts from ziro
 	{
 		b = FALSE;
 	}
@@ -693,10 +826,10 @@ bool is_enemy_position(int row, int col)
 	char tool;
 	bool enemy;
 	color_e mine;
-	
+
 	enemy = FALSE;
 	tool = game_board[row][col];
-	
+
 	if ((is_valid_position(row, col)) && (game_board[row][col] != EMPTY))
 	{
 		if (turn == USER)
@@ -733,7 +866,7 @@ bool is_become_king(int row, int col){
 	color_e mine;
 
 	king = FALSE;
-	
+
 	if (turn == USER)
 	{
 		mine = user.color;
@@ -745,7 +878,7 @@ bool is_become_king(int row, int col){
 
 	if (mine == WHITE)
 	{
-		if (((row == BOARD_SIZE - 1) && (is_empty_position(row, col)) && (is_valid_position(row , col))))
+		if (((row == BOARD_SIZE - 1) && (is_empty_position(row, col)) && (is_valid_position(row, col))))
 		{
 			king = TRUE;
 		}
@@ -775,7 +908,7 @@ int* adjacent_slot_is_enemy(int row, int col){
 		enemy_color = user.color;
 	}
 	//Not good need to check one more slot
-	if (is_enemy_position(row + 1 , col + 1))
+	if (is_enemy_position(row + 1, col + 1))
 	{
 		four_diraction[0] == TRUE;
 	}
@@ -892,7 +1025,7 @@ int clone_path(path_t* original_path)
 	return 1;
 }
 
-int get_moves(){
+int get_moves(player_e player){
 
 	coordinate_t *iterator;
 
@@ -906,11 +1039,11 @@ int get_moves(){
 		return -1;
 	}
 	capacity = BOARD_SIZE;
-	
-	iterator = creat_linkedList_pointer(MAN, turn);
+
+	iterator = creat_linkedList_pointer(MAN, player);
 	get_move_helper(iterator, MAN);
 
-	iterator = creat_linkedList_pointer(KING , turn);
+	iterator = creat_linkedList_pointer(KING, player);
 	get_move_helper(iterator, KING);
 
 	//printf(paths_list);
@@ -923,14 +1056,14 @@ void get_move_helper(coordinate_t *itereting_node, type_e tool){
 	{
 		if (tool == KING)
 		{
-			get_king_moves(itereting_node-> row, itereting_node->col);
+			get_king_moves(itereting_node->row, itereting_node->col);
 		}
 		else
 		{
-			get_men_moves(itereting_node-> row, itereting_node->col);
+			get_men_moves(itereting_node->row, itereting_node->col);
 		}
 
-		itereting_node = itereting_node-> next_coordinate;
+		itereting_node = itereting_node->next_coordinate;
 	}
 }
 
@@ -947,7 +1080,9 @@ int get_men_moves(int curr_row, int curr_col){
 	step_t step = { 1, 0 };
 	int return_val;
 
-	new_path = (path_t*) malloc(sizeof(path_t));
+
+
+	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
 	{
 		printf("get_move function - Failed to allocated memory");
@@ -981,7 +1116,7 @@ int get_men_moves(int curr_row, int curr_col){
 	return 1;
 }
 
-int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t step, path_t *new_path){
+int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path){
 
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
@@ -1011,7 +1146,7 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 
 	if ((step.is_first_step == TRUE) && (step.is_potntial_step == FALSE))
 	{
-	// arrive here if it the first step.
+		// arrive here if it the first step.
 		step.is_first_step = FALSE;
 		if (is_enemy_position(next_row, next_col))
 		{
@@ -1039,7 +1174,7 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 			default:
 				returnval1 = -1;
 				break;
-			}	
+			}
 
 			if (returnval1 == -1)
 			{
@@ -1075,7 +1210,7 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 	}
 	else if ((step.is_first_step == FALSE) && (step.is_potntial_step == TRUE))
 	{
-	//arrive here if the previouse slot is belongs to enemy
+		//arrive here if the previouse slot is belongs to enemy
 
 		if (is_enemy_position(next_row, next_col))
 		{
@@ -1093,7 +1228,7 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 			}
 			// Calculate path weight
 			new_path->path_weight += 1;
-		
+
 			returnval1 = update_paths_array(new_path);
 			if (returnval1 == -1)
 			{
@@ -1106,7 +1241,7 @@ int get_man_moves_helper(direction_e dir, int next_row,	int next_col, step_t ste
 			left_up_clone = clone_path(new_path);
 			left_down_clone = clone_path(new_path);
 
-			
+
 			//Check if there are more enemies to kill.
 			switch (dir)
 			{
@@ -1250,7 +1385,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 		}
 		return 1;
 	}
-	
+
 	if ((step.is_first_step == TRUE) && (step.is_potntial_step == FALSE))
 	{
 		//arrive here if it first step or the previous slot is free
@@ -1399,14 +1534,14 @@ int path_score(path_t* path_pointer)
 				use_tmp_board = TRUE;
 				if (strstr(type, "M") != NULL)
 				{
-					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col,BLACK, MAN);
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, BLACK, MAN);
 				}
 				else
 				{
 					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, WHITE, MAN);
 				}
-				
-				
+
+
 			}
 			else
 			{
@@ -1420,8 +1555,8 @@ int path_score(path_t* path_pointer)
 					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, WHITE, KING);
 				}
 			}
-			
-			
+
+
 		}
 		use_tmp_board = FALSE;
 	}
@@ -1472,7 +1607,7 @@ int build_min_max_tree(int row, int col)
 			turn = COMPUTER;
 		}
 
-		get_moves();
+		get_moves(turn);
 		for (j = 0; j < paths_number; j++)
 		{
 			tree_next_level->path = paths_arr[i]->head_position;
