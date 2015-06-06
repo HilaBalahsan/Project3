@@ -138,7 +138,7 @@ extern path_t* possible_user_paths;
 extern path_t** paths_arr;
 extern user_t user;
 extern computer_t computer;
-extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
+//extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
 
 //Infrastructure Functions
 void print_board(board_t game_board);
