@@ -88,15 +88,17 @@ typedef struct user {
 	int num_of_kings;
 } user_t;
 
-typedef struct node {
-	int score;
-	path_t path;
-	struct node *children;
-} node_t;
+typedef struct node
+{
+	int node_path_score;
+	coordinate_t* path;
+	struct node* next_node;
+	struct node* prev_node;
+}node_t;
 
 typedef struct tree{
-	node_t root;
-} tree_t;
+	node_t* root;
+}tree_t;
 
 
 // Saperate between board line (char*) and a regular string.
@@ -135,7 +137,8 @@ extern path_t* possible_user_paths;
 extern path_t** paths_arr;
 extern user_t user;
 extern computer_t computer;
-
+extern coordinate_t* best_path;
+extern path_t mimmax_path;
 
 
 //Infrastructure Functions
