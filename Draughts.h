@@ -125,6 +125,7 @@ extern int capacity;
 extern int paths_number;
 extern char game_board[BOARD_SIZE][BOARD_SIZE];
 extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
+extern int maximal_path_weight;
 extern player_e turn;
 extern path_t* possible_user_paths;
 extern path_t** paths_arr;

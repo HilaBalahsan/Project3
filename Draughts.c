@@ -9,6 +9,7 @@ int capacity = 0;
 int paths_number = 0;
 int scoring_white = 0;
 int scoring_black = 0;
+int maximal_path_weight = 0;
 state_e State = SETTINGS_STATE;
 player_e turn = COMPUTER;
 path_t** paths_arr = NULL;
@@ -944,8 +945,21 @@ int start()
 
 int update_paths_array(path_t* new_path)
 {
-	paths_arr[paths_number] = new_path;
-	paths_number++;
+	if (new_path->path_weight == maximal_path_weight)
+	{
+		paths_arr[paths_number] = new_path;
+		paths_number++;
+	}
+	else if (new_path->path_weight > maximal_path_weight)
+	{
+		free_paths_arr();
+		paths_arr[paths_number] = new_path;
+		paths_number++;
+	}
+	else
+	{
+		free_path(new_path);
+	}
 
 	if (paths_number == capacity)
 	{
@@ -1065,6 +1079,7 @@ void get_move_helper(coordinate_t *itereting_node, type_e tool){
 
 		itereting_node = itereting_node->next_coordinate;
 	}
+	 maximal_path();
 }
 
 void initialize_step(step_t step){
