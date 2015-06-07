@@ -15,8 +15,8 @@
 #define FALSE		(0)
 #define DEBUG		(TRUE)
 #define WHITESPACE  (" ")
-#define A  (-100)
-#define B  (100)
+#define BIGGER  (">")
+
 
 //type definition
 typedef char** board_t;
@@ -122,10 +122,12 @@ extern int player_b;
 extern int scoring_white;
 extern int scoring_black;
 extern int capacity;
+extern int move_number; // rotem
 extern int paths_number;
 extern char game_board[BOARD_SIZE][BOARD_SIZE];
 extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
 extern int maximal_path_weight;
+extern char** move_arr; // rotem
 extern player_e turn;
 extern path_t* possible_user_paths;
 extern path_t** paths_arr;

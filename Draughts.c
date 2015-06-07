@@ -1,4 +1,7 @@
 ﻿#include "Draughts.h"
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 char game_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
@@ -10,6 +13,9 @@ int paths_number = 0;
 int scoring_white = 0;
 int scoring_black = 0;
 int maximal_path_weight = 0;
+int move_number = 0; // rotem
+char** move_arr = { 0 };// rotem
+int moves_capacity = 0;
 state_e State = SETTINGS_STATE;
 player_e turn = COMPUTER;
 path_t** paths_arr = NULL;
@@ -88,6 +94,174 @@ int main_loop(){                     //I changed here.
 		}
 	}
 }
+int move(int row, int col, char* string)
+{
+	// Varibles
+	int check_if_10, row_new, col_new;
+	char tool;
+	int i, len;
+	color_e tool_color;
+	type_e tool_type;
+	bool enemy_pos, last_one;
+	char* *inputCopy, *token, *type;
+	coordinate_t* node_to_delete;
+
+	// Initialize
+	len = strlen(string);
+	tool_color = WHITE;
+
+	inputCopy = (char*)malloc(sizeof(char)*(strlen(string) + 1));
+	if (inputCopy == NULL)
+	{
+		printf("Error: standard function malloc failed, exiting.");
+		return -1;
+	}
+
+	strncpy(inputCopy, string, strlen(string));
+	inputCopy[strlen(string)] = '\0';
+
+	token = strtok(inputCopy, BIGGER);
+	i = 0;
+	while ((token != NULL)) {
+		if (move_number < len) {
+			update_moves_arr(token);
+		}
+		token = strtok(NULL, BIGGER);
+		//i++;
+	}
+
+	/*input check*/
+	if (move_number == 0)
+	{
+		free(string);
+		free(inputCopy);
+		return 1;
+	}
+
+	// remove the disc from his current position
+	remove_disc(row, col);
+
+	while (i < move_number)
+	{
+		col_new = alpha_to_num((int)move_arr[i][1]) - 1; // <x>
+
+		check_if_10 = (int)move_arr[i][4] - 48;
+		if (check_if_10 == 0)
+		{
+			row_new = 10;
+		}
+		else
+		{
+			row_new = (int)move_arr[i][3] - 49; // <y>
+		}
+
+		// find type
+		tool = game_board[row_new][col_new];
+		if ((tool == WHITE_K) || (tool == BLACK_K))
+		{
+			tool_type = KING;
+		}
+		else
+		{
+			tool_type = MAN;
+		}
+
+		// find color
+		if ((tool == WHITE_K) || (tool == WHITE_M))
+		{
+			tool_color = WHITE;
+		}
+		else
+		{
+			tool_color = BLACK;
+		}
+
+
+		enemy_pos = is_enemy_position(row_new, col_new);
+
+		if (enemy_pos)
+		{
+			remove_disc(row_new, col_new);
+			node_to_delete->col = col_new;
+			node_to_delete->row = row_new;
+			last_one = delete_link_from_linked_list(node_to_delete);
+			if (last_one){
+				if (turn = COMPUTER){
+					if (computer.color == BLACK)
+					{
+						if ((tool == BLACK_M) || (tool == WHITE_M))
+						{
+							computer.men_coordinate = NULL;
+						}
+						else
+						{
+							computer.kings_coordinate = NULL;
+						}
+					}
+					else
+					{
+						if ((tool == BLACK_M) || (tool == WHITE_M))
+						{
+							computer.men_coordinate = NULL;
+						}
+						else
+						{
+							computer.kings_coordinate = NULL;
+						}
+					}
+				}
+			}
+		}
+
+		else
+		{
+			set_disc(tool, col_new, row_new, tool_color, tool_type);
+		}
+		i++;
+	}
+	return 1;
+}
+
+int update_moves_arr(char* string)
+{
+
+	if (move_number == capacity)
+	{
+		move_arr = (int**)realloc(paths_arr, sizeof(int) * 2);
+
+		if (move_arr == NULL)
+		{
+			printf("Error: fatal error during memory alocation, exiting.\n");
+			return -1;
+		}
+	}
+	move_arr[move_number] = string;
+	move_number++;
+
+
+
+	return 1;
+}
+void free_tree(tree_t tree)
+{
+	free(tree.root->path);
+	free_node_list(tree.root);
+}
+
+void free_node_list(node_t *linkedlist){
+	node_t *iterator;
+	iterator = linkedlist;
+	while (iterator->next_node != NULL)
+	{
+		if (linkedlist->prev_node != NULL)
+		{
+			free(linkedlist->prev_node);
+		}
+		iterator = iterator->next_node;
+	}
+	free(iterator);
+}
+
 
 char* readline(void) {
 
