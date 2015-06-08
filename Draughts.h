@@ -111,7 +111,7 @@ typedef char* String;
 //Macros
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
-#define alpha_to_num(character) (character - 96)
+#define alpha_to_num(character) (character - 97)
 
 
 //Externs

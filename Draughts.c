@@ -179,8 +179,6 @@ int move(int row, int col, char* string)
 		{
 			tool_color = BLACK;
 		}
-
-
 		enemy_pos = is_enemy_position(row_new, col_new);
 
 		if (enemy_pos)
@@ -422,7 +420,7 @@ int parsing(char* input){
 		}
 		if (check_if_10 != 0)
 		{
-			row = (int)userinput[1][3] - 48; // <y>
+			row = (int)userinput[1][3] - 49; // <y>
 		}
 
 		if (strstr(userinput[2], "black"))
@@ -467,7 +465,7 @@ int parsing(char* input){
 		}
 		else
 		{
-			row = (int)userinput[1][3] - 48; // <y>
+			row = (int)userinput[1][3] - 49; // <y>
 		}
 		remove_disc(row, col);
 	}
