@@ -1,6 +1,5 @@
 #ifndef DRAUGHTS_
 #define DRAUGHTS_
-//////////////////
 #include<stdio.h>
 
 //Defines
@@ -95,7 +94,7 @@ typedef struct tree{
 
 
 // Saperate between board line (char*) and a regular string.
-typedef char* string;
+typedef char* String;
 
 
 // Massages
@@ -129,25 +128,25 @@ extern char tmp_board[BOARD_SIZE][BOARD_SIZE];
 extern int maximal_path_weight;
 extern char** move_arr; // rotem
 extern player_e turn;
-extern path_t* possible_user_paths;
 extern path_t** paths_arr;
 extern player_t user;
 extern player_t computer;
 extern coordinate_t* best_path;
-extern path_t mimmax_path;
+extern path_t minmax_path;
 extern state_e State;
 extern bool use_tmp_board;
 
 //Infrastructure Functions
 void print_board();
 void init_board();
+void print_line();
 char* readline(void);
 int parsing(char* line);
 int main_loop();
 int main();
-int updating_linked_list(player_e player, int row, int col);
+int updating_linked_list(int row, int col, coordinate_t *head_coordinate);
 int delete_node(coordinate_t* tool_to_delete);
-coordinate_t * creat_linkedList_pointer(type_e type);
+bool delete_link_from_linked_list(coordinate_t* node_to_delete);
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
@@ -173,10 +172,13 @@ bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
 int get_moves(player_e player);
 void get_move_helper(coordinate_t *itereting_node, type_e tool);
 int get_men_moves(int curr_row, int curr_col);
-int get_men_moves_helper(direction_e dir, int next_row, int next_col, step_t step, coordinate_t *moves_coor);
+int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path);
+int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path);
+int get_king_moves(int curr_row, int curr_col);
 
 
 int* adjacent_slot_is_enemy(int row, int col, type_e player);
+bool is_enemy_position(int row, int col);
 bool is_become_king(int row, int col);
 void print_path(path_t *path);
 void initialize_step(step_t* step);
@@ -185,6 +187,23 @@ void print_single_path(path_t* path);
 void free_paths_arr();
 bool is_empty_position(int row, int col);
 void first_updating_MenKings_coordinate();
+void free_node_list(node_t *linkedlist);
+coordinate_t * creat_linkedList_pointer(type_e type, player_e player);
+void clone_linkedline(coordinate_t *iterator, coordinate_t *clone);
+int clone_path(path_t* original_path);
+void free_paths_arr();
+void initialize_step(step_t step);
+bool is_a_winner();
+
+
+
+
+int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max);
+coordinate_t* minMax(coordinate_t node, int depth, int a, int b, bool min_or_max);
+int clone_path(path_t* original_path);
+void free_tree(tree_t tree);
+int update_moves_arr(char* string);
+int move(int row, int col, char* string);
 
 
 #endif
