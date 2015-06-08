@@ -98,7 +98,7 @@ int main_loop(){                     //I changed here.
 	}
 }
 
-nt move(int row, int col, char* string)
+int move(int row, int col, char* string)
 {
 	// Varibles
 	int check_if_10, row_new, col_new;
@@ -1685,7 +1685,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 }
 
 
-nt* scoring(){
+int* scoring(){
 
 	int score_arr[2] = { 0 }; // scoer array - computer, user
 	int scoring_computer, scoring_user;
