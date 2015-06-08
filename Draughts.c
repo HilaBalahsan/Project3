@@ -114,8 +114,9 @@ int move(int row, int col, char* string)
 	len = strlen(string);
 	tool_color = WHITE;
 
+	node_to_delete = (coordinate_t*)malloc(sizeof(coordinate_t));
 	inputCopy = (char*)malloc(sizeof(char)*(strlen(string) + 1));
-	if (inputCopy == NULL)
+	if (inputCopy == NULL || node_to_delete)
 	{
 		printf("Error: standard function malloc failed, exiting.");
 		return -1;
@@ -179,6 +180,8 @@ int move(int row, int col, char* string)
 		{
 			tool_color = BLACK;
 		}
+
+
 		enemy_pos = is_enemy_position(row_new, col_new);
 
 		if (enemy_pos)
@@ -221,6 +224,8 @@ int move(int row, int col, char* string)
 		}
 		i++;
 	}
+	free(inputCopy);
+	free_linked_list(node_to_delete);
 	return 1;
 }
 int update_moves_arr(char* string)
