@@ -186,9 +186,9 @@ int move(int row, int col, char* string)
 		if (enemy_pos)
 		{
 			remove_disc(row_new, col_new);
-			//node_to_delete->col = col_new;
-			//node_to_delete->row = row_new;
-			//last_one = delete_link_from_linked_list(node_to_delete);
+			node_to_delete->col = col_new;
+			node_to_delete->row = row_new;
+			last_one = delete_link_from_linked_list(node_to_delete);
 			if (last_one){
 				if (turn = COMPUTER){
 					if (computer.color == BLACK)
