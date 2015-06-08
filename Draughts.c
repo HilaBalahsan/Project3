@@ -108,7 +108,7 @@ int move(int row, int col, char* string)
 	type_e tool_type, pre_tool_type;
 	bool enemy_pos, last_one;
 	char *inputCopy, *token, *type;
-	coordinate_t* node_to_delete;
+	coordinate_t* node_to_delete = NULL ;
 
 	// Initialize
 	len = strlen(string);
@@ -122,6 +122,8 @@ int move(int row, int col, char* string)
 		return -1;
 	}
 
+	node_to_delete->next_coordinate = NULL;
+	node_to_delete->previous_coordinate = NULL;
 	strncpy(inputCopy, string, strlen(string));
 	inputCopy[strlen(string)] = '\0';
 
@@ -165,7 +167,7 @@ int move(int row, int col, char* string)
 	}
 
 	// remove the disc from his current position
-	remove_disc(row, col);
+	remove_disc(row, col, turn);
 
 	while (i < move_number)
 	{
@@ -207,7 +209,14 @@ int move(int row, int col, char* string)
 
 		if (enemy_pos)
 		{
-			remove_disc(row_new, col_new);
+			if (turn == COMPUTER)
+			{
+				remove_disc(row_new, col_new, USER);
+			}
+			else
+			{
+				remove_disc(row_new, col_new, COMPUTER);
+			}
 			node_to_delete->col = col_new;
 			node_to_delete->row = row_new;
 			last_one = delete_link_from_linked_list(node_to_delete);
@@ -671,7 +680,7 @@ char** copy_board(){
 	return tmp_board;
 }
 
-int remove_disc(int row, int col){                        //Problem        
+int remove_disc(int row, int col, player_e player){                        //Problem        
 
 	if (!is_valid_position(row, col))
 	{
@@ -936,8 +945,9 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 
 bool is_empty_position(int row, int col){
 	bool empty = TRUE;
-	if (game_board[row][col] != EMPTY)
+	if (game_board[col][row] != EMPTY)
 	{
+		game_board[col][row] = "ro";
 		empty = FALSE;
 	}
 	return empty;
