@@ -108,7 +108,11 @@ int move(int row, int col, char* string)
 	type_e tool_type, pre_tool_type;
 	bool enemy_pos, last_one;
 	char *inputCopy, *token, *type;
+
 	coordinate_t* node_to_delete , *list_to_change;
+
+	node_to_delete = NULL ;
+
 
 	// Initialize
 	len = strlen(string);
@@ -122,6 +126,8 @@ int move(int row, int col, char* string)
 		return -1;
 	}
 
+	node_to_delete->next_coordinate = NULL;
+	node_to_delete->previous_coordinate = NULL;
 	strncpy(inputCopy, string, strlen(string));
 	inputCopy[strlen(string)] = '\0';
 
@@ -165,8 +171,7 @@ int move(int row, int col, char* string)
 	}
 	
 	// remove the disc from his current position
-	list_to_change = creat_linkedList_pointer(pre_tool_type, turn);
-	remove_disc(row, col, list_to_change);
+	remove_disc(row, col, turn);
 
 	while (i < move_number)
 	{
@@ -211,7 +216,14 @@ int move(int row, int col, char* string)
 
 		if (enemy_pos)
 		{
-			remove_disc(row_new, col_new);
+			if (turn == COMPUTER)
+			{
+				remove_disc(row_new, col_new, USER);
+			}
+			else
+			{
+				remove_disc(row_new, col_new, COMPUTER);
+			}
 			node_to_delete->col = col_new;
 			node_to_delete->row = row_new;
 			list_to_change = creat_linkedList_pointer(pre_tool_type, turn);
@@ -681,6 +693,7 @@ char** copy_board(){
 }
 
 
+
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	coordinate_t* specific_link;
 	specific_link = (coordinate_t*)malloc(sizeof(coordinate_t));
@@ -713,6 +726,12 @@ int remove_disc(int row, int col , player_e rm_from_this_player){
 
 	if (State == GAME_STATE)
 	{
+		if (!is_valid_position(row, col))
+		{
+			printf(WRONG_POSITION);
+			return -1;
+		}
+
 		if ((game_board[row][col] == BLACK_M) || (game_board[row][col] == WHITE_M))
 		{
 			tool_type = MAN;
@@ -725,17 +744,7 @@ int remove_disc(int row, int col , player_e rm_from_this_player){
 		specific_link = creat_linkedList_pointer(tool_type, rm_from_this_player);
 		delete_link_from_linked_list(specific_link);
 	}
-
-	if (!is_valid_position(row, col))
-	{
-		printf(WRONG_POSITION);
-		return -1;
-	}
-	else
-	{
-		game_board[col][row] = EMPTY;
-	}
-
+	game_board[col][row] = EMPTY;
 	return 1;
 }
 
@@ -990,8 +999,9 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 
 bool is_empty_position(int row, int col){
 	bool empty = TRUE;
-	if (game_board[row][col] != EMPTY)
+	if (game_board[col][row] != EMPTY)
 	{
+		game_board[col][row] = "ro";
 		empty = FALSE;
 	}
 	return empty;
