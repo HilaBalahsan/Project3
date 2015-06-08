@@ -150,7 +150,7 @@ bool delete_link_from_linked_list(coordinate_t* node_to_delete);
 bool check_win(color_e color);
 bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
-void free_path(path_t path);
+void free_path(path_t* path);
 void free_linked_list(coordinate_t *linkedlist);
 
 
@@ -158,7 +158,7 @@ void free_linked_list(coordinate_t *linkedlist);
 //Settings Functions
 int set_minimax_depth(int x);
 int clear();
-int remove_disc(int row, int col, coordinate_t* list_to_change);
+int remove_disc(int row, int col, player_e list_to_change);
 int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e tool_type);
 int start();
 void set_user_color(color_e color);
@@ -191,7 +191,6 @@ void free_node_list(node_t *linkedlist);
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player);
 void clone_linkedline(coordinate_t *iterator, coordinate_t *clone);
 int clone_path(path_t* original_path);
-void free_paths_arr();
 void initialize_step(step_t step);
 bool is_a_winner();
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
