@@ -108,7 +108,7 @@ int move(int row, int col, char* string)
 	type_e tool_type, pre_tool_type;
 	bool enemy_pos, last_one;
 	char *inputCopy, *token, *type;
-	coordinate_t* node_to_delete;
+	coordinate_t* node_to_delete , *list_to_change;
 
 	// Initialize
 	len = strlen(string);
@@ -163,9 +163,10 @@ int move(int row, int col, char* string)
 	{
 		pre_tool_col = BLACK;
 	}
-
+	
 	// remove the disc from his current position
-	remove_disc(row, col);
+	list_to_change = creat_linkedList_pointer(pre_tool_type, turn);
+	remove_disc(row, col, list_to_change);
 
 	while (i < move_number)
 	{
@@ -203,6 +204,9 @@ int move(int row, int col, char* string)
 				tool_color = BLACK;
 			}
 		}
+
+
+
 		enemy_pos = is_enemy_position(row_new, col_new);
 
 		if (enemy_pos)
@@ -210,7 +214,8 @@ int move(int row, int col, char* string)
 			remove_disc(row_new, col_new);
 			node_to_delete->col = col_new;
 			node_to_delete->row = row_new;
-			last_one = delete_link_from_linked_list(node_to_delete);
+			list_to_change = creat_linkedList_pointer(pre_tool_type, turn);
+			last_one = delete_link_from_linked_list(node_to_delete, list_to_change);
 			if (last_one){
 				if (turn = COMPUTER){
 					if (computer.color == BLACK)
@@ -245,11 +250,8 @@ int move(int row, int col, char* string)
 		}
 		i++;
 			
-
 		}
-		
-		
-	
+			
 	free(inputCopy);
 //	free_linked_list(node_to_delete);
 	return 1;
@@ -498,7 +500,14 @@ int parsing(char* input){
 		{
 			row = (int)userinput[1][3] - 49; // <y>
 		}
-		remove_disc(row, col);
+		if (State == SETTINGS_STATE)
+		{
+			game_board[row][col] == EMPTY;
+		}
+		else
+		{
+			remove_disc(row, col, USER);
+		}
 	}
 
 	else if (strstr(userinput[0], "get_moves") != NULL)
@@ -671,7 +680,51 @@ char** copy_board(){
 	return tmp_board;
 }
 
-int remove_disc(int row, int col){                        //Problem        
+
+coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
+	coordinate_t* specific_link;
+	specific_link = (coordinate_t*)malloc(sizeof(coordinate_t));
+	if (specific_link == NULL)
+	{
+		printf("Error: fatal error during memory allocation, exiting.\n");
+		return;
+	}
+			
+	while (list_to_change != NULL)
+	{
+		if ((list_to_change->col == col) && (list_to_change->row == row))
+		{
+			specific_link = list_to_change;
+			break;
+		}
+	}
+	if (list_to_change == NULL)
+	{
+		printf("Error:Tool is not exist.\n");
+		return;
+	}
+	return specific_link;
+}
+
+
+int remove_disc(int row, int col , player_e rm_from_this_player){
+	type_e tool_type;
+	coordinate_t* specific_link;
+
+	if (State == GAME_STATE)
+	{
+		if ((game_board[row][col] == BLACK_M) || (game_board[row][col] == WHITE_M))
+		{
+			tool_type = MAN;
+		}
+		else
+		{
+			tool_type = KING;
+		}
+
+		specific_link = creat_linkedList_pointer(tool_type, rm_from_this_player);
+		delete_link_from_linked_list(specific_link);
+	}
 
 	if (!is_valid_position(row, col))
 	{
@@ -682,6 +735,7 @@ int remove_disc(int row, int col){                        //Problem
 	{
 		game_board[col][row] = EMPTY;
 	}
+
 	return 1;
 }
 
@@ -1154,7 +1208,6 @@ int start()
 		printf(WROND_BOARD_INITIALIZATION);
 		return -1;
 	}
-
 	State = GAME_STATE;
 	return 1;
 }
@@ -1789,8 +1842,9 @@ int path_score(path_t* path_pointer)
 				printf("path_score function - Failed to allocated memory");
 				return -1;
 			}
+
 			while (is_enemy_position(node->row, node->col)){
-				node = node->previous_coordinate;
+			node = node->previous_coordinate;
 			}
 			type = tmp_board[node->row][node->col];
 			if (strstr(type, "M") != NULL || strstr(type, "m") != NULL)
