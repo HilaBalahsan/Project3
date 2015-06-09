@@ -76,8 +76,8 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 			}
 		}
 
-		return_val = updating_linked_list(row, col, temp_linkedlist);
-		if (return_val == -1)
+		temp_linkedlist = updating_linked_list(row, col, temp_linkedlist);
+		if (temp_linkedlist == NULL)
 		{
 			return -1;
 		}
@@ -165,8 +165,6 @@ void print_board()
 
 int start()
 {
-	//bool valid;
-
 	if (is_valid_initialization() == FALSE)
 	{
 		printf(WROND_BOARD_INITIALIZATION);

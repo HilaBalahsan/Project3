@@ -144,7 +144,7 @@ char* readline(void);
 int parsing(char* line);
 int main_loop();
 int main();
-int updating_linked_list(int row, int col, coordinate_t *head_coordinate);
+coordinate_t* updating_linked_list(int row, int col, coordinate_t *head_coordinate);
 int delete_node(coordinate_t* tool_to_delete);
 bool delete_link_from_linked_list(coordinate_t* node_to_delete);
 bool check_win(color_e color);

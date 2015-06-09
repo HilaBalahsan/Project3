@@ -69,8 +69,8 @@ void clone_linkedline(coordinate_t *iterator, coordinate_t *clone){
 			return -1;
 		}
 
-		check_clone = updating_linked_list(iterator->row, iterator->col, clone);
-		if (check_clone == -1)
+		clone = updating_linked_list(iterator->row, iterator->col, clone);
+		if (clone == NULL)
 		{
 			printf("Didn't clone eatten_kings_coordinate ");
 		}

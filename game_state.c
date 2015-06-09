@@ -233,8 +233,8 @@ int get_men_moves(int curr_row, int curr_col){
 	new_path->last_coordinate[0] = curr_row;
 	new_path->last_coordinate[1] = curr_col;
 
-	return_val = updating_linked_list(curr_row, curr_col, new_path->head_position);
-	if (return_val == -1)
+	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
+	if (new_path->head_position == NULL)
 	{
 		return -1;
 	}
@@ -272,8 +272,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 	{
 		new_path->last_coordinate[0] = next_row;
 		new_path->last_coordinate[1] = next_col;
-		returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-		if (returnval1 == -1)
+		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+		if (new_path->head_position == NULL)
 		{
 			return -1;
 		}
@@ -282,8 +282,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 
 	if (is_become_king(next_row, next_col))
 	{
-		returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-		if (returnval1 == -1)
+		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+		if (new_path->head_position == NULL)
 		{
 			return -1;
 		}
@@ -297,8 +297,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		if (is_enemy_position(next_row, next_col))
 		{
 			step.is_potntial_step == TRUE;
-			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-			if (returnval1 == -1)
+			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			if (new_path->head_position == NULL)
 			{
 				return -1;
 			}
@@ -331,8 +331,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		// not an enemy slot
 		else if (is_valid_position(next_row, next_col))
 		{
-			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-			if (returnval1 == -1)
+			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			if (new_path->head_position == NULL)
 			{
 				return -1;
 			}
@@ -367,8 +367,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		else if (is_valid_position(next_row, next_col))
 		{
 			step.is_potntial_step = FALSE;
-			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-			if (returnval1 == -1)
+			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			if (new_path->head_position == NULL)
 			{
 				return -1;
 			}
@@ -431,8 +431,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 			if (is_enemy_position(next_row, next_col))
 			{
 				step.is_potntial_step = TRUE;
-				returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-				if (returnval1 == -1)
+				new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+				if (new_path->head_position == NULL)
 				{
 					return -1;
 				}
@@ -489,8 +489,8 @@ int get_king_moves(int curr_row, int curr_col){
 		return -1;
 	}
 	//First coordinate is the starting slot.
-	return_val = updating_linked_list(curr_row, curr_col, new_path->head_position);
-	if (return_val == -1)
+	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
+	if (new_path->head_position == NULL)
 	{
 		return -1;
 	}
@@ -529,8 +529,8 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 	{
 		new_path->last_coordinate[0] = next_row;
 		new_path->last_coordinate[1] = next_col;
-		returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-		if (returnval1 == -1)
+		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+		if (new_path->head_position == NULL)
 		{
 			return -1;
 		}
@@ -547,8 +547,8 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 			step.is_potntial_step = TRUE;
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
-			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-			if (returnval1 == -1)
+			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			if (new_path->head_position == NULL)
 			{
 				return -1;
 			}
@@ -582,8 +582,8 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 		{
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
-			returnval1 = updating_linked_list(next_row, next_col, new_path->head_position);
-			if (returnval1 == -1)
+			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			if (new_path->head_position == NULL)
 			{
 				return -1;
 			}

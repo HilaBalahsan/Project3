@@ -67,6 +67,13 @@ int main(){
 
 int main_loop(){                     //I changed here.
 	String line;
+	if (DEBUG)
+	{
+		clear();
+		set_disc(WHITE_M, 0, 0, WHITE, MAN);
+		set_disc(BLACK_M, 1, 1, BLACK, MAN);
+		first_updating_MenKings_coordinate();
+	}
 	first_updating_MenKings_coordinate();
 	while (State == GAME_STATE)
 	{
@@ -95,7 +102,6 @@ int main_loop(){                     //I changed here.
 		}
 	}
 }
-
 
 int update_moves_arr(char* string)
 {
@@ -331,7 +337,7 @@ int parsing(char* input){
 
 		if (State == SETTINGS_STATE)
 		{
-			game_board[row][col] == EMPTY;
+			game_board[row][col] = EMPTY;
 		}
 		else
 		{
@@ -345,7 +351,10 @@ int parsing(char* input){
 
 	else if (strstr(userinput[0], "get_moves") != NULL)
 	{
-		//get_moves();
+		if (State == GAME_STATE)
+		{
+			return_val = get_moves(turn);
+		}
 	}
 
 	else if (strstr(userinput[0], "start") != NULL)
@@ -374,10 +383,8 @@ int parsing(char* input){
 
 		move(row, col, userinput[3]);
 	}
-
 	return 1;
 }
-
 
 void init_board(){
 	int i, j;
@@ -456,14 +463,16 @@ void first_updating_MenKings_coordinate(){
 					if (computer.color == BLACK)
 					{
 						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
+						computer.men_coordinate = head_linkedList;
 					}
 					else
 					{
 						head_linkedList = creat_linkedList_pointer(MAN, USER);
+						user.men_coordinate = head_linkedList;
 					}
 				}
-				return_val = updating_linked_list(i, j, head_linkedList);
-				if (return_val == -1)
+				head_linkedList = updating_linked_list(i, j, head_linkedList);
+				if (head_linkedList == NULL)
 				{
 					return -1;
 				}
@@ -484,8 +493,6 @@ char** copy_board(){
 	}
 	return tmp_board;
 }
-
-
 
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	coordinate_t* specific_link;
@@ -512,10 +519,7 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	return specific_link;
 }
 
-
-//Craeting pointer to the list we're updating
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
-	// player_e is for the setting stage
 
 	coordinate_t *head_coordinate;
 
@@ -576,8 +580,7 @@ bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 	return FALSE;
 }
 
-int updating_linked_list(int row, int col, coordinate_t *head_coordinate){
-
+coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 
 	coordinate_t *new_coordinate, *current_coordinate, *prev_coordinate, *temp_coordinate;
 
@@ -586,6 +589,11 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 	current_coordinate = NULL;
 	prev_coordinate = NULL;
 	temp_coordinate = NULL;
+
+	if (TRUE)
+	{
+		printf("%d  , %d", user.men_coordinate, head_coordinate);
+	}
 
 	//Buildind the coordinate list
 	current_coordinate = (coordinate_t*)malloc(sizeof(coordinate_t));
@@ -626,8 +634,7 @@ int updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 		temp_coordinate = current_coordinate;
 		temp_coordinate->previous_coordinate = prev_coordinate;
 	}
-	//free_coordinate(current_coordinate)
-	return 1;
+	return head_coordinate;
 }
 
 bool is_empty_position(int row, int col){
@@ -691,7 +698,6 @@ bool is_valid_position(int row, int col){
 	return b;
 }
 
-// checks if the borad is OK - not empty, 20 discs for each color
 bool is_valid_initialization()
 {
 	// define
@@ -807,8 +813,6 @@ bool is_become_king(int row, int col){
 
 	return king;
 }
-
-
 
 int* scoring(){
 
