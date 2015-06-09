@@ -203,6 +203,8 @@ int clone_path(path_t* original_path);
 //void free_tree(tree_t tree);
 int update_moves_arr(char* string);
 int move(int row, int col, char* string);
+void print_coordinate_list(coordinate_t* list_to_print);
+
 
 
 #endif

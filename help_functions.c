@@ -40,8 +40,25 @@ void print_path_arr(){
 
 	for (i = 0; i < paths_number; i++)
 	{
-		print_single_path(paths_arr[i]);
+		print_single_path(paths_arr[i]->head_position);
 	}
+}
+
+void print_coordinate_list(coordinate_t* list_to_print)
+{
+	while (list_to_print != NULL)
+	{
+		if (list_to_print->next_coordinate == NULL)
+		{
+			printf(" < %d,%d> ", list_to_print->row, list_to_print->col);
+		}
+		else
+		{
+			printf(" < %d,%d> --> ", list_to_print->row, list_to_print->col);
+		}
+		list_to_print = list_to_print->next_coordinate;
+	}
+	printf("\n");
 }
 
 void print_single_path(path_t* path){
@@ -90,7 +107,7 @@ int clone_path(path_t* original_path)
 		printf("clone_path function - Failed to allocated memory");
 		return -1;
 	}
-	cloned_path = NULL;
+	cloned_path->head_position = NULL;
 	cloned_positions = NULL;
 
 	cloned_path->path_weight = original_path->path_weight;

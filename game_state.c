@@ -193,15 +193,17 @@ int get_moves(player_e player){
 		return -1;
 	}
 	capacity = BOARD_SIZE;
-
+	
 	iterator = creat_linkedList_pointer(MAN, player);
 	get_move_helper(iterator, MAN);
 
 	iterator = creat_linkedList_pointer(KING, player);
 	get_move_helper(iterator, KING);
 
-	//printf(paths_list);
-	free_linked_list(iterator);
+	if (iterator != NULL)
+	{
+		free_linked_list(iterator);
+	}
 }
 
 void get_move_helper(coordinate_t *itereting_node, type_e tool){
@@ -244,6 +246,7 @@ int get_men_moves(int curr_row, int curr_col){
 	}
 	new_path->last_coordinate[0] = curr_row;
 	new_path->last_coordinate[1] = curr_col;
+	new_path->head_position = NULL;
 
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (new_path->head_position == NULL)
@@ -280,16 +283,16 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 	returnval3 = 0;
 
 	//Halting conditions
-	if ((!is_valid_position(next_row, next_col) && new_path->head_position != NULL))
+	if (!is_valid_position(next_row, next_col) )
 	{
-		new_path->last_coordinate[0] = next_row;
-		new_path->last_coordinate[1] = next_col;
-		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
-		if (new_path->head_position == NULL)
+		if (new_path->head_position != NULL)
 		{
-			return -1;
+			returnval1 = update_paths_array(new_path);
+			if (returnval1 == -1)
+			{
+				printf("Faild to update path array");
+			}
 		}
-		return 1;
 	}
 
 	if (is_become_king(next_row, next_col))
@@ -500,6 +503,8 @@ int get_king_moves(int curr_row, int curr_col){
 		printf("get_move function - Failed to allocated memory");
 		return -1;
 	}
+	new_path->head_position = NULL;
+
 	//First coordinate is the starting slot.
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (new_path->head_position == NULL)

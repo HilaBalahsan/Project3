@@ -69,12 +69,15 @@ int main(){
 
 int main_loop(){                     //I changed here.
 	String line;
+
 	if (DEBUG)
 	{
 		clear();
 		set_disc(WHITE_M, 0, 0, WHITE, MAN);
 		set_disc(BLACK_M, 1, 1, BLACK, MAN);
+		print_board();
 		first_updating_MenKings_coordinate();
+		get_moves(turn);
 	}
 	first_updating_MenKings_coordinate();
 	while (State == GAME_STATE)
@@ -103,9 +106,7 @@ int main_loop(){                     //I changed here.
 //				if (tmp_path->val > best_path->val)
 //					best_path = tmp_path;
 			}
-			//minMax();
 			print_board();
-			//	if (is_a_winnet)    //page 6 in the PDF
 
 			turn = USER;
 		}
@@ -128,12 +129,6 @@ int update_moves_arr(char* string)
 	move_number++;
 	return 1;
 }
-
-//void free_tree(tree_t* tree)
-//{
-//	free(tree->root->path);
-//	free_node_list(tree->root);
-//}
 
 void free_node_list(node_t *linkedlist){
 	node_t *iterator;
@@ -323,7 +318,14 @@ int parsing(char* input){
 				ch_on_board = WHITE_K;
 			}
 		}
+
 		return_val = set_disc(ch_on_board, row, col, tool_color, tool_type);
+		if (DEBUG)
+		{
+			printf("row number : %d  , col number : %d  \n", row, col);
+			printf(" %c  \n", game_board[row][col]);
+		}
+
 		if (return_val == -1)
 		{
 			printf("Failed to set tool on board .\n");
@@ -385,6 +387,8 @@ int parsing(char* input){
 			printf("Error: fatal error during memory allocation, exiting.\n");
 			return -1;
 		}
+		tmp_path->next_coordinate = NULL;
+
 		check_if_10 = (int)userinput[1][4] - 48;
 		if (check_if_10 == 0)
 		{
@@ -425,12 +429,13 @@ void init_board(){
 
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++){
+
 			if ((i + j) % 2 == 0)
 			{
-				if (j <= 3){
+				if (i <= 3){
 					game_board[i][j] = WHITE_M;
 				}
-				else if (j >= 6)
+				else if (i >= 6)
 				{
 					game_board[i][j] = BLACK_M;
 				}
@@ -447,11 +452,14 @@ void init_board(){
 }
 
 void first_updating_MenKings_coordinate(){
-	coordinate_t* head_linkedList;
+	coordinate_t *list_to_build, *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
 	int i, j , return_val;
 	char slot;
-
-	head_linkedList = NULL;
+	list_to_build = NULL;
+	user_soldier = NULL;
+	user_kings = NULL;
+	comp_soldiers = NULL;
+	copm_kings = NULL;
 
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++)
@@ -463,55 +471,72 @@ void first_updating_MenKings_coordinate(){
 				{
 					if (computer.color == WHITE)
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
+						//list_to_build = comp_soldiers;
+						comp_soldiers = updating_linked_list(i, j, comp_soldiers);
 					}
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, USER);
+						//list_to_build = user_soldier;
+						user_soldier = updating_linked_list(i, j, user_soldier);
 					}
 				}
 				else if (slot == WHITE_K)
 				{
 					if (computer.color == WHITE)
 					{
-						head_linkedList = creat_linkedList_pointer(KING, COMPUTER);
+						//list_to_build = copm_kings;
+						copm_kings = updating_linked_list(i, j, copm_kings);
 					}
+
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(KING, USER);
+						//list_to_build = user_kings;
+						user_kings = updating_linked_list(i, j, user_kings);
 					}
 				}
 				else if (slot == BLACK_K)
 				{
 					if (computer.color == BLACK)
 					{
-						head_linkedList = creat_linkedList_pointer(KING, COMPUTER);
+						//list_to_build = copm_kings;
+						copm_kings = updating_linked_list(i, j, copm_kings);
+
 					}
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(KING, USER);
+						//list_to_build = user_kings;
+						user_kings = updating_linked_list(i, j, user_kings);
 					}
 				}
 				else
 				{
 					if (computer.color == BLACK)
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
-						computer.men_coordinate = head_linkedList;
+						//list_to_build = comp_soldiers;
+						comp_soldiers = updating_linked_list(i, j, comp_soldiers);
+
 					}
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, USER);
-						user.men_coordinate = head_linkedList;
+						//list_to_build = user_soldier;
+						user_soldier = updating_linked_list(i, j, user_soldier);
 					}
 				}
-				head_linkedList = updating_linked_list(i, j, head_linkedList);
-				if (head_linkedList == NULL)
-				{
-					return -1;
-				}
+			//	list_to_build = updating_linked_list(i, j, list_to_build);
+			//	if (list_to_build == NULL)
+		//		{
+		//			return -1;
+			//	}
+			}
+			if (!is_empty_position(i, j))
+			{
+				user.kings_coordinate = user_kings;
+				user.men_coordinate = user_soldier;
+				computer.kings_coordinate = copm_kings;
+				computer.men_coordinate = comp_soldiers;
 			}
 		}
+
 	}
 }
 
@@ -536,6 +561,8 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 		printf("Error: fatal error during memory allocation, exiting.\n");
 		return;
 	}
+	specific_link->next_coordinate = NULL;
+	specific_link->previous_coordinate = NULL;
 			
 	while (list_to_change != NULL)
 	{
@@ -624,11 +651,6 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	prev_coordinate = NULL;
 	temp_coordinate = NULL;
 
-	if (TRUE)
-	{
-		printf("%d  , %d", user.men_coordinate, head_coordinate);
-	}
-
 	//Buildind the coordinate list
 	current_coordinate = (coordinate_t*)malloc(sizeof(coordinate_t));
 	if (current_coordinate == NULL)
@@ -647,12 +669,13 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	if (head_coordinate == NULL)
 	{
 		head_coordinate = current_coordinate;
+		//temp_coordinate = current_coordinate;
 	}
 	else
 	{
 		temp_coordinate = head_coordinate;
 		prev_coordinate = head_coordinate;
-		while (temp_coordinate != NULL)
+		while (temp_coordinate->next_coordinate != NULL)
 		{
 			if (temp_coordinate == head_coordinate)
 			{
@@ -663,19 +686,18 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 				temp_coordinate = temp_coordinate->next_coordinate;
 				prev_coordinate = prev_coordinate->next_coordinate;
 			}
-			break;
 		}
-		temp_coordinate = current_coordinate;
+		temp_coordinate->next_coordinate = current_coordinate;
 		temp_coordinate->previous_coordinate = prev_coordinate;
+		//head_coordinate->next_coordinate = temp_coordinate;
 	}
 	return head_coordinate;
 }
 
 bool is_empty_position(int row, int col){
 	bool empty = TRUE;
-	if (game_board[col][row] != EMPTY)
+	if (game_board[row][col] != EMPTY)
 	{
-		game_board[col][row] = "1";
 		empty = FALSE;
 	}
 	return empty;
@@ -910,6 +932,9 @@ int path_score(path_t* path_pointer)
 				printf("path_score function - Failed to allocated memory");
 				return -1;
 			}
+
+			node->next_coordinate = NULL;
+			node->previous_coordinate = NULL;
 
 			while (is_enemy_position(node->row, node->col)){
 			node = node->previous_coordinate;

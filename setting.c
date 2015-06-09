@@ -37,7 +37,7 @@ int set_minimax_depth(int depth){
 	}
 }
 
-int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e tool_type)
+int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e tool_type)
 {
 	coordinate_t *temp_linkedlist;
 	int return_val;
@@ -47,8 +47,7 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 		printf(WRONG_POSITION);
 		return -1;
 	}
-
-	game_board[col][row] = char_on_board;
+	game_board[row][col] = char_on_board;
 	if (State == GAME_STATE)
 	{
 		if (user.color == tool_color)
@@ -96,10 +95,14 @@ int clear(){
 	}
 	if (State == GAME_STATE)
 	{
-		free_linked_list(computer.kings_coordinate);
-		free_linked_list(user.kings_coordinate);
-		free_linked_list(computer.men_coordinate);
-		free_linked_list(user.men_coordinate);
+		if ((computer.kings_coordinate != NULL) && (user.kings_coordinate != NULL)
+			&& (computer.men_coordinate != NULL) && (user.men_coordinate != NULL))
+		{
+			free_linked_list(computer.kings_coordinate);
+			free_linked_list(user.kings_coordinate);
+			free_linked_list(computer.men_coordinate);
+			free_linked_list(user.men_coordinate);
+		}
 	}
 	return 1;
 }
@@ -151,7 +154,8 @@ void print_board()
 	{
 		printf((j < 9 ? " %d" : "%d"), j + 1);
 		for (i = 0; i < BOARD_SIZE; i++){
-			printf("| %c ", game_board[i][j]);
+			//printf("| %c ", game_board[i][j]);
+			printf("| %c ", game_board[j][i]);
 		}
 		printf("|\n");
 		print_line();
