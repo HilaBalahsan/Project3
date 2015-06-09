@@ -22,7 +22,8 @@ player_e turn = USER;
 path_t** paths_arr = NULL;
 player_t user = { 0, WHITE, NULL, NULL, 0, 0 };
 player_t computer = { 0, BLACK, NULL, NULL, 0, 0 };
-node_t* minmax_tree =  NULL;
+node_t* minmax_tree = { NULL };
+node_t* tree_next_level = { NULL };
 coordinate_t* best_path = NULL;
 coordinate_t* tmp_path = NULL;
 bool use_tmp_board = FALSE;
@@ -965,37 +966,43 @@ int build_min_max_tree(int row, int col)
 	int root_score, i, j, num_path_score;
 	node_t* tree_next_level;
 	coordinate_t* path;
+	int* pointer_score;
 
 	i = 0;
 	path = (coordinate_t*)malloc(sizeof(coordinate_t*));
 	tree_next_level = (node_t*)malloc(sizeof(node_t*));
+	tree_next_level->next_node = (node_t*)malloc(sizeof(node_t*));
+	tree_next_level->prev_node = (node_t*)malloc(sizeof(node_t*));
+	tree_next_level->path = (coordinate_t*)malloc(sizeof(coordinate_t*));
 	minmax_tree = (node_t*)malloc(sizeof(node_t*));
 	//minmax_tree = malloc(sizeof(tree_t));
-	if (tree_next_level == NULL || minmax_tree == NULL || path == NULL)
+	if (tree_next_level == NULL || minmax_tree == NULL || path == NULL || tree_next_level->next_node == NULL)
 	{
 		printf("build_min_max_tree function - Failed to allocated memory");
 		return -1;
 	}
 
-	tree_next_level = NULL;
-	path == NULL;
-	//minmax_tree = NULL;
-	//minmax_tree->root = NULL;
 	if (turn == COMPUTER)
 	{
 		root_score = scoring()[0];
+		pointer_score = root_score;
 	}
 	else
 	{
 		root_score = scoring()[1];
+		pointer_score = root_score;
 	}
 
 	path->col = col;
 	path->row = row;
 	path->val = root_score;
+
+	//minmax_tree = 
 	// root of the tree
-	minmax_tree->node_path_score = root_score;
-	tree_next_level = minmax_tree->next_node;
+	//tree_next_level->prev_node = NULL;
+	minmax_tree->node_path_score = pointer_score;
+	minmax_tree->path = path;
+	//tree_next_level = minmax_tree->next_node;
 	tree_next_level->prev_node = minmax_tree;
 	tree_next_level->prev_node->node_path_score = root_score;
 	//tree_next_level->prev_node->path->col = col;
