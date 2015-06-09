@@ -88,9 +88,9 @@ typedef struct node
 	struct node* prev_node;
 }node_t;
 
-typedef struct tree{
-	node_t* root;
-}tree_t;
+//typedef struct tree{
+	//node_t* root;
+//}tree_t;
 
 
 // Saperate between board line (char*) and a regular string.
@@ -198,9 +198,9 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
 
 
 int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max);
-coordinate_t* minMax(coordinate_t node, int depth, int a, int b, bool min_or_max);
+coordinate_t* minMax(coordinate_t* node);
 int clone_path(path_t* original_path);
-void free_tree(tree_t tree);
+//void free_tree(tree_t tree);
 int update_moves_arr(char* string);
 int move(int row, int col, char* string);
 

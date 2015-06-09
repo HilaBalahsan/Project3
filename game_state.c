@@ -35,6 +35,8 @@ int move(int row, int col, char* string)
 	node_to_delete->previous_coordinate = NULL;
 	strncpy(inputCopy, string, strlen(string));
 	inputCopy[strlen(string)] = '\0';
+	move_arr = NULL;
+	move_number = 0;
 
 	token = strtok(inputCopy, BIGGER);
 	i = 0;
@@ -74,10 +76,13 @@ int move(int row, int col, char* string)
 	{
 		pre_tool_col = BLACK;
 	}
+
 	while (i < move_number)
 	{
 		remove_disc(row, col, turn); // remove the disc from his current position
+
 		col_new = alpha_to_num((int)move_arr[i][1]); // <x>
+
 		check_if_10 = (int)move_arr[i][4] - 48;
 		if (check_if_10 == 0)
 		{
@@ -87,6 +92,7 @@ int move(int row, int col, char* string)
 		{
 			row_new = (int)move_arr[i][3] - 49; // <y>
 		}
+
 		// find type
 		tool = game_board[col_new][row_new];
 		if (tool != EMPTY)
@@ -109,7 +115,11 @@ int move(int row, int col, char* string)
 				tool_color = BLACK;
 			}
 		}
+
+
+
 		enemy_pos = is_enemy_position(row_new, col_new);
+
 		if (enemy_pos)
 		{
 			if (turn == COMPUTER)
@@ -151,6 +161,7 @@ int move(int row, int col, char* string)
 				}
 			}
 		}
+
 		else
 		{
 			set_disc(pre_tool, col_new, row_new, pre_tool_col, pre_tool_type);
@@ -158,11 +169,14 @@ int move(int row, int col, char* string)
 			col = col_new;
 		}
 		i++;
+
 	}
+
 	free(inputCopy);
 	//	free_linked_list(node_to_delete);
 	return 1;
 }
+
 
 int get_moves(player_e player){
 

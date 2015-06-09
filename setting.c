@@ -48,7 +48,7 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 		return -1;
 	}
 
-	game_board[row][col] = char_on_board;
+	game_board[col][row] = char_on_board;
 	if (State == GAME_STATE)
 	{
 		if (user.color == tool_color)
