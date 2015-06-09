@@ -22,8 +22,9 @@ player_e turn = USER;
 path_t** paths_arr = NULL;
 player_t user = { 0, WHITE, NULL, NULL, 0, 0 };
 player_t computer = { 0, BLACK, NULL, NULL, 0, 0 };
-tree_t minmax_tree = { NULL };
+node_t* minmax_tree =  NULL;
 coordinate_t* best_path = NULL;
+coordinate_t* tmp_path = NULL;
 bool use_tmp_board = FALSE;
 path_t minmax_path = { 0, 0, { 0 }, NULL };
 
@@ -94,6 +95,13 @@ int main_loop(){                     //I changed here.
 		}
 		else
 		{
+			get_moves(COMPUTER);
+			for (int i = 0; i < paths_number; i++)
+			{
+//				tmp_path = minMax(paths_arr[i]->head_position);
+//				if (tmp_path->val > best_path->val)
+//					best_path = tmp_path;
+			}
 			//minMax();
 			print_board();
 			//	if (is_a_winnet)    //page 6 in the PDF
@@ -120,11 +128,11 @@ int update_moves_arr(char* string)
 	return 1;
 }
 
-void free_tree(tree_t tree)
-{
-	free(tree.root->path);
-	free_node_list(tree.root);
-}
+//void free_tree(tree_t* tree)
+//{
+//	free(tree->root->path);
+//	free_node_list(tree->root);
+//}
 
 void free_node_list(node_t *linkedlist){
 	node_t *iterator;
@@ -365,6 +373,31 @@ int parsing(char* input){
 	else if (strstr(userinput[0], "print") != NULL)
 	{
 		print_board(game_board);
+	}
+
+	else if (strstr(userinput[0], "minmax") != NULL)
+	{
+		col = alpha_to_num((int)userinput[1][1]); // <x>
+		tmp_path = (coordinate_t*)malloc(sizeof(coordinate_t));
+		if (tmp_path == NULL)
+		{
+			printf("Error: fatal error during memory allocation, exiting.\n");
+			return -1;
+		}
+		check_if_10 = (int)userinput[1][4] - 48;
+		if (check_if_10 == 0)
+		{
+			row = 10;
+		}
+		if (check_if_10 != 0)
+		{
+			row = (int)userinput[1][3] - 49; // <y>
+		}
+
+		tmp_path->col = col;
+		tmp_path->row = row;
+
+		minMax(tmp_path);
 	}
 
 	else if (strstr(userinput[0], "move") != NULL)
@@ -827,8 +860,8 @@ int* scoring(){
 		return -1;
 	}
 
-	scoring_computer = 0;
-	scoring_user = 0;
+	scoring_computer = 20;
+	scoring_user = 20;
 
 	scoring_computer = ((computer.num_of_kings) * 3) + (computer.num_of_men);
 	scoring_user = ((user.num_of_kings) * 3) + (user.num_of_men);
@@ -931,14 +964,23 @@ int build_min_max_tree(int row, int col)
 {
 	int root_score, i, j, num_path_score;
 	node_t* tree_next_level;
+	coordinate_t* path;
 
 	i = 0;
+	path = (coordinate_t*)malloc(sizeof(coordinate_t*));
 	tree_next_level = (node_t*)malloc(sizeof(node_t*));
-	if (tree_next_level == NULL)
+	minmax_tree = (node_t*)malloc(sizeof(node_t*));
+	//minmax_tree = malloc(sizeof(tree_t));
+	if (tree_next_level == NULL || minmax_tree == NULL || path == NULL)
 	{
 		printf("build_min_max_tree function - Failed to allocated memory");
 		return -1;
 	}
+
+	tree_next_level = NULL;
+	path == NULL;
+	//minmax_tree = NULL;
+	//minmax_tree->root = NULL;
 	if (turn == COMPUTER)
 	{
 		root_score = scoring()[0];
@@ -948,12 +990,16 @@ int build_min_max_tree(int row, int col)
 		root_score = scoring()[1];
 	}
 
+	path->col = col;
+	path->row = row;
+	path->val = root_score;
 	// root of the tree
-	minmax_tree.root->node_path_score = root_score;
-	tree_next_level = minmax_tree.root->next_node;
-	tree_next_level->prev_node->node_path_score = path_score(paths_arr[i]);
-	tree_next_level->prev_node->path->col = col;
-	tree_next_level->prev_node->path->row = row;
+	minmax_tree->node_path_score = root_score;
+	tree_next_level = minmax_tree->next_node;
+	tree_next_level->prev_node = minmax_tree;
+	tree_next_level->prev_node->node_path_score = root_score;
+	//tree_next_level->prev_node->path->col = col;
+	//tree_next_level->prev_node->path->row = row;
 
 	// creat the tree
 	for (i = 0; i < Minimax_Depth; i++)
@@ -992,7 +1038,7 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 		printf("build_min_max_tree function - Failed to allocated memory");
 		return -1;
 	}
-	tree_next_level = minmax_tree.root->next_node;
+	tree_next_level = minmax_tree->next_node;
 
 	// build minmax array - the optimal move is in
 	if (depth == 0 || tree_next_level->next_node == NULL)
@@ -1006,7 +1052,7 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 		while (tree_next_level->next_node != NULL)
 		{
 			rec = (tree_next_level->next_node, depth - 1, a, b, FALSE);
-			if (tree_next_level->prev_node != minmax_tree.root){
+			if (tree_next_level->prev_node != minmax_tree){
 				best_path = tree_next_level->next_node->path;
 			}
 			v = max(v, rec);
@@ -1024,7 +1070,7 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 		while (tree_next_level->next_node != NULL)
 		{
 			rec = (tree_next_level->next_node, depth - 1, a, b, FALSE);
-			if (tree_next_level->prev_node != minmax_tree.root){
+			if (tree_next_level->prev_node != minmax_tree){
 				best_path = tree_next_level->next_node->path;
 			}
 			v = min(v, rec);
@@ -1039,12 +1085,12 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 
 }
 
-coordinate_t* minMax(coordinate_t node, int depth, int a, int b, bool min_or_max)
+coordinate_t* minMax(coordinate_t* node)
 {
-	build_min_max_tree(node.row, node.col);
-	recursive_minMax(minmax_tree.root, Minimax_Depth, -100, 100, TRUE);
+	build_min_max_tree(node->row, node->col);
+	recursive_minMax(minmax_tree, Minimax_Depth, -100, 100, TRUE);
 
-	free_tree(minmax_tree);
+	free_node_list(minmax_tree);
 
 	return best_path;
 }
