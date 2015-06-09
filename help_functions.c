@@ -6,6 +6,11 @@
 
 int update_paths_array(path_t* new_path)
 {
+	if (new_path == NULL)
+	{
+		return -1;
+	}
+
 	if (new_path->path_weight == maximal_path_weight)
 	{
 		paths_arr[paths_number] = new_path;
@@ -13,7 +18,7 @@ int update_paths_array(path_t* new_path)
 	}
 	else if (new_path->path_weight > maximal_path_weight)
 	{
-		free_paths_arr();
+		free_paths_arr(FALSE);
 		paths_arr[paths_number] = new_path;
 		paths_number++;
 	}
@@ -37,10 +42,12 @@ int update_paths_array(path_t* new_path)
 
 void print_path_arr(){
 	int i;
-
-	for (i = 0; i < paths_number; i++)
+	if (paths_arr != NULL)
 	{
-		print_single_path(paths_arr[i]->head_position);
+		for (i = 0; i < paths_number; i++)
+		{
+			print_single_path(paths_arr[i]);
+		}
 	}
 }
 
@@ -62,59 +69,59 @@ void print_coordinate_list(coordinate_t* list_to_print)
 }
 
 void print_single_path(path_t* path){
-	coordinate_t *iterator;
-	iterator = path->head_position;
-	printf("move <%d,%d> to <%d,%d>[", path->head_position->row, path->head_position->col,
-		path->last_coordinate[0], path->last_coordinate[1]);
-	while (iterator->next_coordinate != NULL)
+	coordinate_t* iterator;
+	iterator = path-> head_position;
+
+	if (iterator != NULL)
 	{
-		iterator = iterator->next_coordinate;
-		printf("<%d,%d> ", iterator->row, iterator->col);
-	}
+		printf("move <%d,%d> to <%d,%d>[", iterator->row, iterator->col,
+			path->last_coordinate[0], path->last_coordinate[1]);
+
+		while (iterator->next_coordinate != NULL)
+		{
+			iterator = iterator->next_coordinate;
+			printf("<%d,%d> ", iterator->row, iterator->col);
+		}
+		printf("<%d,%d> ] ", path->last_coordinate[0], path->last_coordinate[1]);
+	}	
 	printf("\n");
 }
 
-void clone_linkedline(coordinate_t *iterator, coordinate_t *clone){
-	int check_clone;
+coordinate_t* clone_linkedline(coordinate_t *to_clone){
+	coordinate_t* cloned_list;
+	cloned_list = NULL;
 
-	while (iterator != NULL)
+	while (to_clone != NULL)
 	{
-		clone = (coordinate_t*)malloc(sizeof(coordinate_t));
-		if (clone == NULL)
-		{
-			printf("Error: fatal error during memory allocation, exiting.\n");
-			return -1;
-		}
-
-		clone = updating_linked_list(iterator->row, iterator->col, clone);
-		if (clone == NULL)
+		cloned_list = updating_linked_list(to_clone->row, to_clone->col, cloned_list);
+		if (cloned_list == NULL)
 		{
 			printf("Didn't clone eatten_kings_coordinate ");
 		}
-		iterator = iterator->next_coordinate;
+		to_clone = to_clone->next_coordinate;
 	}
+	return cloned_list;
 }
 
-int clone_path(path_t* original_path)
+path_t* clone_path(path_t* original_path)
 {
 	bool check_cloned_positions;
 	path_t* cloned_path;
-	coordinate_t  *positions_iterate, *cloned_positions;
 
 	cloned_path = (path_t*)malloc(sizeof(path_t));
 	if (cloned_path == NULL)
 	{
 		printf("clone_path function - Failed to allocated memory");
-		return -1;
+		return NULL;
 	}
 	cloned_path->head_position = NULL;
-	cloned_positions = NULL;
+	cloned_path->last_coordinate[0] = original_path->last_coordinate[0];
+	cloned_path->last_coordinate[1] = original_path->last_coordinate[1];
 
 	cloned_path->path_weight = original_path->path_weight;
-	positions_iterate = original_path->head_position;
-	clone_linkedline(positions_iterate, cloned_positions);
+	cloned_path->head_position = clone_linkedline(original_path->head_position);
 
-	return 1;
+	return cloned_path;
 }
 
 void initialize_step(step_t step){
@@ -124,18 +131,19 @@ void initialize_step(step_t step){
 
 void free_linked_list(coordinate_t *linkedlist)
 {
-	coordinate_t *iterator;
+	//coordinate_t *iterator;
 
-	iterator = linkedlist;
-	while (iterator->next_coordinate != NULL)
+	//iterator = linkedlist;
+	while (linkedlist->next_coordinate != NULL)
 	{
 		if (linkedlist->previous_coordinate != NULL)
 		{
+
 			free(linkedlist->previous_coordinate);
 		}
-		iterator = iterator->next_coordinate;
+		linkedlist = linkedlist->next_coordinate;
 	}
-	free(iterator);
+	free(linkedlist);
 }
 
 void free_path(path_t* path)
@@ -147,7 +155,7 @@ void free_path(path_t* path)
 	free(path);
 }
 
-void free_paths_arr()
+void free_paths_arr(bool needToDeleteArr)
 {
 	int i;
 
@@ -156,10 +164,14 @@ void free_paths_arr()
 		for (i = 0; i < paths_number; i++)
 		{
 			free_path(paths_arr[i]);
+			paths_arr[i] = NULL;
 		}
 	}
 	paths_number = 0;
-	free(paths_arr);
+	if (needToDeleteArr)
+	{
+		free(paths_arr);
+	}
 }
 
 int* adjacent_slot_is_enemy(int row, int col){

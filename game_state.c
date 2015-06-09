@@ -183,10 +183,10 @@ int get_moves(player_e player){
 	coordinate_t *iterator;
 
 	//releast the previouse arr.
-	free_paths_arr(paths_arr);
+	free_paths_arr(TRUE);
 	maximal_path_weight = 0;
 
-	paths_arr = (path_t**)malloc(sizeof(path_t*) * BOARD_SIZE);
+	paths_arr = (path_t**)calloc(BOARD_SIZE,sizeof(path_t*));
 	if (paths_arr == NULL)
 	{
 		printf("get_move function - Failed to allocated memory");
@@ -204,6 +204,7 @@ int get_moves(player_e player){
 	{
 		free_linked_list(iterator);
 	}
+	print_path_arr();
 }
 
 void get_move_helper(coordinate_t *itereting_node, type_e tool){
@@ -244,6 +245,7 @@ int get_men_moves(int curr_row, int curr_col){
 		printf("get_move function - Failed to allocated memory");
 		return -1;
 	}
+	new_path->path_weight = 0;
 	new_path->last_coordinate[0] = curr_row;
 	new_path->last_coordinate[1] = curr_col;
 	new_path->head_position = NULL;
@@ -287,12 +289,14 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 	{
 		if (new_path->head_position != NULL)
 		{
-			returnval1 = update_paths_array(new_path);
+			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
 				printf("Faild to update path array");
+				return -1;
 			}
 		}
+		return 1;
 	}
 
 	if (is_become_king(next_row, next_col))
@@ -311,7 +315,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		step.is_first_step = FALSE;
 		if (is_enemy_position(next_row, next_col))
 		{
-			step.is_potntial_step == TRUE;
+			step.is_potntial_step = TRUE;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
 			{
@@ -355,7 +359,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
 
-			returnval1 = update_paths_array(new_path);
+			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
 				return -1;
@@ -382,6 +386,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		else if (is_valid_position(next_row, next_col))
 		{
 			step.is_potntial_step = FALSE;
+			new_path->last_coordinate[0] = next_row;
+			new_path->last_coordinate[1] = next_col;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
 			{
@@ -389,8 +395,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 			}
 			// Calculate path weight
 			new_path->path_weight += 1;
-
-			returnval1 = update_paths_array(new_path);
+			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
 				return -1;
@@ -504,6 +509,7 @@ int get_king_moves(int curr_row, int curr_col){
 		return -1;
 	}
 	new_path->head_position = NULL;
+	new_path->path_weight = 0;
 
 	//First coordinate is the starting slot.
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
@@ -542,18 +548,25 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 	left_down_clone = NULL;
 
 	//Halting conditions
-	if ((!is_valid_position(next_row, next_col) && new_path->head_position != NULL))
+	if (!is_valid_position(next_row, next_col))
 	{
-		new_path->last_coordinate[0] = next_row;
-		new_path->last_coordinate[1] = next_col;
-		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
-		if (new_path->head_position == NULL)
+		if (new_path->head_position != NULL)
 		{
+			new_path->last_coordinate[0] = next_row;
+			new_path->last_coordinate[1] = next_col;
+			returnval1 = update_paths_array(clone_path(new_path));
+			if (returnval1 == -1)
+			{
+				printf("Faild to update path array");
+			}
 			return -1;
+			if (DEBUG)
+			{
+				print_path_arr();
+			}
 		}
 		return 1;
 	}
-
 	if ((step.is_first_step == TRUE) && (step.is_potntial_step == FALSE))
 	{
 		//arrive here if it first step or the previous slot is free
