@@ -48,35 +48,39 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 		return -1;
 	}
 	game_board[row][col] = char_on_board;
-	if (user.color == tool_color)
-	{
-		temp_linkedlist = creat_linkedList_pointer(tool_type, USER);
-		if (tool_type == KING)
-		{
-			user.num_of_kings++;
-		}
-		else
-		{
-			user.num_of_men++;
-		}
-	}
-	else
-	{
-		temp_linkedlist = creat_linkedList_pointer(tool_type, COMPUTER);
-		if (tool_type == KING)
-		{
-			computer.num_of_kings++;
-		}
-		else
-		{
-			computer.num_of_men++;
-		}
-	}
 
-	return_val = updating_linked_list(row, col, temp_linkedlist);
-	if (return_val == -1)
+	if (State == GAME_STATE)
 	{
-		return -1;
+		if (user.color == tool_color)
+		{
+			temp_linkedlist = creat_linkedList_pointer(tool_type, USER);
+			if (tool_type == KING)
+			{
+				user.num_of_kings++;
+			}
+			else
+			{
+				user.num_of_men++;
+			}
+		}
+		else
+		{
+			temp_linkedlist = creat_linkedList_pointer(tool_type, COMPUTER);
+			if (tool_type == KING)
+			{
+				computer.num_of_kings++;
+			}
+			else
+			{
+				computer.num_of_men++;
+			}
+		}
+
+		return_val = updating_linked_list(row, col, temp_linkedlist);
+		if (return_val == -1)
+		{
+			return -1;
+		}
 	}
 	return 1;
 }
@@ -90,10 +94,13 @@ int clear(){
 			game_board[i][j] = EMPTY;
 		}
 	}
-	free_linked_list(computer.kings_coordinate);
-	free_linked_list(user.kings_coordinate);
-	free_linked_list(computer.men_coordinate);
-	free_linked_list(user.men_coordinate);
+	if (State == GAME_STATE)
+	{
+		free_linked_list(computer.kings_coordinate);
+		free_linked_list(user.kings_coordinate);
+		free_linked_list(computer.men_coordinate);
+		free_linked_list(user.men_coordinate);
+	}
 	return 1;
 }
 

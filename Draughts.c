@@ -18,15 +18,13 @@ int maximal_path_weight = 0;
 int move_number = 0; // rotem
 int moves_capacity = 0;
 state_e State = SETTINGS_STATE;
-player_e turn = COMPUTER;
+player_e turn = USER;
 path_t** paths_arr = NULL;
-player_t user = { 0, BLACK, NULL, NULL, 0, 0 };
-player_t computer = { 0, WHITE, NULL, NULL, 0, 0 };
+player_t user = { 0, WHITE, NULL, NULL, 0, 0 };
+player_t computer = { 0, BLACK, NULL, NULL, 0, 0 };
 tree_t minmax_tree = { NULL };
 coordinate_t* best_path = NULL;
 bool use_tmp_board = FALSE;
-
-//
 path_t minmax_path = { 0, 0, { 0 }, NULL };
 
 int main(){
@@ -206,9 +204,10 @@ char* readline(void) {
 int parsing(char* input){
 
 	// Varibles
-	int i, depth, row, col, check_if_10;
+	int i, depth, row, col, check_if_10 , return_val;
 	color_e tool_color;
 	type_e tool_type;
+	char ch_on_board;
 	char* userinput[4] = { 0 }, *inputCopy, *token, *type;
 
 	// Initialize
@@ -218,7 +217,7 @@ int parsing(char* input){
 	inputCopy = (char*)malloc(sizeof(char)*(strlen(input) + 1));
 	if (inputCopy == NULL)
 	{
-		printf("Error: standard function malloc failed, exiting.");
+		printf("Error: standard function malloc failed, exiting .\n");
 		return -1;
 	}
 
@@ -243,31 +242,10 @@ int parsing(char* input){
 		return 1;
 	}
 
-	if (strstr(userinput[0], "minmax_depth") != NULL)
+	if (strstr(userinput[0], "minimax_depth") != NULL)
 	{
-
-		if (strstr(userinput[1], "2") != NULL)
-		{
-			depth = 2;
-		}
-		else if (strstr(userinput[1], "3") != NULL)
-		{
-			depth = 3;
-		}
-		else if (strstr(userinput[1], "4") != NULL)
-		{
-			depth = 4;
-		}
-		else if (strstr(userinput[1], "5") != NULL)
-		{
-			depth = 5;
-		}
-		else if (strstr(userinput[1], "6") != NULL)
-		{
-			depth = 6;
-		}
-
-		set_minimax_depth(depth); // calculate depth
+		depth = atoi(userinput[1]);
+		set_minimax_depth(depth);
 	}
 
 	else if (strstr(userinput[0], "user_color") != NULL)
@@ -282,13 +260,16 @@ int parsing(char* input){
 
 	else if (strstr(userinput[0], "clear") != NULL)
 	{
-		clear();
+		return_val = clear();
+		if (return_val == -1)
+		{
+			printf("Failed to clear board .\n");
+		}
 	}
 
 	else if (strstr(userinput[0], "set") != NULL)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
-
 		check_if_10 = (int)userinput[1][4] - 48;
 		if (check_if_10 == 0)
 		{
@@ -305,28 +286,32 @@ int parsing(char* input){
 			if (strstr(userinput[3], "m"))
 			{
 				tool_type = MAN;
-				set_disc(BLACK_M, row, col, tool_color, tool_type);
+				ch_on_board = BLACK_M;
 			}
 			else
 			{
 				tool_type = KING;
-				set_disc(BLACK_K, row, col, tool_color, tool_type);
+				ch_on_board = BLACK_K;
 			}
 		}
-
 		else
 		{
-			color_e tool_color = WHITE;
+			tool_color = WHITE;
 			if (strstr(userinput[3], "m"))
 			{
 				tool_type = MAN;
-				set_disc(WHITE_M, row, col, tool_color, tool_type);
+				ch_on_board = WHITE_M;
 			}
 			else
 			{
 				tool_type = KING;
-				set_disc(WHITE_K, row, col, tool_color, tool_type);
+				ch_on_board = WHITE_K;
 			}
+		}
+		return_val = set_disc(ch_on_board, row, col, tool_color, tool_type);
+		if (return_val == -1)
+		{
+			printf("Failed to set tool on board .\n");
 		}
 	}
 
@@ -343,13 +328,18 @@ int parsing(char* input){
 		{
 			row = (int)userinput[1][3] - 49; // <y>
 		}
+
 		if (State == SETTINGS_STATE)
 		{
 			game_board[row][col] == EMPTY;
 		}
 		else
 		{
-			remove_disc(row, col, USER);
+			return_val = remove_disc(row, col, USER);
+			if (return_val == -1)
+			{
+				printf("Faild to remove disc . \n");
+			}
 		}
 	}
 
@@ -699,12 +689,12 @@ bool is_valid_position(int row, int col){
 
 	//if (((col % 2 == 1) && (row % 2 == 0)) || ((col % 2 == 0) && (row % 2 == 1)))
 
-	if ((row + col) % 2 != 0)      //assamption: indexes starts from ziro
+	if (((row + col) % 2) != 0)      //assamption: indexes starts from ziro
 	{
 		b = FALSE;
 	}
 
-	if ((row > 10) || (row < 0) || (col > 10) || (col < 0))
+	if ((row > 9) || (row < 0) || (col > 9) || (col < 0))
 	{
 		b = FALSE;
 	}
@@ -828,46 +818,6 @@ bool is_become_king(int row, int col){
 
 	return king;
 }
-
-int* adjacent_slot_is_enemy(int row, int col){
-
-	int four_diraction[4] = { FALSE };   //up-right , down-right , down-left , up-left -ClockWise
-	color_e enemy_color;
-
-	if (turn == USER)
-	{
-		enemy_color = computer.color;
-	}
-	else
-	{
-		enemy_color = user.color;
-	}
-	//Not good need to check one more slot
-	if (is_enemy_position(row + 1, col + 1))
-	{
-		four_diraction[0] = TRUE;
-	}
-	if (is_enemy_position(row - 1, col + 1))
-	{
-		four_diraction[1] = TRUE;
-	}
-	if (is_enemy_position(row - 1, col - 1))
-	{
-		four_diraction[2] = TRUE;
-	}
-	if (is_enemy_position(row + 1, col - 1))
-	{
-		four_diraction[3] = TRUE;
-	}
-
-	return four_diraction;
-}
-
-
-
-
-
-
 
 
 

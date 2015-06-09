@@ -174,7 +174,6 @@ int move(int row, int col, char* string)
 	return 1;
 }
 
-
 int get_moves(player_e player){
 
 	coordinate_t *iterator;

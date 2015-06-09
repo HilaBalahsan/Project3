@@ -144,3 +144,37 @@ void free_paths_arr()
 	paths_number = 0;
 	free(paths_arr);
 }
+
+int* adjacent_slot_is_enemy(int row, int col){
+
+	int four_diraction[4] = { FALSE };   //up-right , down-right , down-left , up-left -ClockWise
+	color_e enemy_color;
+
+	if (turn == USER)
+	{
+		enemy_color = computer.color;
+	}
+	else
+	{
+		enemy_color = user.color;
+	}
+	//Not good need to check one more slot
+	if (is_enemy_position(row + 1, col + 1))
+	{
+		four_diraction[0] = TRUE;
+	}
+	if (is_enemy_position(row - 1, col + 1))
+	{
+		four_diraction[1] = TRUE;
+	}
+	if (is_enemy_position(row - 1, col - 1))
+	{
+		four_diraction[2] = TRUE;
+	}
+	if (is_enemy_position(row + 1, col - 1))
+	{
+		four_diraction[3] = TRUE;
+	}
+
+	return four_diraction;
+}
