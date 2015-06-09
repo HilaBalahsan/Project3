@@ -47,7 +47,7 @@ int set_disc(char char_on_board, int col, int row, color_e tool_color, type_e to
 		printf(WRONG_POSITION);
 		return -1;
 	}
-	game_board[row][col] = char_on_board;
+	game_board[col][row] = char_on_board;
 	if (user.color == tool_color)
 	{
 		temp_linkedlist = creat_linkedList_pointer(tool_type, USER);
@@ -101,14 +101,15 @@ int remove_disc(int row, int col, player_e rm_from_this_player){
 	type_e tool_type;
 	coordinate_t* specific_link;
 
+	if (!is_valid_position(row, col))
+	{
+		printf(WRONG_POSITION);
+		return -1;
+	}
+
 	if (State == GAME_STATE)
 	{
-		if (!is_valid_position(row, col))
-		{
-			printf(WRONG_POSITION);
-			return -1;
-		}
-
+		
 		if ((game_board[row][col] == BLACK_M) || (game_board[row][col] == WHITE_M))
 		{
 			tool_type = MAN;
@@ -121,6 +122,7 @@ int remove_disc(int row, int col, player_e rm_from_this_player){
 		specific_link = creat_linkedList_pointer(tool_type, rm_from_this_player);
 		delete_link_from_linked_list(specific_link);
 	}
+
 	game_board[col][row] = EMPTY;
 	return 1;
 }

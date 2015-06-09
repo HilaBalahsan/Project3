@@ -343,14 +343,14 @@ int parsing(char* input){
 		{
 			row = (int)userinput[1][3] - 49; // <y>
 		}
-		if (State == SETTINGS_STATE)
-		{
-			game_board[row][col] == EMPTY;
-		}
-		else
-		{
+		//if (State == SETTINGS_STATE)
+		//{
+		//	game_board[row][col] == EMPTY;
+		//}
+		//else
+		//{
 			remove_disc(row, col, USER);
-		}
+		//}
 	}
 
 	else if (strstr(userinput[0], "get_moves") != NULL)
@@ -523,17 +523,6 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 //Craeting pointer to the list we're updating
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 	// player_e is for the setting stage
@@ -655,7 +644,7 @@ bool is_empty_position(int row, int col){
 	bool empty = TRUE;
 	if (game_board[col][row] != EMPTY)
 	{
-		game_board[col][row] = "ro";
+		game_board[col][row] = "1";
 		empty = FALSE;
 	}
 	return empty;
