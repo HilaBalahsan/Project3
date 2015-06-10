@@ -185,14 +185,14 @@ int get_moves(player_e player){
 	free_paths_arr(TRUE);
 	maximal_path_weight = 0;
 
-	paths_arr = (path_t**)calloc(BOARD_SIZE,sizeof(path_t*));
+	paths_arr = (path_t**)calloc(BOARD_SIZE, sizeof(path_t*));
 	if (paths_arr == NULL)
 	{
 		printf("get_move function - Failed to allocated memory");
 		return -1;
 	}
 	capacity = BOARD_SIZE;
-	
+
 	iterator = creat_linkedList_pointer(MAN, player);
 	get_move_helper(iterator, MAN);
 
@@ -293,7 +293,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 	returnval3 = 0;
 
 	//Halting conditions
-	if (!is_valid_position(next_row, next_col) )
+	if (!is_valid_position(next_row, next_col))
 	{
 		if (new_path->head_position != NULL)
 		{
@@ -505,7 +505,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 		}
 
 	}
-	
+
 	return 1;
 }
 
@@ -584,7 +584,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 				printf("Faild to update path array");
 			}
 			return -1;
-			
+
 		}
 		return 1;
 	}

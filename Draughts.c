@@ -62,7 +62,7 @@ int main(){
 			}
 		}
 	}
-    //FUNCTION THAT FREES ALL	
+	//FUNCTION THAT FREES ALL	
 	print_board(game_board);
 	return 1;
 }
@@ -105,9 +105,9 @@ int main_loop(){                     //I changed here.
 			get_moves(COMPUTER);
 			for (int i = 0; i < paths_number; i++)
 			{
-//				tmp_path = minMax(paths_arr[i]->head_position);
-//				if (tmp_path->val > best_path->val)
-//					best_path = tmp_path;
+				//				tmp_path = minMax(paths_arr[i]->head_position);
+				//				if (tmp_path->val > best_path->val)
+				//					best_path = tmp_path;
 			}
 			print_board();
 
@@ -217,7 +217,7 @@ char* readline(void) {
 int parsing(char* input){
 
 	// Varibles
-	int i, depth, row, col, check_if_10 , return_val;
+	int i, depth, row, col, check_if_10, return_val;
 	color_e tool_color;
 	type_e tool_type;
 	char ch_on_board;
@@ -456,7 +456,7 @@ void init_board(){
 
 void first_updating_MenKings_coordinate(){
 	coordinate_t *list_to_build, *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
-	int i, j , return_val;
+	int i, j, return_val;
 	char slot;
 	list_to_build = NULL;
 	user_soldier = NULL;
@@ -525,11 +525,11 @@ void first_updating_MenKings_coordinate(){
 						user_soldier = updating_linked_list(i, j, user_soldier);
 					}
 				}
-			//	list_to_build = updating_linked_list(i, j, list_to_build);
-			//	if (list_to_build == NULL)
-		//		{
-		//			return -1;
-			//	}
+				//	list_to_build = updating_linked_list(i, j, list_to_build);
+				//	if (list_to_build == NULL)
+				//		{
+				//			return -1;
+				//	}
 			}
 			if (!is_empty_position(i, j))
 			{
@@ -566,7 +566,7 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	}
 	specific_link->next_coordinate = NULL;
 	specific_link->previous_coordinate = NULL;
-			
+
 	while (list_to_change != NULL)
 	{
 		if ((list_to_change->col == col) && (list_to_change->row == row))
@@ -693,7 +693,7 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 		}
 		temp_coordinate->next_coordinate = current_coordinate;
 		current_coordinate->previous_coordinate = temp_coordinate;
-		
+
 		//head_coordinate->next_coordinate = temp_coordinate;
 	}
 	return head_coordinate;
@@ -768,7 +768,7 @@ int path_score(path_t* path_pointer)
 			node->previous_coordinate = NULL;
 
 			while (is_enemy_position(node->row, node->col)){
-			node = node->previous_coordinate;
+				node = node->previous_coordinate;
 			}
 			type = tmp_board[node->row][node->col];
 			if (strstr(type, "M") != NULL || strstr(type, "m") != NULL)

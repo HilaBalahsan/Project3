@@ -21,7 +21,7 @@ int update_paths_array(path_t* new_path)
 		free_paths_arr(FALSE);
 		paths_arr[paths_number] = new_path;
 		paths_number++;
-		maximal_path_weight = new_path-> path_weight;
+		maximal_path_weight = new_path->path_weight;
 	}
 	else
 	{
@@ -77,8 +77,8 @@ void print_coordinate_list(coordinate_t* list_to_print)
 
 void print_single_path(path_t* path){
 	coordinate_t* iterator;
-	iterator = path-> head_position;
-	char col , last_coo_col;
+	iterator = path->head_position;
+	char col, last_coo_col;
 	int row, last_coo_row;
 
 	last_coo_col = num_to_alpha(path->last_coordinate[1]);
@@ -86,10 +86,10 @@ void print_single_path(path_t* path){
 
 	if (iterator != NULL)
 	{
-		col = num_to_alpha (iterator->col);
+		col = num_to_alpha(iterator->col);
 		row = (iterator->row) + 1;
 
-		printf("move <%c,%d> to <%c,%d>[",col, row, last_coo_col, last_coo_row);
+		printf("move <%c,%d> to <%c,%d>[", col, row, last_coo_col, last_coo_row);
 		//iterator = iterator->next_coordinate;
 
 		while (iterator->next_coordinate != NULL)
@@ -100,7 +100,7 @@ void print_single_path(path_t* path){
 			row = (iterator->row) + 1;
 		}
 		printf("<%c,%d>]", last_coo_col, last_coo_row);
-	}	
+	}
 	printf("\n");
 }
 
