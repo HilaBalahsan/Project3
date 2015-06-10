@@ -136,6 +136,7 @@ extern coordinate_t* best_path;
 extern path_t minmax_path;
 extern state_e State;
 extern bool use_tmp_board;
+extern bool debug;
 
 //Infrastructure Functions
 void print_board();
@@ -166,7 +167,7 @@ void set_user_color(color_e color);
 
 
 //Game Functions
-int* scoring();                  //Uses the global board
+int scoring();                  //Uses the global board
 void moves(coordinate_t tool);
 coordinate_t* minMax(coordinate_t node, int depth, int a, int b, bool min_or_max);
 bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
