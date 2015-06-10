@@ -181,7 +181,6 @@ int move(int row, int col, char* string)
 int get_moves(player_e player){
 
 	coordinate_t *iterator;
-
 	//releast the previouse arr.
 	free_paths_arr(TRUE);
 	maximal_path_weight = 0;
@@ -236,9 +235,15 @@ int get_men_moves(int curr_row, int curr_col){
 	path_t *new_path;
 	coordinate_t *moves_coor;
 	direction_e prev_dir;
-	step_t step = { 1, 0 };
+	step_t* step;
 	int return_val;
 
+	step = (step_t*)malloc(sizeof(step_t));
+	if (step == NULL)
+	{
+		return -1;
+	}
+	step = initialize_step(step);
 	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
 	{
@@ -257,25 +262,28 @@ int get_men_moves(int curr_row, int curr_col){
 	}
 
 	return_val = get_man_moves_helper(DOWNLEFT, curr_row - 1, curr_col - 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
+
 
 	return_val = get_man_moves_helper(DOWNRIGHT, curr_row - 1, curr_col + 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
 
 	return_val = get_man_moves_helper(UPLEFT, curr_row + 1, curr_col - 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
 
 	return_val = get_man_moves_helper(UPRIGHT, curr_row + 1, curr_col + 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
 
 	if (return_val == -1)
 	{
 		return -1;
 	}
+
+	free(step);
 	return 1;
 }
 
-int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path){
+int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path){
 
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
@@ -299,7 +307,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		return 1;
 	}
 
-	if (is_become_king(next_row, next_col))
+	if ((is_become_king(next_row, next_col)) && ((step->is_first_step == TRUE) || (step->is_potntial_step == TRUE)))
 	{
 		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 		if (new_path->head_position == NULL)
@@ -309,14 +317,16 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		return 1;
 	}
 
-	if ((step.is_first_step == TRUE) && (step.is_potntial_step == FALSE))
+	if ((step->is_first_step == TRUE) && (step->is_potntial_step == FALSE))
 	{
 		// arrive here if it the first step.
-		step.is_first_step = FALSE;
+		step->is_first_step = FALSE;
 		if (is_enemy_position(next_row, next_col))
 		{
-			step.is_potntial_step = TRUE;
+			step->is_potntial_step = TRUE;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			new_path->last_coordinate[0] = next_row;
+			new_path->last_coordinate[1] = next_col;
 			if (new_path->head_position == NULL)
 			{
 				return -1;
@@ -373,7 +383,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 			return 1;
 		}
 	}
-	else if ((step.is_first_step == FALSE) && (step.is_potntial_step == TRUE))
+	else if ((step->is_first_step == FALSE) && (step->is_potntial_step == TRUE))
 	{
 		//arrive here if the previouse slot is belongs to enemy
 
@@ -385,7 +395,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 		}
 		else if (is_valid_position(next_row, next_col))
 		{
-			step.is_potntial_step = FALSE;
+			step->is_potntial_step = FALSE;
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
@@ -407,34 +417,40 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 			left_up_clone = clone_path(new_path);
 			left_down_clone = clone_path(new_path);
 
-
 			//Check if there are more enemies to kill.
 			switch (dir)
 			{
 			case UPRIGHT:
 				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone);
-				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
-				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone);
+				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
+				returnval3 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
+
+				//returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone);
 
 
 				break;
 			case UPLEFT:
-				returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
-				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
+				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone);
+				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
+				//returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
 				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone);
 
 
 				break;
 			case DOWNRIGHT:
-				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone);
-				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
+				//returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone);
+				returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
 				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone);
+				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
+
 
 				break;
 			case DOWNLEFT:
 				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone);
-				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
-				returnval3 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
+				//returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
+				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
+				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone);
+
 				break;
 			default:
 				returnval1 = -1;
@@ -446,51 +462,50 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t ste
 				return -1;
 			}
 		}
-		else  //Arrive here when looking for another eat
+	}
+	else  //Arrive here when looking for another eat
+	{
+		if (is_enemy_position(next_row, next_col))
 		{
-			if (is_enemy_position(next_row, next_col))
+			step->is_potntial_step = TRUE;
+			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
+			if (new_path->head_position == NULL)
 			{
-				step.is_potntial_step = TRUE;
-				new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
-				if (new_path->head_position == NULL)
-				{
-					return -1;
-				}
-
-				switch (dir)
-				{
-				case UPRIGHT:
-					returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, new_path);
-					break;
-				case UPLEFT:
-					returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, new_path);
-					break;
-				case DOWNRIGHT:
-					returnval1 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, new_path);
-					break;
-				case DOWNLEFT:
-					returnval1 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, new_path);
-					break;
-				default:
-					returnval1 = -1;
-					break;
-				}
-
-				if (returnval1 == -1)
-				{
-					return -1;
-				}
+				return -1;
 			}
-			else
+
+			switch (dir)
 			{
-				free_path(new_path);
-				return 1;
+			case UPRIGHT:
+				returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, new_path);
+				break;
+			case UPLEFT:
+				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, new_path);
+				break;
+			case DOWNRIGHT:
+				returnval1 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, new_path);
+				break;
+			case DOWNLEFT:
+				returnval1 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, new_path);
+				break;
+			default:
+				returnval1 = -1;
+				break;
 			}
-			//user position can't go from here.
+
+			if (returnval1 == -1)
+			{
+				return -1;
+			}
+		}
+		else
+		{
 			free_path(new_path);
 			return 1;
 		}
+
 	}
+	
 	return 1;
 }
 
@@ -499,8 +514,15 @@ int get_king_moves(int curr_row, int curr_col){
 	path_t *new_path;
 	coordinate_t *moves_coor;
 	direction_e prev_dir;
-	step_t step = { 1, 0 };
+	step_t* step;
 	int return_val;
+
+	step = (step_t*)malloc(sizeof(step_t));
+	if (step == NULL)
+	{
+		return -1;
+	}
+	step = initialize_step(step);
 
 	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
@@ -519,16 +541,18 @@ int get_king_moves(int curr_row, int curr_col){
 	}
 
 	return_val = get_king_moves_helper(DOWNLEFT, curr_row - 1, curr_col - 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
 
 	return_val = get_king_moves_helper(DOWNRIGHT, curr_row - 1, curr_col + 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
 
 	return_val = get_king_moves_helper(UPLEFT, curr_row + 1, curr_col - 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
 
 	return_val = get_king_moves_helper(UPRIGHT, curr_row + 1, curr_col + 1, step, new_path);
-	initialize_step(step);
+	step = initialize_step(step);
+
+	free(step);
 
 	if (return_val == -1)
 	{
@@ -537,7 +561,7 @@ int get_king_moves(int curr_row, int curr_col){
 	return 1;
 }
 
-int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path){
+int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path){
 
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
@@ -560,21 +584,18 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 				printf("Faild to update path array");
 			}
 			return -1;
-			if (DEBUG)
-			{
-				print_path_arr();
-			}
+			
 		}
 		return 1;
 	}
-	if ((step.is_first_step == TRUE) && (step.is_potntial_step == FALSE))
+	if ((step->is_first_step == TRUE) && (step->is_potntial_step == FALSE))
 	{
 		//arrive here if it first step or the previous slot is free
 
-		step.is_first_step = FALSE;
+		step->is_first_step = FALSE;
 		if (is_enemy_position(next_row, next_col))
 		{
-			step.is_potntial_step = TRUE;
+			step->is_potntial_step = TRUE;
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
@@ -646,7 +667,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t st
 			return 1;
 		}
 	}
-	else if ((step.is_first_step == FALSE) && (step.is_potntial_step == TRUE))
+	else if ((step->is_first_step == FALSE) && (step->is_potntial_step == TRUE))
 	{
 		//arrive here if the previous slot is belong to enemy
 

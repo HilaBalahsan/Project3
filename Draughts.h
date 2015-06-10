@@ -112,6 +112,7 @@ typedef char* String;
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
 #define alpha_to_num(character) (character - 97)
+#define num_to_alpha(int) (int + 97);
 
 
 //Externs
@@ -172,8 +173,8 @@ bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
 int get_moves(player_e player);
 void get_move_helper(coordinate_t *itereting_node, type_e tool);
 int get_men_moves(int curr_row, int curr_col);
-int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path);
-int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t step, path_t *new_path);
+int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path);
+int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t*step, path_t *new_path);
 int get_king_moves(int curr_row, int curr_col);
 
 
@@ -181,7 +182,7 @@ int* adjacent_slot_is_enemy(int row, int col, type_e player);
 bool is_enemy_position(int row, int col);
 bool is_become_king(int row, int col);
 void print_path(path_t *path);
-void initialize_step(step_t* step);
+step_t* initialize_step(step_t* step);
 void print_path_arr();
 void print_single_path(path_t* path);
 void free_paths_arr(bool needToDeleteArr);
@@ -191,7 +192,6 @@ void free_node_list(node_t *linkedlist);
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player);
 coordinate_t* clone_linkedline(coordinate_t *to_clone);
 path_t* clone_path(path_t* original_path);
-void initialize_step(step_t step);
 bool is_a_winner();
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
 

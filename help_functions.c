@@ -21,6 +21,7 @@ int update_paths_array(path_t* new_path)
 		free_paths_arr(FALSE);
 		paths_arr[paths_number] = new_path;
 		paths_number++;
+		maximal_path_weight = new_path-> path_weight;
 	}
 	else
 	{
@@ -53,15 +54,21 @@ void print_path_arr(){
 
 void print_coordinate_list(coordinate_t* list_to_print)
 {
+	char col;
+	int row;
+
 	while (list_to_print != NULL)
 	{
+		col = alpha_to_num(list_to_print->col);
+		row = list_to_print->row;
+
 		if (list_to_print->next_coordinate == NULL)
 		{
-			printf(" < %d,%d> ", list_to_print->row, list_to_print->col);
+			printf(" <%c,%d> ", col, row);
 		}
 		else
 		{
-			printf(" < %d,%d> --> ", list_to_print->row, list_to_print->col);
+			printf(" < %d,%d> --> ", col, row);
 		}
 		list_to_print = list_to_print->next_coordinate;
 	}
@@ -71,18 +78,28 @@ void print_coordinate_list(coordinate_t* list_to_print)
 void print_single_path(path_t* path){
 	coordinate_t* iterator;
 	iterator = path-> head_position;
+	char col , last_coo_col;
+	int row, last_coo_row;
+
+	last_coo_col = num_to_alpha(path->last_coordinate[1]);
+	last_coo_row = (path->last_coordinate[0]) + 1;
 
 	if (iterator != NULL)
 	{
-		printf("move <%d,%d> to <%d,%d>[", iterator->row, iterator->col,
-			path->last_coordinate[0], path->last_coordinate[1]);
+		col = num_to_alpha (iterator->col);
+		row = (iterator->row) + 1;
+
+		printf("move <%c,%d> to <%c,%d>[",col, row, last_coo_col, last_coo_row);
+		//iterator = iterator->next_coordinate;
 
 		while (iterator->next_coordinate != NULL)
 		{
+			printf("<%c,%d> ", col, row);
 			iterator = iterator->next_coordinate;
-			printf("<%d,%d> ", iterator->row, iterator->col);
+			col = num_to_alpha(iterator->col);
+			row = (iterator->row) + 1;
 		}
-		printf("<%d,%d> ] ", path->last_coordinate[0], path->last_coordinate[1]);
+		printf("<%c,%d>]", last_coo_col, last_coo_row);
 	}	
 	printf("\n");
 }
@@ -124,9 +141,10 @@ path_t* clone_path(path_t* original_path)
 	return cloned_path;
 }
 
-void initialize_step(step_t step){
-	step.is_first_step = 1;
-	step.is_potntial_step = 0;
+step_t* initialize_step(step_t* step){
+	step->is_first_step = 1;
+	step->is_potntial_step = 0;
+	return step;
 }
 
 void free_linked_list(coordinate_t *linkedlist)

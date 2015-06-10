@@ -75,8 +75,11 @@ int main_loop(){                     //I changed here.
 		clear();
 		set_disc(WHITE_M, 0, 0, WHITE, MAN);
 		set_disc(BLACK_M, 1, 1, BLACK, MAN);
+		set_disc(BLACK_M, 3, 3, BLACK, MAN);
 		first_updating_MenKings_coordinate();
 		print_coordinate_list(user.men_coordinate);
+		print_coordinate_list(computer.men_coordinate);
+		print_board();
 		get_moves(turn);
 	}
 	first_updating_MenKings_coordinate();
