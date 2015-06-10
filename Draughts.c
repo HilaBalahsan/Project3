@@ -23,12 +23,11 @@ path_t** paths_arr = NULL;
 player_t user = { 0, WHITE, NULL, NULL, 0, 0 };
 player_t computer = { 0, BLACK, NULL, NULL, 0, 0 };
 node_t* minmax_tree = { NULL };
-node_t* tmp_tree = { NULL };
+node_t* tree_next_level = { NULL };
 coordinate_t* best_path = NULL;
 coordinate_t* tmp_path = NULL;
 bool use_tmp_board = FALSE;
 path_t minmax_path = { 0, 0, { 0 }, NULL };
-bool debug = TRUE;
 
 int main(){
 	// Varibles
@@ -70,6 +69,7 @@ int main(){
 
 int main_loop(){                     //I changed here.
 	String line;
+
 	if (DEBUG)
 	{
 		clear();
@@ -109,9 +109,7 @@ int main_loop(){                     //I changed here.
 //				if (tmp_path->val > best_path->val)
 //					best_path = tmp_path;
 			}
-			//minMax();
 			print_board();
-			//	if (is_a_winnet)    //page 6 in the PDF
 
 			turn = USER;
 		}
@@ -134,12 +132,6 @@ int update_moves_arr(char* string)
 	move_number++;
 	return 1;
 }
-
-//void free_tree(tree_t* tree)
-//{
-//	free(tree->root->path);
-//	free_node_list(tree->root);
-//}
 
 void free_node_list(node_t *linkedlist){
 	node_t *iterator;
@@ -329,7 +321,14 @@ int parsing(char* input){
 				ch_on_board = WHITE_K;
 			}
 		}
+
 		return_val = set_disc(ch_on_board, row, col, tool_color, tool_type);
+		if (DEBUG)
+		{
+			printf("row number : %d  , col number : %d  \n", row, col);
+			printf(" %c  \n", game_board[row][col]);
+		}
+
 		if (return_val == -1)
 		{
 			printf("Failed to set tool on board .\n");
@@ -382,10 +381,8 @@ int parsing(char* input){
 		print_board(game_board);
 	}
 
-	if (debug)
+	else if (strstr(userinput[0], "minmax") != NULL)
 	{
-		if (strstr(userinput[0], "minmax") != NULL)
-		{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 		tmp_path = (coordinate_t*)malloc(sizeof(coordinate_t));
 		if (tmp_path == NULL)
@@ -393,6 +390,8 @@ int parsing(char* input){
 			printf("Error: fatal error during memory allocation, exiting.\n");
 			return -1;
 		}
+		tmp_path->next_coordinate = NULL;
+
 		check_if_10 = (int)userinput[1][4] - 48;
 		if (check_if_10 == 0)
 		{
@@ -407,9 +406,7 @@ int parsing(char* input){
 		tmp_path->row = row;
 
 		minMax(tmp_path);
-		}
 	}
-
 
 	else if (strstr(userinput[0], "move") != NULL)
 	{
@@ -435,12 +432,13 @@ void init_board(){
 
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++){
+
 			if ((i + j) % 2 == 0)
 			{
-				if (j <= 3){
+				if (i <= 3){
 					game_board[i][j] = WHITE_M;
 				}
-				else if (j >= 6)
+				else if (i >= 6)
 				{
 					game_board[i][j] = BLACK_M;
 				}
@@ -457,11 +455,14 @@ void init_board(){
 }
 
 void first_updating_MenKings_coordinate(){
-	coordinate_t* head_linkedList;
+	coordinate_t *list_to_build, *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
 	int i, j , return_val;
 	char slot;
-
-	head_linkedList = NULL;
+	list_to_build = NULL;
+	user_soldier = NULL;
+	user_kings = NULL;
+	comp_soldiers = NULL;
+	copm_kings = NULL;
 
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++)
@@ -473,55 +474,72 @@ void first_updating_MenKings_coordinate(){
 				{
 					if (computer.color == WHITE)
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
+						//list_to_build = comp_soldiers;
+						comp_soldiers = updating_linked_list(i, j, comp_soldiers);
 					}
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, USER);
+						//list_to_build = user_soldier;
+						user_soldier = updating_linked_list(i, j, user_soldier);
 					}
 				}
 				else if (slot == WHITE_K)
 				{
 					if (computer.color == WHITE)
 					{
-						head_linkedList = creat_linkedList_pointer(KING, COMPUTER);
+						//list_to_build = copm_kings;
+						copm_kings = updating_linked_list(i, j, copm_kings);
 					}
+
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(KING, USER);
+						//list_to_build = user_kings;
+						user_kings = updating_linked_list(i, j, user_kings);
 					}
 				}
 				else if (slot == BLACK_K)
 				{
 					if (computer.color == BLACK)
 					{
-						head_linkedList = creat_linkedList_pointer(KING, COMPUTER);
+						//list_to_build = copm_kings;
+						copm_kings = updating_linked_list(i, j, copm_kings);
+
 					}
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(KING, USER);
+						//list_to_build = user_kings;
+						user_kings = updating_linked_list(i, j, user_kings);
 					}
 				}
 				else
 				{
 					if (computer.color == BLACK)
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, COMPUTER);
-						computer.men_coordinate = head_linkedList;
+						//list_to_build = comp_soldiers;
+						comp_soldiers = updating_linked_list(i, j, comp_soldiers);
+
 					}
 					else
 					{
-						head_linkedList = creat_linkedList_pointer(MAN, USER);
-						user.men_coordinate = head_linkedList;
+						//list_to_build = user_soldier;
+						user_soldier = updating_linked_list(i, j, user_soldier);
 					}
 				}
-				head_linkedList = updating_linked_list(i, j, head_linkedList);
-				if (head_linkedList == NULL)
-				{
-					return -1;
-				}
+			//	list_to_build = updating_linked_list(i, j, list_to_build);
+			//	if (list_to_build == NULL)
+		//		{
+		//			return -1;
+			//	}
+			}
+			if (!is_empty_position(i, j))
+			{
+				user.kings_coordinate = user_kings;
+				user.men_coordinate = user_soldier;
+				computer.kings_coordinate = copm_kings;
+				computer.men_coordinate = comp_soldiers;
 			}
 		}
+
 	}
 }
 
@@ -546,6 +564,8 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 		printf("Error: fatal error during memory allocation, exiting.\n");
 		return;
 	}
+	specific_link->next_coordinate = NULL;
+	specific_link->previous_coordinate = NULL;
 			
 	while (list_to_change != NULL)
 	{
@@ -604,6 +624,7 @@ bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 		else
 		{
 			node_to_delete->col = node_to_delete->next_coordinate->col;
+			node_to_delete->previous_coordinate = node_to_delete->next_coordinate->previous_coordinate;
 			node_to_delete->next_coordinate = node_to_delete->next_coordinate->next_coordinate;
 			node_to_delete->row = node_to_delete->next_coordinate->row;
 			node_to_delete->val = node_to_delete->next_coordinate->val;
@@ -634,11 +655,6 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	prev_coordinate = NULL;
 	temp_coordinate = NULL;
 
-	if (TRUE)
-	{
-		printf("%d  , %d", user.men_coordinate, head_coordinate);
-	}
-
 	//Buildind the coordinate list
 	current_coordinate = (coordinate_t*)malloc(sizeof(coordinate_t));
 	if (current_coordinate == NULL)
@@ -657,12 +673,13 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	if (head_coordinate == NULL)
 	{
 		head_coordinate = current_coordinate;
+		//temp_coordinate = current_coordinate;
 	}
 	else
 	{
 		temp_coordinate = head_coordinate;
-		prev_coordinate = head_coordinate;
-		while (temp_coordinate != NULL)
+		//prev_coordinate = head_coordinate;
+		while (temp_coordinate->next_coordinate != NULL)
 		{
 			if (temp_coordinate == head_coordinate)
 			{
@@ -671,146 +688,129 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 			else
 			{
 				temp_coordinate = temp_coordinate->next_coordinate;
-				prev_coordinate = prev_coordinate->next_coordinate;
+				//prev_coordinate = prev_coordinate->next_coordinate;
 			}
-			break;
 		}
-		temp_coordinate = current_coordinate;
-		temp_coordinate->previous_coordinate = prev_coordinate;
+		temp_coordinate->next_coordinate = current_coordinate;
+		current_coordinate->previous_coordinate = temp_coordinate;
+		
+		//head_coordinate->next_coordinate = temp_coordinate;
 	}
 	return head_coordinate;
 }
 
 
 
-int scoring(){
+int* scoring(){
 
-	int i, j;
-	//int score_arr[2] = { 0 }; // scoer array - computer, user
+	int score_arr[2] = { 0 }; // scoer array - computer, user
 	int scoring_computer, scoring_user;
-	int white_score, black_score;
-	//int* result;
-	char char_on_board;
+	int* result;
 
-	white_score = 0;
-	black_score = 0;
-
-	if (use_tmp_board)
+	result = (int*)malloc(sizeof(int));
+	if (result == NULL)
 	{
-		for (i = 0; i < BOARD_SIZE; i++)
-		{
-			for (j = 0; j < BOARD_SIZE; j++)
-			{
-				char_on_board = tmp_board[i][j];
-
-				if (char_on_board == WHITE_M)
-					white_score += 1;
-				if (char_on_board == WHITE_K)
-					white_score += 3;
-				if (char_on_board == BLACK_M)
-					black_score += 1;
-				if (char_on_board == BLACK_K)
-					black_score += 3;
-			}
-		}
+		printf("scoring() function - Failed to allocated memory");
+		return -1;
 	}
 
-	else
-	{
-		for (i = 0; i < BOARD_SIZE; i++)
-		{
-			for (j = 0; j < BOARD_SIZE; j++)
-			{
-				char_on_board = game_board[i][j];
+	scoring_computer = 20;
+	scoring_user = 20;
 
-				if (char_on_board == WHITE_M)
-					white_score += 1;
-				if (char_on_board == WHITE_K)
-					white_score += 3;
-				if (char_on_board == BLACK_M)
-					black_score += 1;
-				if (char_on_board == BLACK_K)
-					black_score += 3;
-			}
-		}
-	}
+	scoring_computer = ((computer.num_of_kings) * 3) + (computer.num_of_men);
+	scoring_user = ((user.num_of_kings) * 3) + (user.num_of_men);
 
-	if ((turn == COMPUTER && computer.color == WHITE) || (turn == USER && user.color == WHITE))
-		return (white_score - black_score);
-	else
-		return (black_score - white_score);
+	score_arr[0] = (scoring_computer - scoring_user);
+	score_arr[1] = (scoring_user - scoring_computer);
+
+	result = score_arr;
+
+	return result;
+
 }
 
 int path_score(path_t* path_pointer)
 {
 
 	path_t path;
-	char** tmp_board = copy_board(game_board);
-	int score;
-	char type;
-	int result;
-	coordinate_t* node, * tmp;
-	bool b;
 
-	result = 0;
-	path.head_position = (coordinate_t*)malloc(sizeof(coordinate_t*));
 	path.head_position = path_pointer->head_position;
-	path.head_position->next_coordinate = path_pointer->head_position->next_coordinate;
 	path.path_weight = path_pointer->path_weight;
 	path.score_board_after_path = path_pointer->score_board_after_path;
-	path.head_position->next_coordinate = path_pointer->head_position->next_coordinate;
 
-	use_tmp_board = TRUE;	
-	while (path.head_position != NULL)
+	char** tmp_board = copy_board(game_board);
+	int* score = NULL;
+	char type;
+	int result;
+
+	result = 0;
+
+	while (path.head_position->next_coordinate != NULL)
 	{
-		if (is_enemy_position(path.head_position->row, path.head_position->col))
+		// remove
+		if (is_enemy_position(path.head_position->next_coordinate->row, path.head_position->next_coordinate->col))
 		{
-			remove_disc(path.head_position->row, path.head_position->col, turn);
+			remove_disc(path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, turn);
 		}
+		// set
+
 		else
 		{
+			coordinate_t* node = path.head_position->previous_coordinate;
 			node = (coordinate_t*)malloc(sizeof(coordinate_t*));
 			if (node == NULL)
 			{
 				printf("path_score function - Failed to allocated memory");
 				return -1;
 			}
-			node = path.head_position->previous_coordinate;
-			while (node != NULL){
-				while (is_enemy_position(node->row, node->col)){
-					type = tmp_board[node->row][node->col];
-					if (strstr(type, "M") != NULL || strstr(type, "m") != NULL)
-					{
-						if (strstr(type, "M") != NULL)
-						{
-							set_disc(type, path.head_position->row, path.head_position->col, BLACK, MAN);
-						}
-						else
-						{
-							set_disc(type, path.head_position->row, path.head_position->col, WHITE, MAN);
-						}
-					}
-					else
-					{
-						if (strstr(type, "K") != NULL)
-						{
-							set_disc(type, path.head_position->row, path.head_position->col, BLACK, KING);
-						}
-						else
-						{
-							set_disc(type, path.head_position->row, path.head_position->col, WHITE, KING);
-						}
-					}
-					node = node->next_coordinate;
+
+			node->next_coordinate = NULL;
+			node->previous_coordinate = NULL;
+
+			while (is_enemy_position(node->row, node->col)){
+			node = node->previous_coordinate;
+			}
+			type = tmp_board[node->row][node->col];
+			if (strstr(type, "M") != NULL || strstr(type, "m") != NULL)
+			{
+				use_tmp_board = TRUE;
+				if (strstr(type, "M") != NULL)
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, BLACK, MAN);
+				}
+				else
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, WHITE, MAN);
+				}
+
+
+			}
+			else
+			{
+				use_tmp_board = TRUE;
+				if (strstr(type, "K") != NULL)
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, BLACK, KING);
+				}
+				else
+				{
+					set_disc(type, path.head_position->next_coordinate->row, path.head_position->next_coordinate->col, WHITE, KING);
 				}
 			}
+
+
 		}
-	//	path.head_position = (coordinate_t*)malloc(sizeof(coordinate_t*));
-		path.head_position = path.head_position->next_coordinate;
+		use_tmp_board = FALSE;
+	}
+	if (turn == COMPUTER)
+	{
+		score = scoring();
+		result = score[0];
+		return result;
 	}
 
-	result = scoring();
-	use_tmp_board = FALSE;
+	result = score[1];
+
 	free(score);
 	free_linked_list(path.head_position);
 
@@ -819,66 +819,54 @@ int path_score(path_t* path_pointer)
 
 int build_min_max_tree(int row, int col)
 {
-	int root_score, i, j;
+	int root_score, i, j, num_path_score;
+	node_t* tree_next_level;
 	coordinate_t* path;
-	path_t* new_path;
+	int* pointer_score;
 
-	if (debug)
-	{
-		//State = GAME_STATE;
-		//paths_number = 1;
-		clear();
-		set_disc(WHITE_M, 0, 0, BLACK, MAN);
-		set_disc(BLACK_M, 1, 1, WHITE, MAN);
-		set_user_color(BLACK);
-		print_board();
-		new_path = (path_t*)malloc(sizeof(path_t*));
-		new_path->head_position = (coordinate_t*)malloc(sizeof(coordinate_t*));
-		paths_arr = (path_t**)malloc(sizeof(path_t**));
-		new_path->head_position->col = 1;
-		new_path->head_position->row = 1;
-		new_path->path_weight = 32;
-		update_paths_array(new_path);
-		
-	}
+	i = 0;
 	path = (coordinate_t*)malloc(sizeof(coordinate_t*));
-	tmp_tree = (node_t*)malloc(sizeof(node_t*));
-	tmp_tree->next_node = (node_t*)malloc(sizeof(node_t*));
-	tmp_tree->prev_node = (node_t*)malloc(sizeof(node_t*));
-	tmp_tree->path = (coordinate_t*)malloc(sizeof(coordinate_t*));
+	tree_next_level = (node_t*)malloc(sizeof(node_t*));
+	tree_next_level->next_node = (node_t*)malloc(sizeof(node_t*));
+	tree_next_level->prev_node = (node_t*)malloc(sizeof(node_t*));
+	tree_next_level->path = (coordinate_t*)malloc(sizeof(coordinate_t*));
 	minmax_tree = (node_t*)malloc(sizeof(node_t*));
-	
-	if (tmp_tree == NULL || minmax_tree == NULL || path == NULL || tmp_tree->next_node == NULL || tmp_tree->prev_node == NULL || tmp_tree->path == NULL)
+	//minmax_tree = malloc(sizeof(tree_t));
+	if (tree_next_level == NULL || minmax_tree == NULL || path == NULL || tree_next_level->next_node == NULL)
 	{
 		printf("build_min_max_tree function - Failed to allocated memory");
 		return -1;
 	}
 
-	root_score = scoring();
+	if (turn == COMPUTER)
+	{
+		root_score = scoring()[0];
+		pointer_score = root_score;
+	}
+	else
+	{
+		root_score = scoring()[1];
+		pointer_score = root_score;
+	}
 
-	// root of the tree
 	path->col = col;
 	path->row = row;
 	path->val = root_score;
 
-	minmax_tree->node_path_score = root_score;
+	//minmax_tree = 
+	// root of the tree
+	//tree_next_level->prev_node = NULL;
+	minmax_tree->node_path_score = pointer_score;
 	minmax_tree->path = path;
-
-	tmp_tree->prev_node = minmax_tree;
+	//tree_next_level = minmax_tree->next_node;
+	tree_next_level->prev_node = minmax_tree;
+	tree_next_level->prev_node->node_path_score = root_score;
+	//tree_next_level->prev_node->path->col = col;
+	//tree_next_level->prev_node->path->row = row;
 
 	// creat the tree
 	for (i = 0; i < Minimax_Depth; i++)
 	{
-		tmp_tree = (node_t*)malloc(sizeof(node_t*));
-		tmp_tree->next_node = (node_t*)malloc(sizeof(node_t*));
-		tmp_tree->prev_node = (node_t*)malloc(sizeof(node_t*));
-		tmp_tree->path = (coordinate_t*)malloc(sizeof(coordinate_t*));
-
-		if (tmp_tree == NULL || tmp_tree->next_node == NULL || tmp_tree->prev_node == NULL || tmp_tree->path == NULL)
-		{
-			printf("build_min_max_tree function - Failed to allocated memory");
-			return -1;
-		}
 
 		if (turn == COMPUTER)
 		{
@@ -889,22 +877,16 @@ int build_min_max_tree(int row, int col)
 			turn = COMPUTER;
 		}
 
-//		get_moves(turn);
-
+		get_moves(turn);
 		for (j = 0; j < paths_number; j++)
 		{
-			tmp_tree->path = paths_arr[i]->head_position;
-			tmp_tree->node_path_score = path_score(paths_arr[i]);
-
-			tmp_tree->next_node->prev_node->node_path_score = path_score(paths_arr[i]);
-			tmp_tree->next_node->prev_node->path = paths_arr[i]->head_position;
-
-			tmp_tree = tmp_tree->next_node;
+			tree_next_level->path = paths_arr[i]->head_position;
+			tree_next_level->node_path_score = path_score(paths_arr[i]);
+			tree_next_level = tree_next_level->next_node;
+			tree_next_level->prev_node->node_path_score = path_score(paths_arr[i]);
+			tree_next_level->prev_node->path = paths_arr[i]->head_position;
 		}
 	}
-
-	minmax_tree->next_node = tmp_tree;
-
 	return 1;
 }
 
@@ -912,20 +894,29 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 {
 	int build_tree, v, rec;
 
-	// build minmax array - the optimal move is in
-	if (depth == 0 || minmax_tree->next_node == NULL)
+	node_t* tree_next_level;
+	tree_next_level = (node_t*)malloc(sizeof(node_t*));
+	if (tree_next_level == NULL)
 	{
-		return minmax_tree->next_node->node_path_score;
+		printf("build_min_max_tree function - Failed to allocated memory");
+		return -1;
+	}
+	tree_next_level = minmax_tree->next_node;
+
+	// build minmax array - the optimal move is in
+	if (depth == 0 || tree_next_level->next_node == NULL)
+	{
+		return tree_next_level->node_path_score;
 	}
 
 	if (min_or_max)
 	{
 		v = -1000;
-		while (minmax_tree->next_node != NULL)
+		while (tree_next_level->next_node != NULL)
 		{
-			rec = (minmax_tree->next_node->next_node, depth - 1, a, b, FALSE);
-			if (minmax_tree->next_node->prev_node != minmax_tree){
-				best_path = minmax_tree->next_node->next_node->path;
+			rec = (tree_next_level->next_node, depth - 1, a, b, FALSE);
+			if (tree_next_level->prev_node != minmax_tree){
+				best_path = tree_next_level->next_node->path;
 			}
 			v = max(v, rec);
 			a = max(v, a);
@@ -933,19 +924,17 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 			{
 				break;
 			}
-
-			minmax_tree->next_node = minmax_tree->next_node->next_node;
 		}
 		return v;
 	}
 	else
 	{
 		v = 1000;
-		while (minmax_tree->next_node != NULL)
+		while (tree_next_level->next_node != NULL)
 		{
-			rec = (minmax_tree->next_node->next_node, depth - 1, a, b, TRUE);
-			if (minmax_tree->next_node->prev_node != minmax_tree){
-				best_path = minmax_tree->next_node->next_node->path;
+			rec = (tree_next_level->next_node, depth - 1, a, b, FALSE);
+			if (tree_next_level->prev_node != minmax_tree){
+				best_path = tree_next_level->next_node->path;
 			}
 			v = min(v, rec);
 			b = min(v, b);
@@ -953,8 +942,6 @@ int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max)
 			{
 				break;
 			}
-
-			minmax_tree->next_node = minmax_tree->next_node->next_node;
 		}
 		return v;
 	}
@@ -966,7 +953,6 @@ coordinate_t* minMax(coordinate_t* node)
 	build_min_max_tree(node->row, node->col);
 	recursive_minMax(minmax_tree, Minimax_Depth, -100, 100, TRUE);
 
-	free_node_list(tmp_tree);
 	free_node_list(minmax_tree);
 
 	return best_path;
