@@ -76,11 +76,18 @@ int main_loop(){                     //I changed here.
 		set_disc(WHITE_M, 0, 0, WHITE, MAN);
 		set_disc(BLACK_M, 1, 1, BLACK, MAN);
 		set_disc(BLACK_M, 3, 3, BLACK, MAN);
+		set_disc(BLACK_M, 2, 4, BLACK, MAN);
+
+		
+		set_disc(WHITE_K, 9, 3, WHITE, KING);
+		set_disc(BLACK_M, 7, 1, BLACK, MAN);
+		set_disc(BLACK_M, 5, 1, BLACK, MAN);
+
 		first_updating_MenKings_coordinate();
 		print_coordinate_list(user.men_coordinate);
 		print_coordinate_list(computer.men_coordinate);
 		print_board();
-		get_moves(turn);
+		get_moves(COMPUTER);
 	}
 	first_updating_MenKings_coordinate();
 	while (State == GAME_STATE)
@@ -586,7 +593,6 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 
 	coordinate_t *head_coordinate;
-
 	if (type == MAN)
 	{
 		if (player == COMPUTER)
@@ -698,8 +704,6 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	}
 	return head_coordinate;
 }
-
-
 
 int* scoring(){
 

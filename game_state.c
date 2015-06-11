@@ -194,9 +194,16 @@ int get_moves(player_e player){
 	capacity = BOARD_SIZE;
 
 	iterator = creat_linkedList_pointer(MAN, player);
+	iterator = clone_linkedline(iterator);
 	get_move_helper(iterator, MAN);
 
+	if (iterator != NULL)
+	{
+		free_linked_list(iterator);
+	}
+
 	iterator = creat_linkedList_pointer(KING, player);
+	iterator = clone_linkedline(iterator);
 	get_move_helper(iterator, KING);
 
 	if (iterator != NULL)
@@ -304,6 +311,10 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 				return -1;
 			}
 		}
+		else
+		{
+			free_path(new_path);
+		}
 		return 1;
 	}
 
@@ -358,7 +369,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 
 		}
 		// not an enemy slot
-		else if (is_valid_position(next_row, next_col))
+		else if (is_empty_position(next_row, next_col))
 		{
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
@@ -375,10 +386,9 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 				return -1;
 			}
 		}
-		// or the place is takken by my frient or the slot is out the board
+		// place is takken by my frient or the slot is out the board
 		else
 		{
-			//user position can't go from here.
 			free_path(new_path);
 			return 1;
 		}
@@ -393,7 +403,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			free_path(new_path);
 			return -1;
 		}
-		else if (is_valid_position(next_row, next_col))
+		else if (is_empty_position(next_row, next_col))
 		{
 			step->is_potntial_step = FALSE;
 			new_path->last_coordinate[0] = next_row;
@@ -531,6 +541,8 @@ int get_king_moves(int curr_row, int curr_col){
 		return -1;
 	}
 	new_path->head_position = NULL;
+	new_path->last_coordinate[0] = curr_row;
+	new_path->last_coordinate[1] = curr_col;
 	new_path->path_weight = 0;
 
 	//First coordinate is the starting slot.
@@ -566,35 +578,38 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
 
-	right_up_clone = NULL;
-	right_down_clone = NULL;
-	left_up_clone = NULL;
-	left_down_clone = NULL;
+	returnval1 = 0;
+	returnval2 = 0;
+	returnval3 = 0;
 
 	//Halting conditions
 	if (!is_valid_position(next_row, next_col))
 	{
 		if (new_path->head_position != NULL)
 		{
-			new_path->last_coordinate[0] = next_row;
-			new_path->last_coordinate[1] = next_col;
 			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
 				printf("Faild to update path array");
+				return -1;
 			}
-			return -1;
-
+		}
+		else
+		{
+			free_path(new_path);
 		}
 		return 1;
 	}
 	if ((step->is_first_step == TRUE) && (step->is_potntial_step == FALSE))
 	{
+	
 		//arrive here if it first step or the previous slot is free
 
-		step->is_first_step = FALSE;
+		//step->is_first_step = FALSE;
+
 		if (is_enemy_position(next_row, next_col))
 		{
+			step->is_first_step = FALSE;
 			step->is_potntial_step = TRUE;
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
@@ -629,7 +644,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 			}
 		}
 		// The slot is not belongs to enemy
-		else if (is_valid_position(next_row, next_col))
+		else if (is_empty_position(next_row , next_col))
 		{
 			new_path->last_coordinate[0] = next_row;
 			new_path->last_coordinate[1] = next_col;
@@ -658,13 +673,11 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 				break;
 			}
 		}
-		else       // it is not valid slot
+		// place is takken by my frient or the slot is out the board
+
+		else
 		{
-			if (new_path->head_position == NULL)
-			{
-				free_path(new_path);
-			}
-			return 1;
+			free_path(new_path);
 		}
 	}
 	else if ((step->is_first_step == FALSE) && (step->is_potntial_step == TRUE))
