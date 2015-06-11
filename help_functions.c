@@ -4,6 +4,129 @@
 #include <string.h>
 
 
+int check_and_build(int row,int col,int des_row, int des_col , path_t* user_path_input){
+	char source_slot, des_slot;
+	color_e curr_color;
+
+	if (turn == USER)
+	{
+		curr_color = user.color;
+	}
+	else
+	{
+		curr_color = computer.color;
+	}
+
+	if ((des_row == -1) && (des_col == -1))
+	{
+		if ((source_slot == WHITE_M) || (source_slot == WHITE_K))
+		{
+			if (curr_color == BLACK)
+			{
+				printf(NO_DICS);
+				return -1;
+			}
+		}
+		else
+		{
+			if (curr_color == WHITE)
+			{
+				printf(NO_DICS);
+				return -1;
+			}
+		}
+		user_path_input->head_position = updating_linked_list(row, col, user_path_input);
+		user_path_input->last_coordinate[0] = row;
+		user_path_input->last_coordinate[1] = col;
+	}
+
+	source_slot = game_board[row][col];
+	des_slot = game_board[des_row][des_col];
+
+	if (!is_valid_position(des_row, des_col))
+	{
+		printf(WRONG_POSITION);
+		return -1;
+	}
+	else
+	{
+		user_path_input->head_position = updating_linked_list(des_row, des_col, user_path_input);
+		user_path_input->last_coordinate[0] = des_row;
+		user_path_input->last_coordinate[1] = des_col;
+	}
+
+}
+
+bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
+	bool equal = TRUE;
+
+	if ((path_from_arr->last_coordinate[0] != user_input_path->last_coordinate[0]) ||
+		(path_from_arr->last_coordinate[1] != user_input_path->last_coordinate[1]))
+	{
+		equal = FALSE;
+	}
+	else
+	{
+
+	}
+
+
+	while ((path_from_arr->head_position != NULL) && (user_input_path->head_position != NULL) && equal)
+	{
+		if ((path_from_arr->head_position->row == user_input_path->head_position->row) &&
+			(path_from_arr->head_position->col == user_input_path->head_position->col))
+			{
+			path_from_arr->head_position = path_from_arr->head_position->next_coordinate;
+			path_from_arr->head_position = path_from_arr->head_position->next_coordinate;
+			}
+			else
+			{
+				equal = FALSE;
+			}
+	}
+
+	return equal;
+}
+
+void make_user_path(coordinate_t* move)
+{
+	int row, col;
+	char slot;
+	color_e enemy_color;
+	coordinate_t* link_do_delete;
+
+	game_board[move->row][move->col] = EMPTY;
+	move = move->next_coordinate;
+	enemy_color = computer.color;
+
+	while (move != NULL)
+	{
+		row = move->row;
+		col = move->col;
+
+		if (is_empty_position(row, col))
+		{
+			move = move->next_coordinate;
+		}
+		else
+		{
+			slot = game_board[row][col];
+			if ((slot == BLACK_M) || (slot == WHITE_M))
+			{
+				computer.num_of_men--;
+				link_do_delete = pointer_to_link(row, col, computer.men_coordinate);
+			}
+			else
+			{
+				computer.num_of_kings--;
+				link_do_delete = pointer_to_link(row, col, computer.kings_coordinate);
+			}
+			delete_link_from_linked_list(link_do_delete);
+		}
+	}
+
+}
+
 int update_paths_array(path_t* new_path)
 {
 	if (new_path == NULL)
@@ -160,6 +283,7 @@ void free_linked_list(coordinate_t *linkedlist)
 		linkedlist = linkedlist->next_coordinate;
 	}
 	free(linkedlist);
+	linkedlist = NULL;
 }
 
 void free_path(path_t* path)
@@ -225,24 +349,3 @@ int* adjacent_slot_is_enemy(int row, int col){
 	return four_diraction;
 }
 
-bool is_at_the_edge(int row, int col){
-	bool edge;
-	edge = FALSE;
-	if ((row == 0) && (col == 0))
-	{
-		edge = TRUE;
-	}
-	else if ((row == 0) && (col == BOARD_SIZE-1))
-	{
-		edge = TRUE;
-	}
-	else if ((col == 0) && (row == BOARD_SIZE - 1))
-	{
-		edge = TRUE;
-	}
-	else if ((col == BOARD_SIZE - 1) && (row == BOARD_SIZE - 1))
-	{
-		edge = TRUE;
-	}
-	return edge;
-}

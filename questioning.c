@@ -3,6 +3,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+bool is_legal_move(path_t* user_input_path)
+{
+	bool comparison;
+	int i;
+	i = 0;
+	comparison = FALSE;
+	get_moves(turn);
+	if (paths_number == 0)
+	{
+		printf(ILLEGAL_MOVE);
+	}
+	else
+	{
+		for (i; i < paths_number; i++)
+		{
+			comparison = compare_two_paths(paths_arr[i], user_input_path);
+			if (comparison)
+			{
+				break;
+			}
+		}
+	}
+	return comparison;
+}
 
 bool is_empty_position(int row, int col){
 	bool empty = TRUE;
@@ -11,6 +35,28 @@ bool is_empty_position(int row, int col){
 		empty = FALSE;
 	}
 	return empty;
+}
+
+bool is_at_the_edge(int row, int col){
+	bool edge;
+	edge = FALSE;
+	if ((row == 0) && (col == 0))
+	{
+		edge = TRUE;
+	}
+	else if ((row == 0) && (col == BOARD_SIZE - 1))
+	{
+		edge = TRUE;
+	}
+	else if ((col == 0) && (row == BOARD_SIZE - 1))
+	{
+		edge = TRUE;
+	}
+	else if ((col == BOARD_SIZE - 1) && (row == BOARD_SIZE - 1))
+	{
+		edge = TRUE;
+	}
+	return edge;
 }
 
 bool is_a_winner(){
@@ -68,41 +114,26 @@ bool is_valid_initialization()
 {
 	// define
 	bool b;
-	int num_of_white, num_of_black, total_discs, num_of_kings, i, j;
+	int num_of_white, num_of_black, total_discs, i, j;
 
 	// initalize
 	b = TRUE;
-	num_of_white = 0;
-	num_of_black = 0;
-	total_discs = 0;
-	num_of_kings = 0;
-
-	for (i = 0; i < BOARD_SIZE; i++)
+	if (user.color == WHITE)
 	{
-		for (j = 0; j < BOARD_SIZE; j++)
-		{
-			if (game_board[i][j] == WHITE_M)
-			{
-				num_of_white++;
-				total_discs++;
-			}
-			else if (game_board[i][j] == BLACK_M)
-			{
-				num_of_black++;
-				total_discs++;
-			}
-
-			else if ((game_board[i][j] == BLACK_K) || (game_board[i][j] == WHITE_K))
-			{
-				num_of_kings++;
-			}
-		}
+		num_of_white = user.num_of_men + user.num_of_kings;
+		num_of_black = computer.num_of_men + computer.num_of_kings;
+	}
+	else
+	{
+		num_of_white = computer.num_of_men + computer.num_of_kings; 
+		num_of_black = user.num_of_men + user.num_of_kings;
 	}
 
-	if ((num_of_white != 20) || (num_of_black != 20) || (num_of_kings != 0) || (total_discs != 40))
+	total_discs = num_of_white + num_of_black;
+
+	if (((num_of_white != 20) || (num_of_black != 20)) && (total_discs != 40))
 	{
 		b = FALSE;
-
 	}
 
 	return b;

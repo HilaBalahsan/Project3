@@ -154,6 +154,7 @@ bool is_valid_initialization();            //empty, disc of one color , more the
 void free_path(path_t* path);
 void free_linked_list(coordinate_t *linkedlist);
 bool is_at_the_edge(int row, int col);
+bool compare_two_paths(coordinate_t* path_from_arr, coordinate_t* user_input_path);
 
 
 
@@ -177,6 +178,7 @@ int get_men_moves(int curr_row, int curr_col);
 int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path);
 int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t*step, path_t *new_path);
 int get_king_moves(int curr_row, int curr_col);
+int check_and_build(int row, int col, int des_row, int des_col, bool first_step);
 
 
 int* adjacent_slot_is_enemy(int row, int col, type_e player);
@@ -195,6 +197,9 @@ coordinate_t* clone_linkedline(coordinate_t *to_clone);
 path_t* clone_path(path_t* original_path);
 bool is_a_winner();
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
+bool is_legal_move(path_t* user_input_path);
+void make_user_path(coordinate_t* move);
+
 
 
 

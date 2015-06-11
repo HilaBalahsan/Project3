@@ -2,181 +2,66 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <ctype.h>
 
-int move(int row, int col, char* string)
-{
-	// Varibles
-	int check_if_10, row_new, col_new;
-	char tool, pre_tool;
-	int i, len;
-	color_e tool_color, pre_tool_col;
-	type_e tool_type, pre_tool_type;
-	bool enemy_pos, last_one;
-	char *inputCopy, *token, *type;
+int move(int row, int col, String coo_stream){
 
-	coordinate_t* node_to_delete, *list_to_change;
+	char ch;
+	int len , i , des_col , des_row , return_val;
+	bool first_step;
+	path_t* user_input_path;
 
-	node_to_delete = NULL;
-
-
-	// Initialize
-	len = strlen(string);
-	tool_color = WHITE;
-
-	node_to_delete = (coordinate_t*)malloc(sizeof(coordinate_t*));
-	inputCopy = (char*)malloc(sizeof(char)*(strlen(string) + 1));
-	if (inputCopy == NULL || node_to_delete == NULL)
-	{
-		printf("Error: standard function malloc failed, exiting.");
-		return -1;
-	}
-
-	node_to_delete->next_coordinate = NULL;
-	node_to_delete->previous_coordinate = NULL;
-	strncpy(inputCopy, string, strlen(string));
-	inputCopy[strlen(string)] = '\0';
-	move_arr = NULL;
-	move_number = 0;
-
-	token = strtok(inputCopy, BIGGER);
 	i = 0;
-	while ((token != NULL)) {
-		if (move_number < len) {
-			update_moves_arr(token);
-		}
-		token = strtok(NULL, BIGGER);
-		//i++;
-	}
-
-	/*input check*/
-	if (move_number == 0)
+	first_step = TRUE;
+	len = strlen(coo_stream);
+	
+	while(i < len)
 	{
-		free(string);
-		free(inputCopy);
-		return 1;
-	}
-
-	// find type
-	pre_tool = game_board[row][col];
-	if ((pre_tool == WHITE_K) || (pre_tool == BLACK_K))
-	{
-		pre_tool_type = KING;
-	}
-	else
-	{
-		pre_tool_type = MAN;
-	}
-
-	// find color
-	if ((pre_tool == WHITE_K) || (pre_tool == WHITE_M))
-	{
-		pre_tool_col = WHITE;
-	}
-	else
-	{
-		pre_tool_col = BLACK;
-	}
-
-	while (i < move_number)
-	{
-		remove_disc(row, col, turn); // remove the disc from his current position
-
-		col_new = alpha_to_num((int)move_arr[i][1]); // <x>
-
-		check_if_10 = (int)move_arr[i][4] - 48;
-		if (check_if_10 == 0)
+		if (isalpha(ch))
 		{
-			row_new = 10;
-		}
-		else
-		{
-			row_new = (int)move_arr[i][3] - 49; // <y>
-		}
-
-		// find type
-		tool = game_board[col_new][row_new];
-		if (tool != EMPTY)
-		{
-			if ((tool == WHITE_K) || (tool == BLACK_K))
+			des_col = alpha_to_num(ch);
+			if (coo_stream[i + 3] == 0)
 			{
-				tool_type = KING;
+				des_row = 9;
+				i += 3;
 			}
 			else
 			{
-				tool_type = MAN;
+				des_row = (int)coo_stream[i + 2];
+				i += 2;
 			}
-			// find color
-			if ((tool == WHITE_K) || (tool == WHITE_M))
+			if (first_step)
 			{
-				tool_color = WHITE;
-			}
-			else
-			{
-				tool_color = BLACK;
-			}
-		}
-
-
-
-		enemy_pos = is_enemy_position(row_new, col_new);
-
-		if (enemy_pos)
-		{
-			if (turn == COMPUTER)
-			{
-				remove_disc(row_new, col_new, USER);
-			}
-			else
-			{
-				remove_disc(row_new, col_new, COMPUTER);
-			}
-			node_to_delete->col = col_new;
-			node_to_delete->row = row_new;
-			list_to_change = creat_linkedList_pointer(pre_tool_type, turn);
-			last_one = delete_link_from_linked_list(node_to_delete, list_to_change);
-			if (last_one){
-				if (turn = COMPUTER){
-					if (computer.color == BLACK)
-					{
-						if ((tool == BLACK_M) || (tool == WHITE_M))
-						{
-							computer.men_coordinate = NULL;
-						}
-						else
-						{
-							computer.kings_coordinate = NULL;
-						}
-					}
-					else
-					{
-						if ((tool == BLACK_M) || (tool == WHITE_M))
-						{
-							computer.men_coordinate = NULL;
-						}
-						else
-						{
-							computer.kings_coordinate = NULL;
-						}
-					}
+				return_val = check_and_build(row, col, des_row, des_col, first_step);
+				first_step = FALSE;
+				if (return_val == -1)
+				{
+					return -1;
 				}
 			}
+			return_val = check_and_build(row, col, des_row, des_col, first_step);
+			if (return_val == -1)
+			{
+				return -1;
+			}
+			user_input_path = updating_linked_list(des_row, des_col, user_input_path);
 		}
-
-		else
-		{
-			set_disc(pre_tool, col_new, row_new, pre_tool_col, pre_tool_type);
-			row = row_new;
-			col = col_new;
-		}
-		i++;
-
+		 else
+		 {
+			 i++;
+		 }
 	}
 
-	free(inputCopy);
-	//	free_linked_list(node_to_delete);
-	return 1;
+	if (!is_legal_move)
+	{
+		printf(ILLEGAL_MOVE);
+	}
+	else
+	{
+		make_user_path(user_input_path->head_position);
+	}
 }
-
 
 int get_moves(player_e player){
 
@@ -194,22 +79,11 @@ int get_moves(player_e player){
 	capacity = BOARD_SIZE;
 
 	iterator = creat_linkedList_pointer(MAN, player);
-	//iterator = clone_linkedline(iterator);
 	get_move_helper(iterator, MAN);
 
-//	if (iterator != NULL)
-//	{
-//		free_linked_list(iterator);
-//	}
-
 	iterator = creat_linkedList_pointer(KING, player);
-//	iterator = clone_linkedline(iterator);
 	get_move_helper(iterator, KING);
 
-//	if (iterator != NULL)
-//	{
-//		free_linked_list(iterator);
-//	}
 	print_path_arr();
 }
 

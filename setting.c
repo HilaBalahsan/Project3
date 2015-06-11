@@ -89,10 +89,16 @@ int clear(){
 	int i, j;
 
 	for (i = 0; i < BOARD_SIZE; i++){
-		for (j = BOARD_SIZE; j >= 0; j--){
+		for (j = BOARD_SIZE; j >= 0; j--)
+		{
 			game_board[i][j] = EMPTY;
 		}
 	}
+	user.num_of_kings = 0;
+	user.num_of_men = 0;
+	computer.num_of_kings = 0;
+	computer.num_of_men = 0;
+
 	if (State == GAME_STATE)
 	{
 		if ((computer.kings_coordinate != NULL) && (user.kings_coordinate != NULL)
@@ -169,7 +175,8 @@ void print_board()
 
 int start()
 {
-	if (is_valid_initialization() == FALSE)
+	first_updating_MenKings_coordinate();
+	if (!is_valid_initialization())
 	{
 		printf(WROND_BOARD_INITIALIZATION);
 		return -1;

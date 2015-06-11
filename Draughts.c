@@ -44,6 +44,15 @@ int main(){
 	{
 		if (State == GAME_STATE)
 		{
+			if (DEBUG)
+			{
+				clear();
+				State = SETTINGS_STATE;
+				line = readline();
+				parsing(line);
+				//set_disc(WHITE_M, 10, 10, WHITE, MAN);
+				print_board();
+			}
 			main_loop();
 			break;
 		}
@@ -69,45 +78,18 @@ int main(){
 
 int main_loop(){                     //I changed here.
 	String line;
-
-	if (DEBUG)
-	{
-		clear();
-		set_disc(WHITE_M, 0, 0, WHITE, MAN);
-		set_disc(BLACK_M, 1, 1, BLACK, MAN);
-		set_disc(BLACK_M, 3, 3, BLACK, MAN);
-		set_disc(BLACK_M, 2, 4, BLACK, MAN);
-
-		
-		set_disc(WHITE_K, 9, 3, WHITE, KING);
-		set_disc(BLACK_M, 7, 1, BLACK, MAN);
-		set_disc(BLACK_M, 5, 1, BLACK, MAN);
-
-		print_board();
-
-		first_updating_MenKings_coordinate();
-		print_coordinate_list(user.men_coordinate);
-		print_coordinate_list(computer.men_coordinate);
-		print_board();
-		turn = COMPUTER;
-		get_moves(turn);
-	}
-	first_updating_MenKings_coordinate();
 	while (State == GAME_STATE)
 	{
 		if (turn == USER)
 		{
 			printf(ENTER_YOUR_MOVE);
 			line = readline();
+			parsing(line);
 			if ((strcmp(line, "quit")) == 0) // zero for equal.
 			{
 				free(line);
 				break;
 			}
-			print_board();
-			//	if (is_a_winnet)    //page 6 in the PDF
-
-			//else
 			turn = COMPUTER;
 		}
 		else
@@ -119,9 +101,12 @@ int main_loop(){                     //I changed here.
 				//				if (tmp_path->val > best_path->val)
 				//					best_path = tmp_path;
 			}
-			print_board();
-
 			turn = USER;
+		}
+		print_board();
+		if (is_a_winner)
+		{
+			printf("%d player wins!\n", turn);
 		}
 	}
 }
@@ -270,7 +255,6 @@ int parsing(char* input){
 		depth = atoi(userinput[1]);
 		set_minimax_depth(depth);
 	}
-
 	else if (strstr(userinput[0], "user_color") != NULL)
 	{
 		if ((strstr(userinput[1], "black") != NULL) || (strstr(userinput[1], "Black") != NULL) || (strstr(userinput[1], "BLACK") != NULL))
@@ -289,14 +273,13 @@ int parsing(char* input){
 			printf("Failed to clear board .\n");
 		}
 	}
-
 	else if (strstr(userinput[0], "set") != NULL)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 		check_if_10 = (int)userinput[1][4] - 48;
 		if (check_if_10 == 0)
 		{
-			row = 10;
+			row = 9;
 		}
 		if (check_if_10 != 0)
 		{
@@ -333,18 +316,11 @@ int parsing(char* input){
 		}
 
 		return_val = set_disc(ch_on_board, row, col, tool_color, tool_type);
-		if (DEBUG)
-		{
-			printf("row number : %d  , col number : %d  \n", row, col);
-			printf(" %c  \n", game_board[row][col]);
-		}
-
 		if (return_val == -1)
 		{
 			printf("Failed to set tool on board .\n");
 		}
 	}
-
 	else if (strstr(userinput[0], "rm") != NULL)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
@@ -372,7 +348,6 @@ int parsing(char* input){
 			}
 		}
 	}
-
 	else if (strstr(userinput[0], "get_moves") != NULL)
 	{
 		if (State == GAME_STATE)
@@ -380,17 +355,17 @@ int parsing(char* input){
 			return_val = get_moves(turn);
 		}
 	}
-
 	else if (strstr(userinput[0], "start") != NULL)
 	{
-		start();
+		if (turn == SETTINGS_STATE)
+		{
+			return_val = start();
+		}
 	}
-
 	else if (strstr(userinput[0], "print") != NULL)
 	{
 		print_board(game_board);
 	}
-
 	else if (strstr(userinput[0], "minmax") != NULL)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
@@ -417,7 +392,6 @@ int parsing(char* input){
 
 		minMax(tmp_path);
 	}
-
 	else if (strstr(userinput[0], "move") != NULL)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
@@ -425,7 +399,7 @@ int parsing(char* input){
 		check_if_10 = (int)userinput[1][4] - 48;
 		if (check_if_10 == 0)
 		{
-			row = 10;
+			row = 9;
 		}
 		if (check_if_10 != 0)
 		{
@@ -484,62 +458,55 @@ void first_updating_MenKings_coordinate(){
 				{
 					if (computer.color == WHITE)
 					{
-						//list_to_build = comp_soldiers;
 						comp_soldiers = updating_linked_list(i, j, comp_soldiers);
+						computer.num_of_men++;
 					}
 					else
 					{
-						//list_to_build = user_soldier;
 						user_soldier = updating_linked_list(i, j, user_soldier);
+						user.num_of_men++;
 					}
 				}
 				else if (slot == WHITE_K)
 				{
 					if (computer.color == WHITE)
 					{
-						//list_to_build = copm_kings;
 						copm_kings = updating_linked_list(i, j, copm_kings);
+						computer.num_of_kings++;
 					}
 
 					else
 					{
-						//list_to_build = user_kings;
 						user_kings = updating_linked_list(i, j, user_kings);
+						user.num_of_kings++;
 					}
 				}
 				else if (slot == BLACK_K)
 				{
 					if (computer.color == BLACK)
 					{
-						//list_to_build = copm_kings;
 						copm_kings = updating_linked_list(i, j, copm_kings);
-
+						computer.num_of_kings++;
 					}
 					else
 					{
-						//list_to_build = user_kings;
 						user_kings = updating_linked_list(i, j, user_kings);
+						user.num_of_kings++;
 					}
 				}
 				else
 				{
 					if (computer.color == BLACK)
 					{
-						//list_to_build = comp_soldiers;
 						comp_soldiers = updating_linked_list(i, j, comp_soldiers);
-
+						computer.num_of_men++;
 					}
 					else
 					{
-						//list_to_build = user_soldier;
 						user_soldier = updating_linked_list(i, j, user_soldier);
+						user.num_of_men++;
 					}
 				}
-				//	list_to_build = updating_linked_list(i, j, list_to_build);
-				//	if (list_to_build == NULL)
-				//		{
-				//			return -1;
-				//	}
 			}
 			if (!is_empty_position(i, j))
 			{
