@@ -153,6 +153,7 @@ bool is_valid_position(int row, int col);   //not a white square , ranges
 bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
 void free_path(path_t* path);
 void free_linked_list(coordinate_t *linkedlist);
+bool is_at_the_edge(int row, int col);
 
 
 
@@ -182,7 +183,7 @@ int* adjacent_slot_is_enemy(int row, int col, type_e player);
 bool is_enemy_position(int row, int col);
 bool is_become_king(int row, int col);
 void print_path(path_t *path);
-step_t* initialize_step(step_t* step);
+void initialize_step(step_t* step);
 void print_path_arr();
 void print_single_path(path_t* path);
 void free_paths_arr(bool needToDeleteArr);

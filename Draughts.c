@@ -83,11 +83,14 @@ int main_loop(){                     //I changed here.
 		set_disc(BLACK_M, 7, 1, BLACK, MAN);
 		set_disc(BLACK_M, 5, 1, BLACK, MAN);
 
+		print_board();
+
 		first_updating_MenKings_coordinate();
 		print_coordinate_list(user.men_coordinate);
 		print_coordinate_list(computer.men_coordinate);
 		print_board();
-		get_moves(COMPUTER);
+		turn = COMPUTER;
+		get_moves(turn);
 	}
 	first_updating_MenKings_coordinate();
 	while (State == GAME_STATE)

@@ -141,10 +141,9 @@ path_t* clone_path(path_t* original_path)
 	return cloned_path;
 }
 
-step_t* initialize_step(step_t* step){
+void initialize_step(step_t* step){
 	step->is_first_step = 1;
 	step->is_potntial_step = 0;
-	return step;
 }
 
 void free_linked_list(coordinate_t *linkedlist)
@@ -156,7 +155,6 @@ void free_linked_list(coordinate_t *linkedlist)
 	{
 		if (linkedlist->previous_coordinate != NULL)
 		{
-
 			free(linkedlist->previous_coordinate);
 		}
 		linkedlist = linkedlist->next_coordinate;
@@ -171,6 +169,7 @@ void free_path(path_t* path)
 		free_linked_list(path->head_position);
 	}
 	free(path);
+	path = NULL;
 }
 
 void free_paths_arr(bool needToDeleteArr)
@@ -186,9 +185,9 @@ void free_paths_arr(bool needToDeleteArr)
 		}
 	}
 	paths_number = 0;
-	if (needToDeleteArr)
+	if (needToDeleteArr && (paths_arr != NULL))
 	{
-		free(paths_arr);
+	//	free(paths_arr);
 	}
 }
 
@@ -224,4 +223,26 @@ int* adjacent_slot_is_enemy(int row, int col){
 	}
 
 	return four_diraction;
+}
+
+bool is_at_the_edge(int row, int col){
+	bool edge;
+	edge = FALSE;
+	if ((row == 0) && (col == 0))
+	{
+		edge = TRUE;
+	}
+	else if ((row == 0) && (col == BOARD_SIZE-1))
+	{
+		edge = TRUE;
+	}
+	else if ((col == 0) && (row == BOARD_SIZE - 1))
+	{
+		edge = TRUE;
+	}
+	else if ((col == BOARD_SIZE - 1) && (row == BOARD_SIZE - 1))
+	{
+		edge = TRUE;
+	}
+	return edge;
 }
