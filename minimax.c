@@ -9,6 +9,42 @@ char** boards[BOARD_NUM] = { level_1_board, level_2_board, level_3_board, level_
 path_t* minmax_path_arr[ARR_NUM] = { NULL };
 char backup_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
 
+void copy_board(){
+	int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			tmp_board[i][j] = game_board[i][j];
+		}
+	}
+	return tmp_board;
+}
+
+void copy_gameboard_to_tmpboard(){
+
+	int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			tmp_board[i][j] = game_board[i][j];
+		}
+	}
+}
+
+void copy_tmpboard_to_gameboard()
+{
+	int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			game_board[i][j] = tmp_board[i][j];
+		}
+	}
+}
+
 void path_on_board(path_t* path_pointer)
 {
 	char char_on_board;
@@ -25,7 +61,7 @@ void path_on_board(path_t* path_pointer)
 
 	tool_type = find_type(row, col); // tool type
 	tool_color = find_color(row, col); // tool color
-	char_on_board = tmp_board[row][col]; // whats in the board
+	char_on_board = game_board[row][col]; // whats in the board
 
 	while (path_pointer->head_position != NULL)
 	{
@@ -107,7 +143,7 @@ int scoring(){
 		{
 			if (use_tmp_board)
 				char_on_board = tmp_board[i][j];
-			if (use_tmp_board)
+			if (!use_tmp_board)
 				char_on_board = game_board[i][j];
 
 			if (char_on_board == WHITE_M)
@@ -142,16 +178,12 @@ void copy_board_to_gameboard(char board[BOARD_SIZE][BOARD_SIZE])
 
 int rec_minimax(char ** board, int depth, bool min_or_max)
 {
-	int bestValue, i, j, num;
-	i = 0;
-	j = 0;
-	num = 1;
+	int bestValue, i, j;
 
 	// stop condiotion - max_depth / turn is winner
-	if (depth >= (Minimax_Depth) || is_a_winner())
+	if (depth >= (Minimax_Depth))
 	{
 		bestValue = scoring();
-		return (bestValue);
 	}
 	else if (min_or_max)
 	{
@@ -162,9 +194,8 @@ int rec_minimax(char ** board, int depth, bool min_or_max)
 		for (i = 0; i < paths_number; i++)
 		{
 			// copy boards
-			boards[num] = game_board;
-			copy_board_to_gameboard(boards[num - 1]);
-			num++;
+			copy_tmpboard_to_gameboard();
+			copy_gameboard_to_tmpboard();
 
 			path_on_board(paths_arr[i]);
 
@@ -172,30 +203,32 @@ int rec_minimax(char ** board, int depth, bool min_or_max)
 			if (max > bestValue)
 			{
 				bestValue = max;
-				minmax_path_arr[num - 2] = paths_arr[i];
+				best_path = paths_arr[i]->head_position;
 			}
 		}
+		return (bestValue);
 	}
 	else
 	{
 		bestValue = 1000;
 		change_turn(turn);
+		print_board();
 		get_moves(turn);
 
 		for (i = 0; i < paths_number; i++)
 		{
-			boards[num] = game_board;
-			copy_board_to_gameboard(boards[num - 1]);
-			num++;
+			copy_tmpboard_to_gameboard();
+			copy_gameboard_to_tmpboard();
 
 			path_on_board(paths_arr[i]);
 			int min = rec_minimax(game_board, depth + 1, TRUE);
 			if (min < bestValue)
 			{
 				bestValue = min;
-				minmax_path_arr[num - 2] = paths_arr[i];
+				best_path = paths_arr[i]->head_position;
 			}
 		}
+		return (bestValue);
 	}
 }
 
@@ -205,14 +238,24 @@ void minimax()
 
 	if (DEBUG)
 	{
-		clear();
-		set_disc(WHITE_M, 0, 0, WHITE, MAN);
-		set_disc(BLACK_M, 1, 1, BLACK, MAN);
-		set_disc(BLACK_M, 3, 3, BLACK, MAN);
-		set_user_color(BLACK);
+		//clear();
+		set_user_color(WHITE);
+		set_minimax_depth(2);
+
+		//set_disc(WHITE_M, 6, 2, WHITE, MAN);
+		//set_disc(WHITE_M, 5, 5, WHITE, MAN);
+		//set_disc(BLACK_M, 3, 9, BLACK, MAN);
+		//set_disc(BLACK_M, 6, 4, BLACK, MAN);
+		//set_disc(BLACK_M, 5, 1, BLACK, MAN);
+		
+		//remove_disc(0, 0, turn);
+		//remove_disc(1, 1, turn);
+		//remove_disc(2, 2, turn);
+		//set_user_color(WHITE);
 		State = GAME_STATE;
-		first_updating_MenKings_coordinate();
+		//first_updating_MenKings_coordinate();
 		turn = COMPUTER;
+		
 	}
 	original_board();
 	print_board();
@@ -221,20 +264,31 @@ void minimax()
 	best_score = -1;
 	max_score = -1;
 	get_moves(turn);
-	for (i = 0; i < paths_number; i++)
+	copy_gameboard_to_tmpboard();
+	if (paths_number == 1)
 	{
-		path_on_board(paths_arr[i]);
-		best_score = rec_minimax(game_board, 0, FALSE);
-		if (best_score > max_score)
+		best_path = paths_arr[0]->head_position;
+	}
+	else
+	{
+		for (i = 0; i < paths_number; i++)
 		{
-			max_score = best_score;
+			copy_tmpboard_to_gameboard();
+			path_on_board(paths_arr[i]);
+			best_score = rec_minimax(game_board, 1, FALSE);
+			if (best_score > max_score)
+			{
+				max_score = best_score;
+			}
 		}
 	}
+	
 	return_player_to_original_satae();
 	copy_board_to_gameboard(backup_board);
 	print_board();
 
 }
+
 void print_tmp_board()
 {
 	int i, j;
@@ -266,7 +320,7 @@ type_e find_type(int row, int col)
 	if (use_tmp_board)
 		char_on_board = tmp_board[row][col];
 	if (!use_tmp_board)
-		char_on_board = tmp_board[row][col];
+		char_on_board = game_board[row][col];
 	if ((char_on_board == WHITE_M) || (char_on_board == BLACK_M))
 		tool_type = MAN;
 
@@ -284,7 +338,7 @@ color_e find_color(int row, int col)
 	if (use_tmp_board)
 		char_on_board = tmp_board[row][col];
 	if (!use_tmp_board)
-		char_on_board = tmp_board[row][col];
+		char_on_board = game_board[row][col];
 	if ((char_on_board == WHITE_M) || (char_on_board == BLACK_M))
 		tool_color = BLACK;
 

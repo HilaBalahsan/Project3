@@ -342,10 +342,6 @@ int parsing(char* input){
 	{
 		print_board(game_board);
 	}
-	else if (strstr(userinput[0], "minimax") != NULL)
-	{
-		minimax();
-	}
 
 }
 
@@ -458,18 +454,7 @@ void first_updating_MenKings_coordinate(){
 	}
 }
 
-char** copy_board(){
-	char tmp_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-	int i, j;
-	for (i = 0; i < BOARD_SIZE; i++)
-	{
-		for (j = 0; j < BOARD_SIZE; j++)
-		{
-			tmp_board[i][j] = game_board[i][j];
-		}
-	}
-	return tmp_board;
-}
+
 
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	coordinate_t* specific_link;

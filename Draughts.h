@@ -154,6 +154,7 @@ extern char level_7_board[BOARD_SIZE][BOARD_SIZE];
 #define BOARD_NUM  (7)
 #define ARR_NUM  (6)
 extern char** boards[BOARD_NUM];
+char backup_board[BOARD_SIZE][BOARD_SIZE];
 
 
 //Infrastructure Functions
@@ -202,7 +203,6 @@ void path_on_board(path_t* path_pointer);
 void back_up_players();
 void minimax();
 void return_player_to_original_satae();
-void copy_board_to_gameboard(char board[BOARD_SIZE][BOARD_SIZE]);
 int rec_minimax(char ** board, int depth, bool min_or_max);
 
 
@@ -234,7 +234,11 @@ coordinate_t* minMax(coordinate_t* node);
 int update_moves_arr(char* string);
 int move(int row, int col, char* string);
 void print_coordinate_list(coordinate_t* list_to_print);
-
-
+void copy_board();
+void copy_gameboard_to_tmpboard();
+void copy_tmpboard_to_gameboard();
+void change_turn(player_e turn);
+color_e find_color(int row, int col);
+type_e find_type(int row, int col);
 
 #endif
