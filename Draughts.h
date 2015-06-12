@@ -154,7 +154,6 @@ extern char level_7_board[BOARD_SIZE][BOARD_SIZE];
 #define BOARD_NUM  (7)
 #define ARR_NUM  (6)
 extern char** boards[BOARD_NUM];
-extern path_t* best_path;
 
 
 //Infrastructure Functions
@@ -176,8 +175,6 @@ void free_linked_list(coordinate_t *linkedlist);
 bool is_at_the_edge(int row, int col);
 bool compare_two_paths(coordinate_t* path_from_arr, coordinate_t* user_input_path);
 
-
-
 //Settings Functions
 int set_minimax_depth(int x);
 int clear();
@@ -188,7 +185,7 @@ void set_user_color(color_e color);
 
 
 //Game Functions
-int* scoring();                  //Uses the global board
+int scoring();                  //Uses the global board
 void moves(coordinate_t tool);
 coordinate_t* minMax(coordinate_t node, int depth, int a, int b, bool min_or_max);
 bool is_safe_slot; // checks if anamy diagonaly lcated around this slot

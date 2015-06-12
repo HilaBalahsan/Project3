@@ -12,6 +12,9 @@ int move(int row, int col, String coo_stream){
 	bool first_step;
 	path_t* user_input_path;
 
+	ch = 0;
+	user_input_path = NULL;
+
 	i = 0;
 	first_step = TRUE;
 	len = strlen(coo_stream);

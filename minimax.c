@@ -5,15 +5,7 @@
 
 
 
-char level_1_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-char level_2_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-char level_3_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-char level_4_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-char level_5_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-char level_6_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
-char level_7_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
 char** boards[BOARD_NUM] = { level_1_board, level_2_board, level_3_board, level_4_board, level_5_board, level_6_board, level_7_board };
-path_t* best_path = { NULL };
 path_t* minmax_path_arr[ARR_NUM] = { NULL };
 char backup_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
 
@@ -159,10 +151,8 @@ int rec_minimax(char ** board, int depth, bool min_or_max)
 	if (depth >= (Minimax_Depth) || is_a_winner())
 	{
 		bestValue = scoring();
-		best_path = minmax_path_arr[Minimax_Depth];
 		return (bestValue);
 	}
-
 	else if (min_or_max)
 	{
 		bestValue = -1000;
@@ -221,6 +211,7 @@ void minimax()
 		set_disc(BLACK_M, 3, 3, BLACK, MAN);
 		set_user_color(BLACK);
 		State = GAME_STATE;
+		first_updating_MenKings_coordinate();
 		turn = COMPUTER;
 	}
 	original_board();

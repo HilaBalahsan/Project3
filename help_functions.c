@@ -8,6 +8,8 @@ int check_and_build(int row,int col,int des_row, int des_col , path_t* user_path
 	char source_slot, des_slot;
 	color_e curr_color;
 
+	source_slot = 0;
+
 	if (turn == USER)
 	{
 		curr_color = user.color;
