@@ -9,6 +9,9 @@
 #define BLACK_K 'K'
 #define EMPTY ' '
 
+#define BOARD_NUM  (7)
+#define ARR_NUM  (6)
+
 #define BOARD_SIZE  (10)
 #define TRUE		(1)
 #define FALSE		(0)
@@ -137,6 +140,23 @@ extern path_t minmax_path;
 extern state_e State;
 extern bool use_tmp_board;
 
+
+extern player_t back_up_user;
+extern player_t back_up_computer;
+extern char backup_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_1_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_2_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_3_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_4_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_5_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_6_board[BOARD_SIZE][BOARD_SIZE];
+extern char level_7_board[BOARD_SIZE][BOARD_SIZE];
+#define BOARD_NUM  (7)
+#define ARR_NUM  (6)
+extern char** boards[BOARD_NUM];
+extern path_t* best_path;
+
+
 //Infrastructure Functions
 void print_board();
 void init_board();
@@ -180,6 +200,14 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t*st
 int get_king_moves(int curr_row, int curr_col);
 int check_and_build(int row, int col, int des_row, int des_col, bool first_step);
 
+void original_board();
+void path_on_board(path_t* path_pointer);
+void back_up_players();
+void minimax();
+void return_player_to_original_satae();
+void copy_board_to_gameboard(char board[BOARD_SIZE][BOARD_SIZE]);
+int rec_minimax(char ** board, int depth, bool min_or_max);
+
 
 int* adjacent_slot_is_enemy(int row, int col, type_e player);
 bool is_enemy_position(int row, int col);
@@ -199,11 +227,11 @@ bool is_a_winner();
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
 bool is_legal_move(path_t* user_input_path);
 void make_user_path(coordinate_t* move);
+void change_turn(player_e turn);
 
 
 
-
-int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max);
+//int recursive_minMax(node_t* node, int depth, int a, int b, bool min_or_max);
 coordinate_t* minMax(coordinate_t* node);
 //void free_tree(tree_t tree);
 int update_moves_arr(char* string);
