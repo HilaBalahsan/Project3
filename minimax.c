@@ -5,9 +5,44 @@
 
 
 
-char** boards[BOARD_NUM] = { level_1_board, level_2_board, level_3_board, level_4_board, level_5_board, level_6_board, level_7_board };
-path_t* minmax_path_arr[ARR_NUM] = { NULL };
+
 char backup_board[BOARD_SIZE][BOARD_SIZE] = { 0 };
+
+void copy_board(){
+	int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			tmp_board[i][j] = game_board[i][j];
+		}
+	}
+	return tmp_board;
+}
+
+void copy_gameboard_to_tmpboard(){
+
+	int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			tmp_board[i][j] = game_board[i][j];
+		}
+	}
+}
+
+void copy_tmpboard_to_gameboard()
+{
+	int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			game_board[i][j] = tmp_board[i][j];
+		}
+	}
+}
 
 void path_on_board(path_t* path_pointer)
 {
@@ -25,7 +60,7 @@ void path_on_board(path_t* path_pointer)
 
 	tool_type = find_type(row, col); // tool type
 	tool_color = find_color(row, col); // tool color
-	char_on_board = tmp_board[row][col]; // whats in the board
+	char_on_board = game_board[row][col]; // whats in the board
 
 	while (path_pointer->head_position != NULL)
 	{
@@ -47,7 +82,9 @@ void path_on_board(path_t* path_pointer)
 
 void original_board()
 {
+	//char** backup_board;
 	int i, j;
+
 	for (i = 0; i < BOARD_SIZE; i++)
 	{
 		for (j = 0; j < BOARD_SIZE; j++)
@@ -55,6 +92,8 @@ void original_board()
 			backup_board[i][j] = game_board[i][j];
 		}
 	}
+
+	//return (backup_board);
 }
 
 void back_up_players()
@@ -107,7 +146,7 @@ int scoring(){
 		{
 			if (use_tmp_board)
 				char_on_board = tmp_board[i][j];
-			if (use_tmp_board)
+			if (!use_tmp_board)
 				char_on_board = game_board[i][j];
 
 			if (char_on_board == WHITE_M)
@@ -127,7 +166,52 @@ int scoring(){
 		return (black_score - white_score);
 }
 
-void copy_board_to_gameboard(char board[BOARD_SIZE][BOARD_SIZE])
+char** copy_game_board()
+{
+	int i, j;
+	char board[BOARD_SIZE][BOARD_SIZE] = { 0 };
+	for (i = 0; i < user.num_of_men; i ++)
+	{
+		if (user.color == WHITE)
+			board[user.men_coordinate->row][user.men_coordinate->col] = WHITE_M;
+		else
+			board[user.men_coordinate->row][user.men_coordinate->col] = BLACK_M;
+		user.men_coordinate = user.men_coordinate->next_coordinate;
+	}
+
+	for (i = 0; i < user.num_of_kings; i++)
+	{
+		if (computer.color == WHITE)
+			board[computer.men_coordinate->row][computer.men_coordinate->col] = WHITE_M;
+		else
+			board[computer.men_coordinate->row][computer.men_coordinate->col] = BLACK_M;
+		computer.men_coordinate = computer.men_coordinate->next_coordinate;
+	}
+
+	for (i = 0; i < user.num_of_kings; i++)
+	{
+		if (user.color == WHITE)
+			board[user.kings_coordinate->row][user.kings_coordinate->col] = WHITE_M;
+		else
+			board[user.kings_coordinate->row][user.kings_coordinate->col] = BLACK_M;
+
+		user.kings_coordinate = user.kings_coordinate->next_coordinate;
+	}
+	
+	for (i = 0; i < user.num_of_kings; i++)
+	{
+		if (computer.color == WHITE)
+			board[computer.kings_coordinate->row][computer.kings_coordinate->col] = WHITE_M;
+		else
+			board[computer.kings_coordinate->row][computer.kings_coordinate->col] = BLACK_M;
+
+		computer.kings_coordinate = computer.kings_coordinate->next_coordinate;
+	}
+
+	return (board);
+}
+
+void copy_board_to_gameboard(board_t board)
 {
 	int i, j;
 
@@ -142,77 +226,120 @@ void copy_board_to_gameboard(char board[BOARD_SIZE][BOARD_SIZE])
 
 int rec_minimax(char ** board, int depth, bool min_or_max)
 {
-	int bestValue, i, j, num;
-	i = 0;
-	j = 0;
-	num = 1;
+	int bestValue, i, j;
+//	char board[BOARD_SIZE][BOARD_SIZE];
+	path_t** clone_path;
+	clone_path = (path_t**)calloc(paths_number, sizeof(path_t*));
+
+	
 
 	// stop condiotion - max_depth / turn is winner
-	if (depth >= (Minimax_Depth) || is_a_winner())
+	if (depth >= (Minimax_Depth))
 	{
 		bestValue = scoring();
-		return (bestValue);
 	}
 	else if (min_or_max)
 	{
 		bestValue = -1000;
+		path_t** clone_path;
+		char** board;
+
 		change_turn(turn);
 		get_moves(turn);
 
-		for (i = 0; i < paths_number; i++)
+		board = (char**)malloc(sizeof(char*));
+		clone_path = (path_t**)calloc(paths_number, sizeof(path_t*));
+		if ((clone_path == NULL) || (board == NULL))
 		{
-			// copy boards
-			boards[num] = game_board;
-			copy_board_to_gameboard(boards[num - 1]);
-			num++;
+			printf("Error: fatal error during memory alocation, exiting.\n");
+			return -1;
+		}
 
-			path_on_board(paths_arr[i]);
+		board = copy_game_board();
+		clone_path = clone_path_arr();
+		int n = paths_number;
+		char** board;
+		board = (char**)malloc(sizeof(char*));
+		board = copy_game_board();
+		for (i = 0; i < n; i++)
+		{
+			copy_board_to_gameboard(board);
+
+			path_on_board(clone_path[i]);
 
 			int max = rec_minimax(game_board, depth + 1, FALSE);
 			if (max > bestValue)
 			{
 				bestValue = max;
-				minmax_path_arr[num - 2] = paths_arr[i];
+				best_path = paths_arr[i]->head_position;
 			}
+			
 		}
+		return (bestValue);
 	}
 	else
 	{
 		bestValue = 1000;
+		path_t** clone_path;
+		char** board;
+
 		change_turn(turn);
 		get_moves(turn);
-
-		for (i = 0; i < paths_number; i++)
+		
+		board = (char**)malloc(sizeof(char*));
+		clone_path = (path_t**)calloc(paths_number, sizeof(path_t*));
+		if ((clone_path == NULL) || (board == NULL))
 		{
-			boards[num] = game_board;
-			copy_board_to_gameboard(boards[num - 1]);
-			num++;
+			printf("Error: fatal error during memory alocation, exiting.\n");
+			return -1;
+		}
 
-			path_on_board(paths_arr[i]);
+		board = copy_game_board();
+		clone_path = clone_path_arr();
+		int n = paths_number;
+		char** board;
+		board = (char**)malloc(sizeof(char*));
+		board = copy_game_board();
+		for (i = 0; i < n; i++)
+		{
+			copy_board_to_gameboard(board);
+
+			path_on_board(clone_path[i]);
 			int min = rec_minimax(game_board, depth + 1, TRUE);
 			if (min < bestValue)
 			{
 				bestValue = min;
-				minmax_path_arr[num - 2] = paths_arr[i];
+				best_path = clone_path[i]->head_position;
 			}
 		}
+		return (bestValue);
 	}
 }
 
 void minimax()
 {
-	int i, best_score, max_score;
+	int i, best_score, max_score, num;
+	char** board;
+	path_t** clone_path;
+	clone_path = (path_t**)calloc(paths_number, sizeof(path_t*));
+	if (clone_path == NULL)
+	{
+		printf("Error: fatal error during memory alocation, exiting.\n");
+		return -1;
+	}
+	clone_path = NULL;
+	num = 0;
 
 	if (DEBUG)
 	{
-		clear();
-		set_disc(WHITE_M, 0, 0, WHITE, MAN);
-		set_disc(BLACK_M, 1, 1, BLACK, MAN);
-		set_disc(BLACK_M, 3, 3, BLACK, MAN);
-		set_user_color(BLACK);
+		//clear();
+		set_user_color(WHITE);
+		set_minimax_depth(2);
+
 		State = GAME_STATE;
-		first_updating_MenKings_coordinate();
+		//first_updating_MenKings_coordinate();
 		turn = COMPUTER;
+
 		get_moves(turn);
 		path_t** newpaths = clone_path_arr();
 	}
@@ -223,20 +350,33 @@ void minimax()
 	best_score = -1;
 	max_score = -1;
 	get_moves(turn);
-	for (i = 0; i < paths_number; i++)
+	clone_path = clone_path_arr();
+	num = paths_number;
+	board = copy_game_board();
+	if (paths_number == 1)
 	{
-		path_on_board(paths_arr[i]);
-		best_score = rec_minimax(game_board, 0, FALSE);
-		if (best_score > max_score)
+		best_path = paths_arr[0]->head_position;
+	}
+	else
+	{
+		for (i = 0; i < num; i++)
 		{
-			max_score = best_score;
+			copy_board_to_gameboard(board);
+			path_on_board(clone_path[i]);
+			best_score = rec_minimax(game_board, 1, FALSE);
+			if (best_score > max_score)
+			{
+				max_score = best_score;
+			}
 		}
 	}
+	
 	return_player_to_original_satae();
 	copy_board_to_gameboard(backup_board);
 	print_board();
 
 }
+
 void print_tmp_board()
 {
 	int i, j;
@@ -268,7 +408,7 @@ type_e find_type(int row, int col)
 	if (use_tmp_board)
 		char_on_board = tmp_board[row][col];
 	if (!use_tmp_board)
-		char_on_board = tmp_board[row][col];
+		char_on_board = game_board[row][col];
 	if ((char_on_board == WHITE_M) || (char_on_board == BLACK_M))
 		tool_type = MAN;
 
@@ -286,7 +426,7 @@ color_e find_color(int row, int col)
 	if (use_tmp_board)
 		char_on_board = tmp_board[row][col];
 	if (!use_tmp_board)
-		char_on_board = tmp_board[row][col];
+		char_on_board = game_board[row][col];
 	if ((char_on_board == WHITE_M) || (char_on_board == BLACK_M))
 		tool_color = BLACK;
 

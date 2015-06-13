@@ -258,6 +258,18 @@ coordinate_t* clone_linkedline(coordinate_t *to_clone){
 	return cloned_list;
 }
 
+path_t** clone_path_arr(){
+	path_t** cloned_path_arr;
+	int i;
+
+	cloned_path_arr = (path_t**)calloc(paths_number, sizeof(path_t*));
+	for (i = 0; i < paths_number; i++)
+	{
+		cloned_path_arr[i] = clone_path(paths_arr[i]);
+	}
+
+	return cloned_path_arr;
+}
 path_t* clone_path(path_t* original_path)
 {
 	bool check_cloned_positions;
