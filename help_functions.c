@@ -4,6 +4,19 @@
 #include <string.h>
 
 
+path_t** clone_path_arr(){
+	path_t** cloned_path_arr;
+	int i;
+
+	cloned_path_arr = (path_t**)calloc(paths_number, sizeof(path_t*));
+	for (i = 0; i < paths_number; i++)
+	{
+		cloned_path_arr[i] = clone_path(paths_arr[i]);
+	}
+	
+	return cloned_path_arr;
+}
+
 int check_and_build(int row,int col,int des_row, int des_col , path_t* user_path_input){
 	char source_slot, des_slot;
 	color_e curr_color;

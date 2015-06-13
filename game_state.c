@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-int move(int row, int col, String coo_stream){
+int move(int row, int col, String coo_stream ){
 
 	char ch;
 	int len , i , des_col , des_row , return_val;

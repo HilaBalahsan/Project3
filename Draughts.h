@@ -174,6 +174,7 @@ void free_path(path_t* path);
 void free_linked_list(coordinate_t *linkedlist);
 bool is_at_the_edge(int row, int col);
 bool compare_two_paths(coordinate_t* path_from_arr, coordinate_t* user_input_path);
+path_t**  clone_path_arr();
 
 //Settings Functions
 int set_minimax_depth(int x);

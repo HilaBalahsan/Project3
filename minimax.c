@@ -213,6 +213,8 @@ void minimax()
 		State = GAME_STATE;
 		first_updating_MenKings_coordinate();
 		turn = COMPUTER;
+		get_moves(turn);
+		path_t** newpaths = clone_path_arr();
 	}
 	original_board();
 	print_board();
