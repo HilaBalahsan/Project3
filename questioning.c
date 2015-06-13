@@ -7,16 +7,15 @@ bool is_legal_move(path_t* user_input_path)
 {
 	bool comparison;
 	int i;
-	i = 0;
 	comparison = FALSE;
-	get_moves(turn);
+	get_moves(Turn);
 	if (paths_number == 0)
 	{
 		printf(ILLEGAL_MOVE);
 	}
 	else
 	{
-		for (i; i < paths_number; i++)
+		for(i = 0; i < paths_number; i++)
 		{
 			comparison = compare_two_paths(paths_arr[i], user_input_path);
 			if (comparison)
@@ -59,32 +58,34 @@ bool is_at_the_edge(int row, int col){
 	return edge;
 }
 
-bool is_a_winner(){
+bool is_a_winner(player_e turn){
 	bool winner = FALSE;
 	coordinate_t* temp_king, *temp_man;
 
 	if (turn == COMPUTER)
 	{
+		temp_king = creat_linkedList_pointer(KING, USER);
+		temp_man = creat_linkedList_pointer(MAN, USER);
+	}
+	else
+	{
 		temp_king = creat_linkedList_pointer(KING, COMPUTER);
 		temp_man = creat_linkedList_pointer(MAN, COMPUTER);
 	}
-	else
+	if ((temp_king == NULL) && (temp_man == NULL)) // enemy don't have any tools.
 	{
-		temp_king = creat_linkedList_pointer(KING, MAN);
-		temp_man = creat_linkedList_pointer(MAN, MAN);
-	}
-	if ((temp_king == NULL) && (temp_man == NULL))
-	{
-		winner == TRUE;
+		winner = TRUE;
 	}
 	else
 	{
-		get_moves(turn);
+		get_moves(turn^1);
 		if (paths_arr[0] == NULL)
 		{
-			winner == TRUE;
+			winner = TRUE;
 		}
 	}
+
+	return winner;
 }
 
 bool is_valid_position(int row, int col){
@@ -114,7 +115,7 @@ bool is_valid_initialization()
 {
 	// define
 	bool b;
-	int num_of_white, num_of_black, total_discs, i, j;
+	int num_of_white, num_of_black;
 
 	// initalize
 	b = TRUE;
@@ -129,9 +130,7 @@ bool is_valid_initialization()
 		num_of_black = user.num_of_men + user.num_of_kings;
 	}
 
-	total_discs = num_of_white + num_of_black;
-
-	if (((num_of_white != 20) || (num_of_black != 20)) && (total_discs != 40))
+	if ((num_of_white > 20) || (num_of_black > 20))
 	{
 		b = FALSE;
 	}
@@ -149,7 +148,7 @@ bool is_enemy_position(int row, int col){
 
 	if ((is_valid_position(row, col)) && (game_board[row][col] != EMPTY))
 	{
-		if (turn == USER)
+		if (Turn == USER)
 		{
 			mine = user.color;
 		}
@@ -176,10 +175,9 @@ bool is_enemy_position(int row, int col){
 	return enemy;
 }
 
-bool is_become_king(int row, int col){
+bool is_become_king(int row, int col, player_e turn){
 
 	bool king;
-	char slot;
 	color_e mine;
 
 	king = FALSE;

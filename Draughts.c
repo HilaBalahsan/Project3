@@ -40,69 +40,76 @@ int main(){
 		}
 	}
 	//FUNCTION THAT FREES ALL	
-	print_board(game_board);
 	return 1;
 }
 
 int main_loop(){                     //I changed here.
 	String line;
-
-	if (DEBUG)
-	{
-		turn = COMPUTER;
-		minimax();
-	}
-
-
+	int retVal;
 	while (State == GAME_STATE)
 	{
-		if (turn == USER)
+		if (Turn == USER)
 		{
 			printf(ENTER_YOUR_MOVE);
 			line = readline();
-			parsing(line);
 			if ((strcmp(line, "quit")) == 0) // zero for equal.
 			{
 				free(line);
 				break;
 			}
-			turn = COMPUTER;
+			retVal = parsing(line);
+			if (retVal == -1)
+			{
+				//Error..
+			}
+			else if (retVal == 2)
+			{
+				continue;
+			}
 		}
 		else
 		{
-			get_moves(COMPUTER);
-			for (int i = 0; i < paths_number; i++)
-			{
-				//				tmp_path = minMax(paths_arr[i]->head_position);
-				//				if (tmp_path->val > best_path->val)
-				//					best_path = tmp_path;
-			}
-			turn = USER;
+			minimax();
 		}
 		print_board();
-		if (is_a_winner)
-		{
-			printf("%d player wins!\n", turn);
-		}
-	}
-}
 
-int update_moves_arr(char* string)
-{
-	if (move_number == capacity)
-	{
-		move_arr = (int**)realloc(paths_arr, sizeof(int) * 2);
-
-		if (move_arr == NULL)
+		if (is_a_winner(Turn))
 		{
-			printf("Error: fatal error during memory alocation, exiting.\n");
-			return -1;
+			switch (Turn)
+			{
+			case USER:
+				if (user.color == WHITE)
+				{
+					printf("White player wins!");
+				}
+				else
+				{
+					printf("Black player wins!");
+				}
+				break;
+			case COMPUTER:
+				if (computer.color == WHITE)
+				{
+					printf("White player wins!");
+				}
+				else
+				{
+					printf("Black player wins!");
+				}
+				break;
+			default:
+				break;
+			}
+
+			return 1;
 		}
+
+		Turn = Turn ^ 1;
 	}
-	move_arr[move_number] = string;
-	move_number++;
+	
 	return 1;
 }
+
 
 void free_node_list(node_t *linkedlist){
 	node_t *iterator;
@@ -192,7 +199,7 @@ int parsing(char* input){
 	color_e tool_color;
 	type_e tool_type;
 	char ch_on_board;
-	char* userinput[4] = { 0 }, *inputCopy, *token, *type;
+	char* userinput[4] = { 0 }, *inputCopy, *token;
 
 	// Initialize
 	depth = 1;
@@ -226,14 +233,14 @@ int parsing(char* input){
 		return 1;
 	}
 
-	if (strstr(userinput[0], "minimax_depth") != NULL)
+	if (strcmp(userinput[0], "minimax_depth") == 0)
 	{
 		depth = atoi(userinput[1]);
 		set_minimax_depth(depth);
 	}
-	else if (strstr(userinput[0], "user_color") != NULL)
+	else if (strcmp(userinput[0], "user_color") == 0)
 	{
-		if ((strstr(userinput[1], "black") != NULL) || (strstr(userinput[1], "Black") != NULL) || (strstr(userinput[1], "BLACK") != NULL))
+		if ((strcmp(userinput[1], "black") == 0) || (strcmp(userinput[1], "Black") == 0) || (strcmp(userinput[1], "BLACK") == 0))
 		{
 			tool_color = BLACK;
 		}
@@ -241,7 +248,7 @@ int parsing(char* input){
 		set_user_color(tool_color); // calculate depth
 	}
 
-	else if (strstr(userinput[0], "clear") != NULL)
+	else if (strcmp(userinput[0], "clear") == 0)
 	{
 		return_val = clear();
 		if (return_val == -1)
@@ -249,7 +256,7 @@ int parsing(char* input){
 			printf("Failed to clear board .\n");
 		}
 	}
-	else if (strstr(userinput[0], "set") != NULL)
+	else if (strcmp(userinput[0], "set") == 0)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 		check_if_10 = (int)userinput[1][4] - 48;
@@ -262,10 +269,10 @@ int parsing(char* input){
 			row = (int)userinput[1][3] - 49; // <y>
 		}
 
-		if (strstr(userinput[2], "black"))
+		if (strcmp(userinput[2], "black") == 0)
 		{
 			tool_color = BLACK;
-			if (strstr(userinput[3], "m"))
+			if (strcmp(userinput[3], "m") == 0)
 			{
 				tool_type = MAN;
 				ch_on_board = BLACK_M;
@@ -279,7 +286,7 @@ int parsing(char* input){
 		else
 		{
 			tool_color = WHITE;
-			if (strstr(userinput[3], "m"))
+			if (strcmp(userinput[3], "m") == 0)
 			{
 				tool_type = MAN;
 				ch_on_board = WHITE_M;
@@ -297,7 +304,7 @@ int parsing(char* input){
 			printf("Failed to set tool on board .\n");
 		}
 	}
-	else if (strstr(userinput[0], "rm") != NULL)
+	else if (strcmp(userinput[0], "rm") == 0)
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 
@@ -324,25 +331,59 @@ int parsing(char* input){
 			}
 		}
 	}
-	else if (strstr(userinput[0], "get_moves") != NULL)
+	else if (strcmp(userinput[0], "get_moves") == 0)
 	{
 		if (State == GAME_STATE)
 		{
-			return_val = get_moves(turn);
+			return_val = get_moves(Turn);
+			print_path_arr();
+			free(input);
+			free(inputCopy);
+			return 2;
 		}
 	}
-	else if (strstr(userinput[0], "start") != NULL)
+	else if (strcmp(userinput[0], "start") == 0)
 	{
-		if (turn == SETTINGS_STATE)
+		if (State == SETTINGS_STATE)
 		{
 			return_val = start();
 		}
 	}
-	else if (strstr(userinput[0], "print") != NULL)
+	else if (strcmp(userinput[0], "print") == 0)
 	{
-		print_board(game_board);
+		print_board();
+	}
+	else if (strcmp(userinput[0], "move") == 0)
+	{
+		col = alpha_to_num((int)userinput[1][1]); // <x>
+
+		check_if_10 = (int)userinput[1][4] - 48;
+		if (check_if_10 == 0)
+		{
+			row = 9;
+		}
+		if (check_if_10 != 0)
+		{
+			row = (int)userinput[1][3] - 49; // <y>
+		}
+
+		return_val = move(row, col, userinput[3]);
+		
+		if (return_val == 2)
+		{
+			free(input);
+			free(inputCopy);
+			return 2;
+		}
 	}
 
+	free(input);
+	free(inputCopy);
+	if (return_val == -1)
+	{
+		return -1;
+	}
+	return 1;
 }
 
 void init_board(){
@@ -373,14 +414,23 @@ void init_board(){
 }
 
 void first_updating_MenKings_coordinate(){
-	coordinate_t *list_to_build, *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
-	int i, j, return_val;
+	coordinate_t *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
+	int i, j;
 	char slot;
-	list_to_build = NULL;
 	user_soldier = NULL;
 	user_kings = NULL;
 	comp_soldiers = NULL;
 	copm_kings = NULL;
+
+	user.num_of_kings = 0;
+	user.num_of_men = 0;
+	computer.num_of_kings = 0;
+	computer.num_of_men = 0;
+	
+	free_linked_list(&user.kings_coordinate);
+	free_linked_list(&user.men_coordinate);
+	free_linked_list(&computer.kings_coordinate);
+	free_linked_list(&computer.men_coordinate);
 
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++)
@@ -458,28 +508,18 @@ void first_updating_MenKings_coordinate(){
 
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	coordinate_t* specific_link;
-	specific_link = (coordinate_t*)malloc(sizeof(coordinate_t));
-	if (specific_link == NULL)
-	{
-		printf("Error: fatal error during memory allocation, exiting.\n");
-		return;
-	}
-	specific_link->next_coordinate = NULL;
-	specific_link->previous_coordinate = NULL;
 
-	while (list_to_change != NULL)
+	specific_link = list_to_change;
+	while (specific_link != NULL)
 	{
-		if ((list_to_change->col == col) && (list_to_change->row == row))
+		if ((specific_link->col == col) && (specific_link->row == row))
 		{
-			specific_link = list_to_change;
-			break;
+			return specific_link;
 		}
+
+		specific_link = specific_link->next_coordinate;
 	}
-	if (list_to_change == NULL)
-	{
-		printf("Error:Tool is not exist.\n");
-		return;
-	}
+
 	return specific_link;
 }
 
@@ -512,22 +552,26 @@ coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 }
 
 bool delete_link_from_linked_list(coordinate_t* node_to_delete){
+	coordinate_t* temp;
 	if (node_to_delete->previous_coordinate == NULL)
 	{
-		if (node_to_delete->next_coordinate == NULL)
-			//Only element in list
+		if (node_to_delete->next_coordinate == NULL) //Only element in list
 		{
 			free(node_to_delete);
 			return TRUE;
 		}
-		else
+		else //first but not last.
 		{
 			node_to_delete->col = node_to_delete->next_coordinate->col;
-			node_to_delete->previous_coordinate = node_to_delete->next_coordinate->previous_coordinate;
-			node_to_delete->next_coordinate = node_to_delete->next_coordinate->next_coordinate;
 			node_to_delete->row = node_to_delete->next_coordinate->row;
-			node_to_delete->val = node_to_delete->next_coordinate->val;
-			delete_link_from_linked_list(node_to_delete->next_coordinate);
+			temp = node_to_delete->next_coordinate;
+			node_to_delete->next_coordinate = node_to_delete->next_coordinate->next_coordinate;
+			if (node_to_delete->next_coordinate != NULL)
+			{
+				node_to_delete->next_coordinate->previous_coordinate = node_to_delete;
+			}
+
+			free(temp);
 		}
 	}
 	else if (node_to_delete->next_coordinate == NULL)
@@ -546,12 +590,10 @@ bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 
 coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 
-	coordinate_t *new_coordinate, *current_coordinate, *prev_coordinate, *temp_coordinate;
+	coordinate_t *current_coordinate, *temp_coordinate;
 
 	//Initializing
-	new_coordinate = NULL;
 	current_coordinate = NULL;
-	prev_coordinate = NULL;
 	temp_coordinate = NULL;
 
 	//Buildind the coordinate list
@@ -559,7 +601,7 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	if (current_coordinate == NULL)
 	{
 		printf("Error: fatal error during memory allocation, exiting.\n");
-		return -1;
+		return NULL;
 	}
 
 	//initializing node
@@ -577,7 +619,6 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	else
 	{
 		temp_coordinate = head_coordinate;
-		//prev_coordinate = head_coordinate;
 		while (temp_coordinate->next_coordinate != NULL)
 		{
 			if (temp_coordinate == head_coordinate)
@@ -587,7 +628,6 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 			else
 			{
 				temp_coordinate = temp_coordinate->next_coordinate;
-				//prev_coordinate = prev_coordinate->next_coordinate;
 			}
 		}
 		temp_coordinate->next_coordinate = current_coordinate;

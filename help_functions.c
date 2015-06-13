@@ -4,11 +4,12 @@
 #include <string.h>
 
 
-path_t** clone_path_arr(){
+path_t** clone_path_arr()	{
+
 	path_t** cloned_path_arr;
 	int i;
 
-	cloned_path_arr = (path_t**)calloc(paths_number, sizeof(path_t*));
+	cloned_path_arr = (path_t**)calloc(capacity, sizeof(path_t*));
 	for (i = 0; i < paths_number; i++)
 	{
 		cloned_path_arr[i] = clone_path(paths_arr[i]);
@@ -17,64 +18,9 @@ path_t** clone_path_arr(){
 	return cloned_path_arr;
 }
 
-int check_and_build(int row,int col,int des_row, int des_col , path_t* user_path_input){
-	char source_slot, des_slot;
-	color_e curr_color;
-
-	source_slot = 0;
-
-	if (turn == USER)
-	{
-		curr_color = user.color;
-	}
-	else
-	{
-		curr_color = computer.color;
-	}
-
-	if ((des_row == -1) && (des_col == -1))
-	{
-		if ((source_slot == WHITE_M) || (source_slot == WHITE_K))
-		{
-			if (curr_color == BLACK)
-			{
-				printf(NO_DICS);
-				return -1;
-			}
-		}
-		else
-		{
-			if (curr_color == WHITE)
-			{
-				printf(NO_DICS);
-				return -1;
-			}
-		}
-		user_path_input->head_position = updating_linked_list(row, col, user_path_input);
-		user_path_input->last_coordinate[0] = row;
-		user_path_input->last_coordinate[1] = col;
-	}
-
-	source_slot = game_board[row][col];
-	des_slot = game_board[des_row][des_col];
-
-	if (!is_valid_position(des_row, des_col))
-	{
-		printf(WRONG_POSITION);
-		return -1;
-	}
-	else
-	{
-		user_path_input->head_position = updating_linked_list(des_row, des_col, user_path_input);
-		user_path_input->last_coordinate[0] = des_row;
-		user_path_input->last_coordinate[1] = des_col;
-	}
-
-}
-
 bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 	bool equal = TRUE;
-
+	coordinate_t *path, *userPath;
 	if ((path_from_arr->last_coordinate[0] != user_input_path->last_coordinate[0]) ||
 		(path_from_arr->last_coordinate[1] != user_input_path->last_coordinate[1]))
 	{
@@ -82,68 +28,30 @@ bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 	}
 	else
 	{
+		path = path_from_arr->head_position;
+		userPath = user_input_path->head_position;
 
-	}
-
-
-	while ((path_from_arr->head_position != NULL) && (user_input_path->head_position != NULL) && equal)
-	{
-		if ((path_from_arr->head_position->row == user_input_path->head_position->row) &&
-			(path_from_arr->head_position->col == user_input_path->head_position->col))
+		while ((path != NULL) && (userPath != NULL) && equal)
+		{
+			if ((path->row == userPath->row) &&
+				(path->col == userPath->col))
 			{
-			path_from_arr->head_position = path_from_arr->head_position->next_coordinate;
-			path_from_arr->head_position = path_from_arr->head_position->next_coordinate;
+				path = path->next_coordinate;
+				userPath = userPath->next_coordinate;
 			}
 			else
 			{
 				equal = FALSE;
 			}
+		}
 	}
-
 	return equal;
-}
-
-void make_user_path(coordinate_t* move)
-{
-	int row, col;
-	char slot;
-	color_e enemy_color;
-	coordinate_t* link_do_delete;
-
-	game_board[move->row][move->col] = EMPTY;
-	move = move->next_coordinate;
-	enemy_color = computer.color;
-
-	while (move != NULL)
-	{
-		row = move->row;
-		col = move->col;
-
-		if (is_empty_position(row, col))
-		{
-			move = move->next_coordinate;
-		}
-		else
-		{
-			slot = game_board[row][col];
-			if ((slot == BLACK_M) || (slot == WHITE_M))
-			{
-				computer.num_of_men--;
-				link_do_delete = pointer_to_link(row, col, computer.men_coordinate);
-			}
-			else
-			{
-				computer.num_of_kings--;
-				link_do_delete = pointer_to_link(row, col, computer.kings_coordinate);
-			}
-			delete_link_from_linked_list(link_do_delete);
-		}
-	}
-
 }
 
 int update_paths_array(path_t* new_path)
 {
+	int index;
+
 	if (new_path == NULL)
 	{
 		return -1;
@@ -163,17 +71,22 @@ int update_paths_array(path_t* new_path)
 	}
 	else
 	{
-		free_path(new_path);
+		free_path(&new_path);
 	}
 
 	if (paths_number == capacity)
 	{
-		paths_arr = (path_t**)realloc(paths_arr, sizeof(path_t) * 2);
+		capacity = capacity * 2;
 
+		paths_arr = (path_t**)realloc(paths_arr, sizeof(path_t*) * capacity);
 		if (paths_arr == NULL)
 		{
 			printf("Error: fatal error during memory alocation, exiting.\n");
 			return -1;
+		}
+		for (index = paths_number; index < capacity; index++)
+		{
+			paths_arr[index] = NULL;
 		}
 	}
 	return 1;
@@ -216,29 +129,38 @@ void print_coordinate_list(coordinate_t* list_to_print)
 void print_single_path(path_t* path){
 	coordinate_t* iterator;
 	iterator = path->head_position;
-	char col, last_coo_col;
-	int row, last_coo_row;
+	char col;
+	int row, colAvg, rowAvg;
+	bool isSrc = TRUE,isSec = TRUE;
 
-	last_coo_col = num_to_alpha(path->last_coordinate[1]);
-	last_coo_row = (path->last_coordinate[0]) + 1;
-
-	if (iterator != NULL)
+	while (iterator != NULL)
 	{
 		col = num_to_alpha(iterator->col);
 		row = (iterator->row) + 1;
-
-		printf("move <%c,%d> to <%c,%d>[", col, row, last_coo_col, last_coo_row);
-		//iterator = iterator->next_coordinate;
-
-		while (iterator->next_coordinate != NULL)
+		if (isSrc)
 		{
-			printf("<%c,%d> ", col, row);
-			iterator = iterator->next_coordinate;
-			col = num_to_alpha(iterator->col);
-			row = (iterator->row) + 1;
+			isSrc = FALSE;
+			printf("<%c,%d> to ", col, row);
 		}
-		printf("<%c,%d>]", last_coo_col, last_coo_row);
+		else if (iterator->next_coordinate == NULL)
+		{
+			printf("<%c,%d>", col, row);
+		}
+		else
+		{
+			colAvg = (iterator->previous_coordinate->col + iterator->col) / 2;
+			rowAvg = (iterator->previous_coordinate->row + iterator->row) / 2;
+
+			if (!((colAvg == iterator->col) || (rowAvg == iterator->row)
+				|| (colAvg == iterator->previous_coordinate->col)
+				|| (rowAvg == iterator->previous_coordinate->row)))
+			{
+				printf("<%c,%d>", col, row);
+			}
+		}
+		iterator = iterator->next_coordinate;
 	}
+	
 	printf("\n");
 }
 
@@ -258,21 +180,8 @@ coordinate_t* clone_linkedline(coordinate_t *to_clone){
 	return cloned_list;
 }
 
-path_t** clone_path_arr(){
-	path_t** cloned_path_arr;
-	int i;
-
-	cloned_path_arr = (path_t**)calloc(paths_number, sizeof(path_t*));
-	for (i = 0; i < paths_number; i++)
-	{
-		cloned_path_arr[i] = clone_path(paths_arr[i]);
-	}
-
-	return cloned_path_arr;
-}
 path_t* clone_path(path_t* original_path)
 {
-	bool check_cloned_positions;
 	path_t* cloned_path;
 
 	cloned_path = (path_t*)malloc(sizeof(path_t));
@@ -296,31 +205,38 @@ void initialize_step(step_t* step){
 	step->is_potntial_step = 0;
 }
 
-void free_linked_list(coordinate_t *linkedlist)
+void free_linked_list(coordinate_t **linkedlist)
 {
-	//coordinate_t *iterator;
-
-	//iterator = linkedlist;
-	while (linkedlist->next_coordinate != NULL)
+	if ((*linkedlist) == NULL)
 	{
-		if (linkedlist->previous_coordinate != NULL)
-		{
-			free(linkedlist->previous_coordinate);
-		}
-		linkedlist = linkedlist->next_coordinate;
+		return;
 	}
-	free(linkedlist);
-	linkedlist = NULL;
+	//iterator = linkedlist;
+	while ((*linkedlist)->next_coordinate != NULL)
+	{
+		if ((*linkedlist)->previous_coordinate != NULL)
+		{
+			free((*linkedlist)->previous_coordinate);
+		}
+		(*linkedlist) = (*linkedlist)->next_coordinate;
+	}
+	free((*linkedlist));
+	*linkedlist = NULL;
 }
 
-void free_path(path_t* path)
+void free_path(path_t** path)
 {
-	if (path->head_position != NULL)
+	if ((*path) == NULL)
 	{
-		free_linked_list(path->head_position);
+		return;
 	}
-	free(path);
-	path = NULL;
+
+	if ((*path)->head_position != NULL)
+	{
+		free_linked_list(&((*path)->head_position));
+	}
+	free((*path));
+	*path = NULL;
 }
 
 void free_paths_arr(bool needToDeleteArr)
@@ -331,48 +247,16 @@ void free_paths_arr(bool needToDeleteArr)
 	{
 		for (i = 0; i < paths_number; i++)
 		{
-			free_path(paths_arr[i]);
+			free_path(&paths_arr[i]);
 			paths_arr[i] = NULL;
 		}
 	}
 	paths_number = 0;
 	if (needToDeleteArr && (paths_arr != NULL))
 	{
-	//	free(paths_arr);
+		free(paths_arr);
 	}
 }
 
-int* adjacent_slot_is_enemy(int row, int col){
 
-	int four_diraction[4] = { FALSE };   //up-right , down-right , down-left , up-left -ClockWise
-	color_e enemy_color;
-
-	if (turn == USER)
-	{
-		enemy_color = computer.color;
-	}
-	else
-	{
-		enemy_color = user.color;
-	}
-	//Not good need to check one more slot
-	if (is_enemy_position(row + 1, col + 1))
-	{
-		four_diraction[0] = TRUE;
-	}
-	if (is_enemy_position(row - 1, col + 1))
-	{
-		four_diraction[1] = TRUE;
-	}
-	if (is_enemy_position(row - 1, col - 1))
-	{
-		four_diraction[2] = TRUE;
-	}
-	if (is_enemy_position(row + 1, col - 1))
-	{
-		four_diraction[3] = TRUE;
-	}
-
-	return four_diraction;
-}
 
