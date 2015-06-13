@@ -240,5 +240,6 @@ void copy_tmpboard_to_gameboard();
 void change_turn(player_e turn);
 color_e find_color(int row, int col);
 type_e find_type(int row, int col);
-
+path_t** clone_path_arr();
+char** copy_board_to_gameboard();
 #endif
