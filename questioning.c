@@ -130,11 +130,11 @@ bool is_valid_initialization()
 		num_of_black = user.num_of_men + user.num_of_kings;
 	}
 
-	if ((num_of_white > 20) || (num_of_black > 20))
+	if ((num_of_white > 20) || (num_of_black > 20) || ((num_of_white == 0) && (num_of_black != 0)) || ((num_of_white != 0) && (num_of_black == 0)) || ((num_of_black == 0) && (num_of_white == 0)))
 	{
 		b = FALSE;
 	}
-
+	
 	return b;
 }
 

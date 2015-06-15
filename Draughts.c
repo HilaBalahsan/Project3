@@ -17,6 +17,11 @@ int main(){
 	init_board(game_board);
 
 	printf(WELCOME_TO_DRAUGHTS);
+	// rotem
+	if (State == SETTINGS_STATE)
+	{
+		printf("Enter game settings:\n");
+	}
 	while (TRUE)
 	{
 		if (State == GAME_STATE)
@@ -77,24 +82,25 @@ int main_loop(){                     //I changed here.
 		{
 			switch (Turn)
 			{
+
 			case USER:
 				if (user.color == WHITE)
 				{
-					printf("White player wins!");
+					printf("White player wins!\n");
 				}
 				else
 				{
-					printf("Black player wins!");
+					printf("Black player wins!\n");
 				}
 				break;
 			case COMPUTER:
 				if (computer.color == WHITE)
 				{
-					printf("White player wins!");
+					printf("White player wins!\n");
 				}
 				else
 				{
-					printf("Black player wins!");
+					printf("Black player wins!\n");
 				}
 				break;
 			default:
@@ -375,6 +381,12 @@ int parsing(char* input){
 			free(inputCopy);
 			return 2;
 		}
+	}
+	else{
+		printf(ILLEGAL_COMMAND);
+		free(input);
+		free(inputCopy);
+		return 1;
 	}
 
 	free(input);
