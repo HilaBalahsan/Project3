@@ -17,6 +17,7 @@ void set_user_color(color_e color)
 	{
 		user.color = color;
 		computer.color = WHITE;
+		Turn = COMPUTER;
 	}
 }
 
@@ -97,7 +98,7 @@ int clear(){
 
 int remove_disc(int row, int col, player_e rm_from_this_player){
 
-	if (!is_valid_position(row, col))
+	if ((!is_valid_position(row, col)) || is_empty_position(row,col))
 	{
 		printf(WRONG_POSITION);
 		return -1;

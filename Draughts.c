@@ -242,6 +242,13 @@ int parsing(char* input){
 
 	if (strcmp(userinput[0], "minimax_depth") == 0)
 	{
+		if (userinput[1] == NULL)
+		{
+			printf(ILLEGAL_COMMAND);
+			free(input);
+			free(inputCopy);
+			return 2;
+		}
 		depth = atoi(userinput[1]);
 		set_minimax_depth(depth);
 	}
@@ -318,7 +325,7 @@ int parsing(char* input){
 		check_if_10 = (int)userinput[1][4] - 48;
 		if (check_if_10 == 0)
 		{
-			row = 10;
+			row = 9;
 		}
 		else
 		{
@@ -327,7 +334,11 @@ int parsing(char* input){
 
 		if (State == SETTINGS_STATE)
 		{
-			game_board[row][col] = EMPTY;
+			if ((!is_valid_position(row, col)) || is_empty_position(row, col))
+			{
+				printf(WRONG_POSITION);
+				return -1;
+			}
 		}
 		else
 		{
