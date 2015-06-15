@@ -11,7 +11,7 @@ bool is_legal_move(path_t* user_input_path)
 	get_moves(Turn);
 	if (paths_number == 0)
 	{
-		printf(ILLEGAL_MOVE);
+		return comparison;
 	}
 	else
 	{

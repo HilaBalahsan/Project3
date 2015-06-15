@@ -20,7 +20,8 @@ int main(){
 	// rotem
 	if (State == SETTINGS_STATE)
 	{
-		printf("Enter game settings:\n");
+		//printf("Enter game settings:\n");
+		print_message(ENTER_SETTINGS);
 	}
 	while (TRUE)
 	{
@@ -65,7 +66,7 @@ int main_loop(){                     //I changed here.
 			retVal = parsing(line);
 			if (retVal == -1)
 			{
-				//Error..
+				return -1;
 			}
 			else if (retVal == 2)
 			{
@@ -307,7 +308,7 @@ int parsing(char* input){
 		return_val = set_disc(ch_on_board, row, col, tool_color, tool_type);
 		if (return_val == -1)
 		{
-			printf("Failed to set tool on board .\n");
+			return -1;
 		}
 	}
 	else if (strcmp(userinput[0], "rm") == 0)
@@ -354,6 +355,13 @@ int parsing(char* input){
 		{
 			return_val = start();
 		}
+		else
+		{
+			printf(ILLEGAL_COMMAND);
+			free(input);
+			free(inputCopy);
+			return 2;
+		}
 	}
 	else if (strcmp(userinput[0], "print") == 0)
 	{
@@ -386,7 +394,7 @@ int parsing(char* input){
 		printf(ILLEGAL_COMMAND);
 		free(input);
 		free(inputCopy);
-		return 1;
+		return 2;
 	}
 
 	free(input);

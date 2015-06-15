@@ -38,7 +38,7 @@ int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e to
 	if ((!is_valid_position(row, col)) || (!is_empty_position(row, col)))
 	{
 		printf(WRONG_POSITION);
-		return -1;
+		return 1;
 	}
 	game_board[row][col] = char_on_board;
 	if (State == GAME_STATE)

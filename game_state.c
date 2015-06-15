@@ -83,13 +83,14 @@ int move(int row, int col, String coo_stream ){
 		if (curr_color == WHITE)
 		{
 			print_message(NO_DICS);
-			return -1;
+			return 2;
 		}
 	}
 
 	if (!is_legal_move(user_input_path))
 	{
 		print_message(ILLEGAL_MOVE);
+		return 2;
 	}
 	else
 	{
