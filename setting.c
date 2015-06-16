@@ -36,7 +36,7 @@ int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e to
 {
 	coordinate_t *temp_linkedlist;
 
-	if ((!is_valid_position(row, col)) || (!is_empty_position(row, col)))
+	if ((!is_valid_position(row, col)))
 	{
 		printf(WRONG_POSITION);
 		return 1;
@@ -104,7 +104,7 @@ int remove_disc(int row, int col, player_e rm_from_this_player){
 		return -1;
 	}
 
-	game_board[col][row] = EMPTY;
+	game_board[row][col] = EMPTY;
 	return 1;
 }
 

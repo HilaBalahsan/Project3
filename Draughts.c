@@ -242,6 +242,7 @@ int parsing(char* input){
 
 	if (strcmp(userinput[0], "minimax_depth") == 0)
 	{
+		// ?
 		if (userinput[1] == NULL)
 		{
 			printf(ILLEGAL_COMMAND);
@@ -334,11 +335,7 @@ int parsing(char* input){
 
 		if (State == SETTINGS_STATE)
 		{
-			if ((!is_valid_position(row, col)) || is_empty_position(row, col))
-			{
-				printf(WRONG_POSITION);
-				return -1;
-			}
+			return_val = remove_disc(row, col, USER);
 		}
 		else
 		{
