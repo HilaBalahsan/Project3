@@ -62,7 +62,7 @@ int move(int row, int col, String coo_stream ){
 		if (!is_valid_position(iter->row, iter->col))
 		{
 			print_message(WRONG_POSITION);
-			free(user_input_path); // rotem added
+			free_path(&user_input_path); // rotem added
 			return 2;
 		}
 
@@ -76,7 +76,7 @@ int move(int row, int col, String coo_stream ){
 		if (curr_color == BLACK)
 		{
 			print_message(NO_DICS);
-			free(user_input_path); // rotem added
+			free_path(&user_input_path); // rotem added
 			return 2;
 		}
 	}
@@ -85,7 +85,7 @@ int move(int row, int col, String coo_stream ){
 		if (curr_color == WHITE)
 		{
 			print_message(NO_DICS);
-			free(user_input_path); // rotem added
+			free_path(&user_input_path); // rotem added
 			return 2;
 		}
 	}
@@ -93,7 +93,7 @@ int move(int row, int col, String coo_stream ){
 	if (!is_legal_move(user_input_path))
 	{
 		print_message(ILLEGAL_MOVE);
-		free(user_input_path); // rotem added
+		free_path(&user_input_path); // rotem added
 		return 2;
 	}
 	else
@@ -101,7 +101,7 @@ int move(int row, int col, String coo_stream ){
 		perform_move(user_input_path->head_position, Turn);
 	}
 	
-	free(user_input_path); // rotem added
+	free_path(&user_input_path); // rotem added
 	return 1;
 }
 
@@ -712,6 +712,8 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 			return -1;
 		}
 	}
+
+	
 
 	free_path(&new_path);
 	return 1;
