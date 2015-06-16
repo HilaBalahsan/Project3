@@ -131,7 +131,8 @@ void print_single_path(path_t* path){
 	iterator = path->head_position;
 	char col;
 	int row, colAvg, rowAvg;
-	bool isSrc = TRUE,isSec = TRUE;
+	bool isSrc = TRUE;
+	//bool isSec = TRUE;
 
 	while (iterator != NULL)
 	{

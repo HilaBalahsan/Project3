@@ -62,6 +62,7 @@ int move(int row, int col, String coo_stream ){
 		if (!is_valid_position(iter->row, iter->col))
 		{
 			print_message(WRONG_POSITION);
+			free(user_input_path); // rotem added
 			return 2;
 		}
 
@@ -75,6 +76,7 @@ int move(int row, int col, String coo_stream ){
 		if (curr_color == BLACK)
 		{
 			print_message(NO_DICS);
+			free(user_input_path); // rotem added
 			return 2;
 		}
 	}
@@ -83,6 +85,7 @@ int move(int row, int col, String coo_stream ){
 		if (curr_color == WHITE)
 		{
 			print_message(NO_DICS);
+			free(user_input_path); // rotem added
 			return 2;
 		}
 	}
@@ -90,6 +93,7 @@ int move(int row, int col, String coo_stream ){
 	if (!is_legal_move(user_input_path))
 	{
 		print_message(ILLEGAL_MOVE);
+		free(user_input_path); // rotem added
 		return 2;
 	}
 	else
@@ -97,6 +101,7 @@ int move(int row, int col, String coo_stream ){
 		perform_move(user_input_path->head_position, Turn);
 	}
 	
+	free(user_input_path); // rotem added
 	return 1;
 }
 
@@ -298,6 +303,7 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (new_path->head_position == NULL)
 	{
+		free_path(&new_path); // rotem added
 		return -1;
 	}
 
@@ -345,9 +351,10 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 
 	if ((return_val1 == -1) || (return_val2 == -1) || (return_val3 == -1) || (return_val4 == -1))
 	{
+		free_path(&new_path); // rotem added
 		return -1;
 	}
-
+	free_path(&new_path); // rotem added
 	return 1;
 }
 
@@ -381,6 +388,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			free_path(&new_path);
 			return -1;
 		}
+		free_path(&new_path); // rotem added
 		return 1;
 	}
 
@@ -580,6 +588,7 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (new_path->head_position == NULL)
 	{
+		free_path(&new_path); // rotem added
 		return -1;
 	}
 
@@ -597,8 +606,10 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 
 	if (return_val == -1)
 	{
+		free_path(&new_path); // rotem added
 		return -1;
 	}
+	free_path(&new_path); // rotem added
 	return 1;
 }
 
@@ -647,7 +658,6 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 			if (returnval1 == -1)
 			{
 				free_path(&new_path);
-
 				return -1;
 			}
 		}
@@ -659,6 +669,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
 			{
+				free_path(&new_path); // rotem added
 				return -1;
 			}
 
