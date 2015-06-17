@@ -19,7 +19,7 @@ int move(int row, int col, char* coo_stream){
 	user_input_path = calloc(1, sizeof(path_t));
 	if (user_input_path == NULL)
 	{
-		perror_message("move");
+		perror_message("calloc");
 		return -1;
 	}
 
@@ -44,6 +44,7 @@ int move(int row, int col, char* coo_stream){
 			else if (coo_stream[i + 3] != '>')
 			{
 				print_message(WRONG_POSITION);
+				free_path(&user_input_path);
 				return 2;
 			}
 			else
@@ -79,6 +80,7 @@ int move(int row, int col, char* coo_stream){
 	if (source_slot == EMPTY)
 	{
 		print_message(NO_DICS);
+		free_path(&user_input_path);
 		return 2;
 	}
 	else if ((source_slot == WHITE_M) || (source_slot == WHITE_K))
@@ -372,7 +374,6 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 // function that helps to get_men_moves
 int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn) {
 
-	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
 	
 	returnval1 = 0;
@@ -491,41 +492,38 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			}
 			//continue looking for a eat in all direction
 			//clone the path four times
-			right_up_clone = clone_path(new_path);
-			right_down_clone = clone_path(new_path);
-			left_up_clone = clone_path(new_path);
-			left_down_clone = clone_path(new_path);
+
 
 			//Check if there are more enemies to kill.
 			switch (dir)
 			{
 			case UPRIGHT:
-				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone, turn);
+				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone, turn);
+				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval3 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone, turn);
+				returnval3 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, clone_path(new_path), turn);
 				break;
 			case UPLEFT:
-				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone, turn);
+				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone, turn);
+				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone, turn);
+				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, clone_path(new_path), turn);
 				break;
 			case DOWNRIGHT:
-				returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone, turn);
+				returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone, turn);
+				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone, turn);
+				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, clone_path(new_path), turn);
 				break;
 			case DOWNLEFT:
-				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone, turn);
+				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone, turn);
+				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, clone_path(new_path), turn);
 				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
-				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone, turn);
+				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, clone_path(new_path), turn);
 
 				break;
 			default:

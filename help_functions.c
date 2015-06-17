@@ -212,7 +212,10 @@ void free_linked_list(coordinate_t **linkedlist)
 		}
 		(*linkedlist) = (*linkedlist)->next_coordinate;
 	}
-	free((*linkedlist)->previous_coordinate);
+	if ((*linkedlist)->previous_coordinate != NULL)
+	{
+		free((*linkedlist)->previous_coordinate);
+	}
 	free((*linkedlist));
 	*linkedlist = NULL;
 }
