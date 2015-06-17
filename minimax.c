@@ -89,7 +89,7 @@ int rec_minimax(int depth, player_e player)
 		{
 			//perform best move
 			perform_move(loacl_paths[bestIndex]->head_position, player);
-			printf("Computer: move ");
+			print_message(COMPUTER_MOVE);
 			print_single_path(loacl_paths[bestIndex]);
 
 			for (i = 0; i < paths_num; i++)

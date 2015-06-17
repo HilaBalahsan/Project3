@@ -9,21 +9,15 @@
 #define BLACK_K 'K'
 #define EMPTY ' '
 
-#define BOARD_NUM  (7)
-#define ARR_NUM  (6)
-
 #define BOARD_SIZE  (10)
 #define TRUE		(1)
 #define FALSE		(0)
 #define DEBUG		(TRUE)
 #define WHITESPACE  (" ")
-#define BIGGER  (">")
-
 
 //type definition
 typedef char** board_t;
 typedef unsigned char bool;
-
 
 typedef enum color {
 	WHITE,
@@ -55,7 +49,6 @@ typedef struct step {
 	int is_potntial_step;    //comes after eatting
 } step_t;
 
-
 typedef struct coordinate {
 	// current position
 	int row;
@@ -64,12 +57,10 @@ typedef struct coordinate {
 	struct coordinate * previous_coordinate;
 } coordinate_t;
 
-
 typedef struct path {
 	float path_weight;
 	coordinate_t * head_position;
 } path_t;
-
 
 typedef struct player {
 	color_e color;
@@ -89,13 +80,17 @@ typedef struct player {
 #define ILLEGAL_MOVE "Illegal move\n"
 #define WROND_BOARD_INITIALIZATION "Wrong board initialization\n"
 #define ENTER_YOUR_MOVE "Enter your move:\n" 
+#define BLACK_WINS "Black player wins!\n"
+#define WHITE_WINS "White player wins!\n"
+#define CLEAR_BOARD_FAILD "Failed to clear board .\n"
+#define REMOVE_DISC_FAILD "Faild to remove disc . \n"
+#define COMPUTER_MOVE "Computer: move "
 
 //Macros
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
 #define alpha_to_num(character) (character - 97)
 #define num_to_alpha(int) (int + 97);
-
 
 //Externs
 extern int Minimax_Depth;
@@ -110,24 +105,11 @@ extern player_t computer;
 extern state_e State;
 
 //Infrastructure Functions
-void print_board();
 void init_board();
-void print_line();
 char* readline(void);
 int parsing(char* line);
 int main_loop();
 int main();
-coordinate_t* updating_linked_list(int row, int col, coordinate_t *head_coordinate);
-int delete_node(coordinate_t* tool_to_delete);
-bool delete_link_from_linked_list(coordinate_t* node_to_delete);
-bool check_win(color_e color);
-bool is_valid_position(int row, int col);   //not a white square , ranges
-bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
-void free_path(path_t **path);
-void free_linked_list(coordinate_t **linkedlist);
-bool is_at_the_edge(int row, int col);
-bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path);
-path_t**  clone_path_arr();
 
 //Settings Functions
 void set_minimax_depth(int x);
@@ -136,52 +118,62 @@ int remove_disc(int row, int col, player_e list_to_change);
 int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e tool_type);
 int start();
 void set_user_color(color_e color);
-
+void print_board();
+void print_line();
 
 //Game Functions
 int scoring(player_e turn);                  //Uses the global board
-void moves(coordinate_t tool);
-bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
 int get_moves(player_e player);
+int move(int row, int col, char* string);
+void minimax();
+
+// Help Game Functions
 int get_move_helper(coordinate_t *itereting_node, type_e tool, player_e turn);
 int get_men_moves(int curr_row, int curr_col, player_e turn);
 int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn);
 int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t*step, path_t *new_path, player_e turn);
 int get_king_moves(int curr_row, int curr_col, player_e turn);
-int update_paths_array(path_t* new_path);
-
-void original_board();
-void back_up_players();
-void minimax();
+int rec_minimax(int depth, player_e player);
+void moves(coordinate_t tool);
+void first_updating_MenKings_coordinate();
 void return_player_to_original_satae();
-
-bool is_enemy_position(int row, int col);
-bool is_become_king(int row, int col, player_e turn);
-void print_path(path_t *path);
 void initialize_step(step_t* step);
+void perform_move(coordinate_t* move, player_e turn);
+
+// Print Functions
 void print_path_arr();
 void print_single_path(path_t* path);
-void free_paths_arr(bool needToDeleteArr);
+void print_path(path_t *path);
+
+// Boolean Functions
 bool is_empty_position(int row, int col);
-void first_updating_MenKings_coordinate();
-coordinate_t * creat_linkedList_pointer(type_e type, player_e player);
-coordinate_t* clone_linkedline(coordinate_t *to_clone);
-path_t* clone_path(path_t* original_path);
 bool is_a_winner(player_e turn);
-coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
 bool is_legal_move(path_t* user_input_path);
-void perform_move(coordinate_t* move, player_e turn);
-void change_turn(player_e turn);
+bool is_enemy_position(int row, int col);
+bool is_become_king(int row, int col, player_e turn);
+bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
+bool check_win(color_e color);
+bool is_valid_position(int row, int col);   //not a white square , ranges
+bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
+bool is_at_the_edge(int row, int col);
+bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path);
 
+// Free Functions
+void free_path(path_t **path);
+void free_linked_list(coordinate_t **linkedlist);
+void free_paths_arr(bool needToDeleteArr);
 
+// create & update linkes_ list/arrays/structs
+coordinate_t* creat_linkedList_pointer(type_e type, player_e player);
+coordinate_t* clone_linkedline(coordinate_t *to_clone);
+coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);
+coordinate_t* updating_linked_list(int row, int col, coordinate_t *head_coordinate);
+bool delete_link_from_linked_list(coordinate_t* node_to_delete);
+path_t* clone_path(path_t* original_path);
+path_t**  clone_path_arr();
 int update_moves_arr(char* string);
-int move(int row, int col, char* string);
+int update_paths_array(path_t* new_path);
+int delete_node(coordinate_t* tool_to_delete);
 void print_coordinate_list(coordinate_t* list_to_print);
-void copy_board();
-void copy_gameboard_to_tmpboard();
-void copy_tmpboard_to_gameboard();
-void change_turn(player_e turn);
-color_e find_color(int row, int col);
-type_e find_type(int row, int col);
-char** copy_board_to_gameboard();
+
 #endif
