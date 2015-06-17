@@ -60,16 +60,13 @@ typedef struct coordinate {
 	// current position
 	int row;
 	int col;
-	int val;
 	struct coordinate * next_coordinate;
 	struct coordinate * previous_coordinate;
 } coordinate_t;
 
 
 typedef struct path {
-	int path_weight;
-	int score_board_after_path;
-	int last_coordinate[2];
+	float path_weight;
 	coordinate_t * head_position;
 } path_t;
 
@@ -81,23 +78,6 @@ typedef struct player {
 	int num_of_men;
 	int num_of_kings;
 } player_t;
-
-typedef struct node
-{
-	int node_path_score;
-	coordinate_t* path;
-	struct node* next_node;
-	struct node* prev_node;
-}node_t;
-
-//typedef struct tree{
-//node_t* root;
-//}tree_t;
-
-
-// Saperate between board line (char*) and a regular string.
-typedef char* String;
-
 
 // Massages
 #define WELCOME_TO_DRAUGHTS "Welcome to Draughts!\n"
@@ -122,13 +102,11 @@ extern int Minimax_Depth;
 extern int capacity;
 extern int paths_number;
 extern char game_board[BOARD_SIZE][BOARD_SIZE];
-extern int maximal_path_weight;
+extern float maximal_path_weight;
 extern player_e Turn;
 extern path_t** paths_arr;
 extern player_t user;
 extern player_t computer;
-extern coordinate_t* best_path;
-extern path_t minmax_path;
 extern state_e State;
 
 //Infrastructure Functions
@@ -186,7 +164,6 @@ void print_single_path(path_t* path);
 void free_paths_arr(bool needToDeleteArr);
 bool is_empty_position(int row, int col);
 void first_updating_MenKings_coordinate();
-void free_node_list(node_t *linkedlist);
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player);
 coordinate_t* clone_linkedline(coordinate_t *to_clone);
 path_t* clone_path(path_t* original_path);

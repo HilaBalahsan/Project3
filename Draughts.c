@@ -9,7 +9,7 @@
 int main(){
 	// Varibles
 	int pars_succeed;
-	String line;
+	char *line;
 
 	// Initialization
 	line = NULL;
@@ -50,7 +50,7 @@ int main(){
 }
 
 int main_loop(){                     //I changed here.
-	String line;
+	char* line;
 	int retVal;
 	while (State == GAME_STATE)
 	{
@@ -115,21 +115,6 @@ int main_loop(){                     //I changed here.
 	}
 	
 	return 1;
-}
-
-
-void free_node_list(node_t *linkedlist){
-	node_t *iterator;
-	iterator = linkedlist;
-	while (iterator->next_node != NULL)
-	{
-		if (linkedlist->prev_node != NULL)
-		{
-			free(linkedlist->prev_node);
-		}
-		iterator = iterator->next_node;
-	}
-	free(iterator);
 }
 
 char* readline(void) {
@@ -267,11 +252,16 @@ int parsing(char* input){
 	{
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 		check_if_10 = (int)userinput[1][4] - 48;
-		if (check_if_10 == 0)
+
+		if ((check_if_10 == 0) && (userinput[1][5] == '>'))
 		{
 			row = 9;
 		}
-		if (check_if_10 != 0)
+		else if (userinput[1][4] != '>')
+		{
+			perror_message(WRONG_POSITION);
+		}
+		else
 		{
 			row = (int)userinput[1][3] - 49; // <y>
 		}
@@ -284,13 +274,20 @@ int parsing(char* input){
 				tool_type = MAN;
 				ch_on_board = BLACK_M;
 			}
-			else
+			else if (strcmp(userinput[3], "k") == 0)
 			{
 				tool_type = KING;
 				ch_on_board = BLACK_K;
 			}
+			else
+			{
+				printf(ILLEGAL_COMMAND);
+				free(input);
+				free(inputCopy);
+				return 2;
+			}
 		}
-		else
+		else if (strcmp(userinput[2], "white") == 0)
 		{
 			tool_color = WHITE;
 			if (strcmp(userinput[3], "m") == 0)
@@ -298,11 +295,25 @@ int parsing(char* input){
 				tool_type = MAN;
 				ch_on_board = WHITE_M;
 			}
-			else
+			else if (strcmp(userinput[3], "k") == 0)
 			{
 				tool_type = KING;
 				ch_on_board = WHITE_K;
 			}
+			else
+			{
+				printf(ILLEGAL_COMMAND);
+				free(input);
+				free(inputCopy);
+				return 2;
+			}
+		}
+		else
+		{
+			printf(ILLEGAL_COMMAND);
+			free(input);
+			free(inputCopy);
+			return 2;
 		}
 
 		return_val = set_disc(ch_on_board, row, col, tool_color, tool_type);
@@ -316,9 +327,13 @@ int parsing(char* input){
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 
 		check_if_10 = (int)userinput[1][4] - 48;
-		if (check_if_10 == 0)
+		if ((check_if_10 == 0) && (userinput[1][5] == '>'))
 		{
-			row = 10;
+			row = 9;
+		}
+		else if (userinput[1][4] != '>')
+		{
+			perror_message(WRONG_POSITION);
 		}
 		else
 		{
@@ -372,15 +387,18 @@ int parsing(char* input){
 		col = alpha_to_num((int)userinput[1][1]); // <x>
 
 		check_if_10 = (int)userinput[1][4] - 48;
-		if (check_if_10 == 0)
+		if ((check_if_10 == 0) && (userinput[1][5] == '>'))
 		{
 			row = 9;
 		}
-		if (check_if_10 != 0)
+		else if (userinput[1][4] != '>')
+		{
+			perror_message(WRONG_POSITION);
+		}
+		else
 		{
 			row = (int)userinput[1][3] - 49; // <y>
 		}
-
 		return_val = move(row, col, userinput[3]);
 		
 		if (return_val == 2)

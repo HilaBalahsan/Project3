@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-int move(int row, int col, String coo_stream ){
+int move(int row, int col, char* coo_stream){
 
 	char ch, source_slot;
 	int len , i , des_col , des_row;
@@ -33,10 +33,15 @@ int move(int row, int col, String coo_stream ){
 		if (isalpha(ch))
 		{
 			des_col = alpha_to_num(ch);
-			if (coo_stream[i + 3] == 0)
+			if ((coo_stream[i + 3] == '0') && (coo_stream[i + 4] == '>'))
 			{
 				des_row = 9;
 				i += 3;
+			}
+			else if (coo_stream[i + 3] != '>')
+			{
+				print_message(WRONG_POSITION);
+				return 2;
 			}
 			else
 			{
@@ -51,9 +56,6 @@ int move(int row, int col, String coo_stream ){
 			i++;
 		}
 	}
-
-	user_input_path->last_coordinate[0] = des_row;
-	user_input_path->last_coordinate[1] = des_col;
 
 	//Validate that all positions in the path are legal.
 	iter = head;
@@ -70,7 +72,12 @@ int move(int row, int col, String coo_stream ){
 	//Validate source position.
 	source_slot = game_board[row][col];
 	curr_color = user.color;
-	if ((source_slot == WHITE_M) || (source_slot == WHITE_K))
+	if (source_slot == EMPTY)
+	{
+		print_message(NO_DICS);
+		return 2;
+	}
+	else if ((source_slot == WHITE_M) || (source_slot == WHITE_K))
 	{
 		if (curr_color == BLACK)
 		{
@@ -161,7 +168,7 @@ void perform_move(coordinate_t* move, player_e turn)
 					{
 						player->men_coordinate = NULL;
 					}
-					else
+					if (player->num_of_kings == 0)
 					{
 						player->kings_coordinate = NULL;
 					}
@@ -189,7 +196,7 @@ void perform_move(coordinate_t* move, player_e turn)
 				{
 					enemy->men_coordinate = NULL;
 				}
-				else
+				if (enemy->num_of_kings == 0)
 				{
 					enemy->kings_coordinate = NULL;
 				}
@@ -291,8 +298,6 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 		return -1;
 	}
 	new_path->path_weight = 0;
-	new_path->last_coordinate[0] = curr_row;
-	new_path->last_coordinate[1] = curr_col;
 	new_path->head_position = NULL;
 
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
@@ -355,6 +360,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
+	char tool;
 
 	returnval1 = 0;
 	returnval2 = 0;
@@ -369,6 +375,14 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 
 	if ((is_become_king(next_row, next_col, turn)) && ((step->is_first_step == TRUE) || (step->is_potntial_step == TRUE)))
 	{
+		if ((((int)(new_path->path_weight * 10)) % 10) == 0)
+		{
+			new_path->path_weight += 0.5;
+		}
+		if (step->is_potntial_step)
+		{
+			new_path->path_weight += 1;
+		}
 		new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 		if (new_path->head_position == NULL)
 		{
@@ -383,11 +397,12 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 		}
 		return 1;
 	}
-
+	
 	if ((step->is_first_step == TRUE) && (step->is_potntial_step == FALSE))
 	{
 		// arrive here if it the first step.
 		step->is_first_step = FALSE;
+
 		if (is_enemy_position(next_row, next_col) && (!is_at_the_edge(next_row, next_col)))
 		{
 			step->is_potntial_step = TRUE;
@@ -428,9 +443,6 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 				return -1;
 			}
 
-			new_path->last_coordinate[0] = next_row;
-			new_path->last_coordinate[1] = next_col;
-
 			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
@@ -453,8 +465,6 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 		else if (is_empty_position(next_row, next_col))
 		{
 			step->is_potntial_step = FALSE;
-			new_path->last_coordinate[0] = next_row;
-			new_path->last_coordinate[1] = next_col;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
 			{
@@ -463,6 +473,14 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			}
 			// Calculate path weight
 			new_path->path_weight += 1;
+			tool = game_board[next_row][next_col];
+			if ((tool == WHITE_K) || (tool == BLACK_K))
+			{
+				if ((((int)(new_path->path_weight * 10)) % 10) == 0)
+				{
+					new_path->path_weight += 0.5;
+				}
+			}
 			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
@@ -481,33 +499,30 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			{
 			case UPRIGHT:
 				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone, turn);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone, turn);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval3 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone, turn);
-
-				//returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone);
-
-
 				break;
 			case UPLEFT:
 				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone, turn);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone, turn);
-				//returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone, turn);
-
-
 				break;
 			case DOWNRIGHT:
-				//returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone);
 				returnval1 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone, turn);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone, turn);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone, turn);
-
-
 				break;
 			case DOWNLEFT:
 				returnval1 = get_man_moves_helper(UPLEFT, next_row + 1, next_col - 1, step, left_up_clone, turn);
-				//returnval2 = get_man_moves_helper(UPRIGHT, next_row + 1, next_col + 1, step, right_up_clone);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval2 = get_man_moves_helper(DOWNRIGHT, next_row - 1, next_col + 1, step, right_down_clone, turn);
+				step->is_first_step = FALSE; step->is_potntial_step = FALSE;
 				returnval3 = get_man_moves_helper(DOWNLEFT, next_row - 1, next_col - 1, step, left_down_clone, turn);
 
 				break;
@@ -572,8 +587,6 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 		return -1;
 	}
 	new_path->head_position = NULL;
-	new_path->last_coordinate[0] = curr_row;
-	new_path->last_coordinate[1] = curr_col;
 	new_path->path_weight = 0;
 
 	//First coordinate is the starting slot.
@@ -654,8 +667,6 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 		// The slot is not belongs to enemy
 		else if (is_empty_position(next_row, next_col))
 		{
-			new_path->last_coordinate[0] = next_row;
-			new_path->last_coordinate[1] = next_col;
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
 			{

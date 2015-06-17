@@ -17,6 +17,7 @@ void set_user_color(color_e color)
 	{
 		user.color = color;
 		computer.color = WHITE;
+		Turn = COMPUTER;
 	}
 }
 

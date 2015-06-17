@@ -21,30 +21,24 @@ path_t** clone_path_arr()	{
 bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 	bool equal = TRUE;
 	coordinate_t *path, *userPath;
-	if ((path_from_arr->last_coordinate[0] != user_input_path->last_coordinate[0]) ||
-		(path_from_arr->last_coordinate[1] != user_input_path->last_coordinate[1]))
-	{
-		equal = FALSE;
-	}
-	else
-	{
-		path = path_from_arr->head_position;
-		userPath = user_input_path->head_position;
 
-		while ((path != NULL) && (userPath != NULL) && equal)
+	path = path_from_arr->head_position;
+	userPath = user_input_path->head_position;
+
+	while ((path != NULL) && (userPath != NULL) && equal)
+	{
+		if ((path->row == userPath->row) &&
+			(path->col == userPath->col))
 		{
-			if ((path->row == userPath->row) &&
-				(path->col == userPath->col))
-			{
-				path = path->next_coordinate;
-				userPath = userPath->next_coordinate;
-			}
-			else
-			{
-				equal = FALSE;
-			}
+			path = path->next_coordinate;
+			userPath = userPath->next_coordinate;
+		}
+		else
+		{
+			equal = FALSE;
 		}
 	}
+	
 	return equal;
 }
 
@@ -191,9 +185,6 @@ path_t* clone_path(path_t* original_path)
 		return NULL;
 	}
 	cloned_path->head_position = NULL;
-	cloned_path->last_coordinate[0] = original_path->last_coordinate[0];
-	cloned_path->last_coordinate[1] = original_path->last_coordinate[1];
-
 	cloned_path->path_weight = original_path->path_weight;
 	cloned_path->head_position = clone_linkedline(original_path->head_position);
 
