@@ -367,8 +367,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
 	int returnval1, returnval2, returnval3;
-	char tool;
-
+	
 	returnval1 = 0;
 	returnval2 = 0;
 	returnval3 = 0;
@@ -382,10 +381,6 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 
 	if ((is_become_king(next_row, next_col, turn)) && ((step->is_first_step == TRUE) || (step->is_potntial_step == TRUE)))
 	{
-		if ((((int)(new_path->path_weight * 10)) % 10) == 0)
-		{
-			new_path->path_weight += 0.5;
-		}
 		if (step->is_potntial_step)
 		{
 			new_path->path_weight += 1;
@@ -466,7 +461,6 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 		if (is_enemy_position(next_row, next_col))
 		{
 			// two enemy tools in a row can't go from here...
-			//free_path(new_path);
 			free_path(&new_path);
 			return 1;
 		}
@@ -481,14 +475,6 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			}
 			// Calculate path weight
 			new_path->path_weight += 1;
-			tool = game_board[next_row][next_col];
-			if ((tool == WHITE_K) || (tool == BLACK_K))
-			{
-				if ((((int)(new_path->path_weight * 10)) % 10) == 0)
-				{
-					new_path->path_weight += 0.5;
-				}
-			}
 			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
 			{
@@ -723,8 +709,6 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 			return -1;
 		}
 	}
-
-	
 
 	free_path(&new_path);
 	return 1;

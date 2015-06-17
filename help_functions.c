@@ -51,7 +51,7 @@ int update_paths_array(path_t* new_path)
 		return -1;
 	}
 
-	if (new_path->path_weight == maximal_path_weight)
+	if (new_path->path_weight == maximal_path_weight)   
 	{
 		paths_arr[paths_number] = new_path;
 		paths_number++;

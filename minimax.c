@@ -39,7 +39,7 @@ int scoring(player_e turn){   ///change!! run over lists and not all board!!!!
 int rec_minimax(int depth, player_e player)
 {
 	int score, paths_num, i, val, bestVal, bestIndex;
-	path_t** loacl_paths;
+	path_t** local_paths;
 	char board[BOARD_SIZE][BOARD_SIZE] = {{0}};
 	
 	score = scoring(player);
@@ -54,7 +54,7 @@ int rec_minimax(int depth, player_e player)
 	get_moves(player);
 
 	//save local copy of the global moves array.
-	loacl_paths = clone_path_arr();
+	local_paths = clone_path_arr();
 	paths_num = paths_number;
 
 	if (player == COMPUTER) // maximazing.
@@ -68,7 +68,7 @@ int rec_minimax(int depth, player_e player)
 			memcpy(&board, &game_board, (BOARD_SIZE*BOARD_SIZE));
 
 			//perform move
-			perform_move(loacl_paths[i]->head_position, player);
+			perform_move(local_paths[i]->head_position, player);
 
 			//recursive call
 			val = rec_minimax((depth - 1), (player ^ 1)); //xor to toggle player. 
@@ -88,26 +88,26 @@ int rec_minimax(int depth, player_e player)
 		if (depth == Minimax_Depth) //upper call.
 		{
 			//perform best move
-			perform_move(loacl_paths[bestIndex]->head_position, player);
+			perform_move(local_paths[bestIndex]->head_position, player);
 			printf("Computer: move ");
-			print_single_path(loacl_paths[bestIndex]);
+			print_single_path(local_paths[bestIndex]);
 
 			for (i = 0; i < paths_num; i++)
 			{
-				free_path(&loacl_paths[i]);
+				free_path(&local_paths[i]);
 			}
 
-			free(loacl_paths);
+			free(local_paths);
 			return 1;
 		}
 		else
 		{
 			for (i = 0; i < paths_num; i++)
 			{
-				free_path(&loacl_paths[i]);
+				free_path(&local_paths[i]);
 			}
 
-			free(loacl_paths);
+			free(local_paths);
 			return bestVal;
 		}
 	}
@@ -121,8 +121,8 @@ int rec_minimax(int depth, player_e player)
 			memcpy(&board, &game_board, (BOARD_SIZE*BOARD_SIZE));
 
 			//perform move
-			perform_move(loacl_paths[i]->head_position, player);
-			free_path(&loacl_paths[i]);
+			perform_move(local_paths[i]->head_position, player);
+			free_path(&local_paths[i]);
 
 			//recursive call
 			val = rec_minimax((depth - 1), (player ^ 1)); //xor to toggle player. 
@@ -140,9 +140,9 @@ int rec_minimax(int depth, player_e player)
 
 		for (i = 0; i < paths_num; i++)
 		{
-			free_path(&loacl_paths[i]);
+			free_path(&local_paths[i]);
 		}
-		free(loacl_paths);
+		free(local_paths);
 
 		return bestVal;
 	}

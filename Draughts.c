@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
-
 int main(){
 	// Varibles
 	int pars_succeed;
@@ -550,8 +547,6 @@ void first_updating_MenKings_coordinate(){
 
 	}
 }
-
-
 
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	coordinate_t* specific_link;
