@@ -4,11 +4,11 @@
 #include <string.h>
 
 int main(){
-	// Varibles
+	/*Varibles*/ 
 	int pars_succeed;
 	char *line;
 
-	// Initialization
+	/*Initialization*/ 
 	line = NULL;
 	pars_succeed = 1;
 	init_board(game_board);
@@ -29,7 +29,7 @@ int main(){
 		else
 		{
 			line = readline();
-			if ((strcmp(line, "quit")) == 0) // zero for equal.
+			if ((strcmp(line, "quit")) == 0)  
 			{
 				free(line);
 				break;
@@ -46,7 +46,7 @@ int main(){
 	return 1;
 }
 
-int main_loop(){                     //I changed here.
+int main_loop(){                     
 	char* line;
 	int retVal;
 	while (State == GAME_STATE)
@@ -55,7 +55,7 @@ int main_loop(){                     //I changed here.
 		{
 			print_message(ENTER_YOUR_MOVE);
 			line = readline();
-			if ((strcmp(line, "quit")) == 0) // zero for equal.
+			if ((strcmp(line, "quit")) == 0) 
 			{
 				free(line);
 				break;
@@ -70,12 +70,12 @@ int main_loop(){                     //I changed here.
 				continue;
 			}
 		}
-		else // computer's turn
+		else /*computer's turn*/ 
 		{
 			minimax();
 		}
 		print_board();
-		// check if user/computer is the winner of the game after the move they made
+		/*check if user/computer is the winner of the game after the move they made*/ 
 		if (is_a_winner(Turn))
 		{
 			switch (Turn)
@@ -113,16 +113,21 @@ int main_loop(){                     //I changed here.
 	return 1;
 }
 
-// converting user's input to something we can work with
+/*
+* readline
+* input : void
+* output : char* readline
+* functionality : reading what the user typed us, char by char and converting it to char array ( string ) and returns char array of the user command
+*/
 char* readline(void) {
 
-	// Varibles
+	/*Varibles*/
 	int currentlen, ch;
 	char* line, *linep;
-	size_t maxlen, len;    //size_t is an unsigned integer type of at least 16 bit 
+	size_t maxlen, len;    /*size_t is an unsigned integer type of at least 16 bit */
 	bool spaceFlag;
 
-	//Initialization
+	/*Initialization*/
 	currentlen = 0;
 	spaceFlag = FALSE;
 	maxlen = 10;
@@ -137,7 +142,7 @@ char* readline(void) {
 
 	while (EOF != (ch = fgetc(stdin)) && (ch != '\n'))
 	{
-		if (--len == 0)   //Condition for resizing.
+		if (--len == 0)   /*Condition for resizing.*/
 		{
 			len = maxlen;
 
@@ -179,24 +184,30 @@ char* readline(void) {
 	return linep;
 }
 
-// parsing user input - find out what the user wants to do!
+/**
+* parsing
+* input : string that we get from readline()
+* output : int parsing
+* functionality : parsing char array to find out what the used asked us to do
+* return : 2 -  if the command was properd corectly or there was an illigal command but the game still goes on, (-1) - if as a memory allocation problem, 1 if it's the end of the game
+*/
 int parsing(char* input){
 
-	// Varibles
+	/*Varibles*/
 	int i, depth, row, col, check_if_10, return_val;
 	color_e tool_color;
 	type_e tool_type;
 	char ch_on_board;
 	char* userinput[4] = { 0 }, *inputCopy, *token;
 
-	// Initialize
+	/*Initialize*/
 	depth = 1;
 	tool_color = WHITE;
 
 	inputCopy = (char*)malloc(sizeof(char)*(strlen(input) + 1));
 	if (inputCopy == NULL)
 	{
-		perror_message("parsing");
+		perror_message("malloc");
 		return -1;
 	}
 
@@ -221,7 +232,7 @@ int parsing(char* input){
 		return 1;
 	}
 
-	if (strcmp(userinput[0], "minimax_depth") == 0) // minimax depth
+	if (strcmp(userinput[0], "minimax_depth") == 0) /*minimax depth*/
 	{
 		if (userinput[1] == NULL)
 		{
@@ -233,7 +244,7 @@ int parsing(char* input){
 		depth = atoi(userinput[1]);
 		set_minimax_depth(depth);
 	}
-	else if (strcmp(userinput[0], "user_color") == 0) // user's color
+	else if (strcmp(userinput[0], "user_color") == 0) /*user's color*/
 	{
 		if ((strcmp(userinput[1], "black") == 0) || (strcmp(userinput[1], "Black") == 0) || (strcmp(userinput[1], "BLACK") == 0))
 		{
@@ -242,7 +253,7 @@ int parsing(char* input){
 		set_user_color(tool_color); 
 	}
 
-	else if (strcmp(userinput[0], "clear") == 0) // clear board
+	else if (strcmp(userinput[0], "clear") == 0) /*clear board*/
 	{
 		return_val = clear();
 		if (return_val == -1)
@@ -250,9 +261,9 @@ int parsing(char* input){
 			print_message(CLEAR_BOARD_FAILD);
 		}
 	}
-	else if (strcmp(userinput[0], "set") == 0) // set disc on the board
+	else if (strcmp(userinput[0], "set") == 0) /*set disc on the board*/
 	{
-		col = alpha_to_num((int)userinput[1][1]); // <x>
+		col = alpha_to_num((int)userinput[1][1]); 
 		check_if_10 = (int)userinput[1][4] - 48;
 
 		if ((check_if_10 == 0) && (userinput[1][5] == '>'))
@@ -265,7 +276,7 @@ int parsing(char* input){
 		}
 		else
 		{
-			row = (int)userinput[1][3] - 49; // <y>
+			row = (int)userinput[1][3] - 49; 
 		}
 
 		if (strcmp(userinput[2], "black") == 0)
@@ -324,9 +335,9 @@ int parsing(char* input){
 			return -1;
 		}
 	}
-	else if (strcmp(userinput[0], "rm") == 0) // remove disc from the board
+	else if (strcmp(userinput[0], "rm") == 0) /*remove disc from the board*/
 	{
-		col = alpha_to_num((int)userinput[1][1]); // <x>
+		col = alpha_to_num((int)userinput[1][1]);
 
 		check_if_10 = (int)userinput[1][4] - 48;
 		if ((check_if_10 == 0) && (userinput[1][5] == '>'))
@@ -339,7 +350,7 @@ int parsing(char* input){
 		}
 		else
 		{
-			row = (int)userinput[1][3] - 49; // <y>
+			row = (int)userinput[1][3] - 49;
 		}
 
 		if (State == SETTINGS_STATE)
@@ -355,7 +366,7 @@ int parsing(char* input){
 			}
 		}
 	}
-	else if (strcmp(userinput[0], "get_moves") == 0) // get user's moves
+	else if (strcmp(userinput[0], "get_moves") == 0) /*get user's moves*/
 	{
 		if (State == GAME_STATE)
 		{
@@ -366,7 +377,7 @@ int parsing(char* input){
 			return 2;
 		}
 	}
-	else if (strcmp(userinput[0], "start") == 0) // start game
+	else if (strcmp(userinput[0], "start") == 0) /*start game*/
 	{
 		if (State == SETTINGS_STATE)
 		{
@@ -380,13 +391,13 @@ int parsing(char* input){
 			return 2;
 		}
 	}
-	else if (strcmp(userinput[0], "print") == 0) // print board
+	else if (strcmp(userinput[0], "print") == 0) /*print board*/
 	{
 		print_board();
 	}
-	else if (strcmp(userinput[0], "move") == 0) // move disc from the board to other spot on the board
+	else if (strcmp(userinput[0], "move") == 0) /*move disc from the board to other spot on the board*/
 	{
-		col = alpha_to_num((int)userinput[1][1]); // <x>
+		col = alpha_to_num((int)userinput[1][1]); 
 
 		check_if_10 = (int)userinput[1][4] - 48;
 		if ((check_if_10 == 0) && (userinput[1][5] == '>'))
@@ -399,7 +410,7 @@ int parsing(char* input){
 		}
 		else
 		{
-			row = (int)userinput[1][3] - 49; // <y>
+			row = (int)userinput[1][3] - 49;
 		}
 		return_val = move(row, col, userinput[3]);
 		
@@ -426,7 +437,7 @@ int parsing(char* input){
 	return 1;
 }
 
-// initialize game board
+
 void init_board(){
 	int i, j;
 
@@ -454,7 +465,12 @@ void init_board(){
 	}
 }
 
-// update men and kings list for eack user
+/**
+* first_updating_MenKings_coordinate
+* input : nothing
+* output : nothing
+* functionality : updates for the first time user's and computer's men and kings lists
+*/
 void first_updating_MenKings_coordinate(){
 	coordinate_t *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
 	int i, j;
@@ -546,9 +562,12 @@ void first_updating_MenKings_coordinate(){
 	}
 }
 
-
-// returns the pointer to specific linked-list
-
+/**
+* pointer_to_link
+* input : int row, int col, coordinate_t* list_to_change
+* output : coordinate_t* pointer_to_link
+* functionality : changes the pointer to given linked list
+*/
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 
 	coordinate_t* specific_link;
@@ -568,7 +587,12 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 	return specific_link;
 }
 
-// create linked list pointer
+/**
+* creat_linkedList_pointer
+* input : type_e type, player_e player)
+* output : coordinate_t * creat_linkedList_pointer
+* functionality : creates pointer to linked list and returns it
+*/
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 
 	coordinate_t *head_coordinate;
@@ -597,17 +621,22 @@ coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 	return head_coordinate;
 }
 
-// delete node from linked list
+/**
+* delete_link_from_linked_list
+* input : coordinate_t* node_to_delete
+* output : TRUE/FALSE
+* functionality : deletes linked list, and free the elemnts if it was success returns TRUE else returns FALSE
+*/
 bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 	coordinate_t* temp;
 	if (node_to_delete->previous_coordinate == NULL)
 	{
-		if (node_to_delete->next_coordinate == NULL) //Only element in list
+		if (node_to_delete->next_coordinate == NULL) /*Only element in list*/
 		{
 			free(node_to_delete);
 			return TRUE;
 		}
-		else //first but not last.
+		else /*first but not last.*/
 		{
 			node_to_delete->col = node_to_delete->next_coordinate->col;
 			node_to_delete->row = node_to_delete->next_coordinate->row;
@@ -635,24 +664,29 @@ bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 	return FALSE;
 }
 
-// add node to linked list
+/**
+* updating_linked_list
+* input : int row, int col, coordinate_t *head_coordinate
+* output : coordinate_t * updating_linked_list
+* functionality : updates given linked list and returns the new linked list (the updated one)
+*/
 coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 
 	coordinate_t *current_coordinate, *temp_coordinate;
 
-	//Initializing
+	/*Initializing*/
 	current_coordinate = NULL;
 	temp_coordinate = NULL;
 
-	//Buildind the coordinate list
+	/*Buildind the coordinate list*/
 	current_coordinate = (coordinate_t*)malloc(sizeof(coordinate_t));
 	if (current_coordinate == NULL)
 	{
-		perror_message("updating_linked_list");
+		perror_message("malloc");
 		return NULL;
 	}
 
-	//initializing node
+	/*Initializing*/
 	current_coordinate->col = col;
 	current_coordinate->row = row;
 	current_coordinate->next_coordinate = NULL;

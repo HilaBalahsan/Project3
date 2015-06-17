@@ -3,7 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int scoring(player_e turn){   ///change!! run over lists and not all board!!!!
+/**
+* scoring
+* input : player_e turn
+* output : int scoring
+* functionality : calculate turns score and returns it
+*/
+int scoring(player_e turn){ 
 
 	int score;
 	player_t *enemy, *mine;
@@ -35,7 +41,13 @@ int scoring(player_e turn){   ///change!! run over lists and not all board!!!!
 	return score;
 }
 
-
+/**
+* rec_minimax
+* input : int depth, player_e player
+* output : int rec_minimax
+* functionality : minimax algorithem to find the best move that the computer can do
+* return : the scoring of the board after the best move 
+*/
 int rec_minimax(int depth, player_e player)
 {
 	int score, paths_num, i, val, bestVal, bestIndex;
@@ -46,48 +58,48 @@ int rec_minimax(int depth, player_e player)
 	
 	if ((depth == 0) || (score == 100) || (score == -100))
 	{
-		//This is a terminal game state.
+		/*his is a terminal game state.*/
 		return (score*-1);
 	}
 
-	// claculate all possible steps.
+	/*claculate all possible steps.*/
 	get_moves(player);
 
-	//save local copy of the global moves array.
+	/*save local copy of the global moves array.*/
 	local_paths = clone_path_arr();
 	paths_num = paths_number;
 
-	if (player == COMPUTER) // maximazing.
+	if (player == COMPUTER) /*maximazing.*/
 	{
 		bestVal = -100;
 		bestIndex = 0;
 
 		for (i = 0; i < paths_num; i++)
 		{
-			//save board
+			/*save board*/
 			memcpy(&board, &game_board, (BOARD_SIZE*BOARD_SIZE));
 
-			//perform move
+			/*perform move*/
 			perform_move(local_paths[i]->head_position, player);
 
-			//recursive call
-			val = rec_minimax((depth - 1), (player ^ 1)); //xor to toggle player. 
+			/*recursive call*/
+			val = rec_minimax((depth - 1), (player ^ 1)); /*xor to toggle player. */
 
-			//update maximum
+			/*update maximum*/
 			if (val > bestVal)
 			{
 				bestVal = val;
 				bestIndex = i;
 			}
 
-			//recover board
+			/*recover board*/
 			memcpy(&game_board, &board, (BOARD_SIZE*BOARD_SIZE));
 			first_updating_MenKings_coordinate();
 		}
 
-		if (depth == Minimax_Depth) //upper call.
+		if (depth == Minimax_Depth) /*upper call.*/
 		{
-			//perform best move
+			/*perform best move*/
 
 			perform_move(local_paths[bestIndex]->head_position, player);
 			print_message(COMPUTER_MOVE);
@@ -112,29 +124,29 @@ int rec_minimax(int depth, player_e player)
 			return bestVal;
 		}
 	}
-	else //minimazing.
+	else /*minimazing.*/
 	{
 		bestVal = 100;
 
 		for (i = 0; i < paths_num; i++)
 		{
-			//save board
+			/*save board*/
 			memcpy(&board, &game_board, (BOARD_SIZE*BOARD_SIZE));
 
-			//perform move
+			/*perform move*/
 			perform_move(local_paths[i]->head_position, player);
 			free_path(&local_paths[i]);
 
-			//recursive call
-			val = rec_minimax((depth - 1), (player ^ 1)); //xor to toggle player. 
+			/*recursive call*/
+			val = rec_minimax((depth - 1), (player ^ 1)); /*xor to toggle player. */
 
-			//update minimum
+			/*update minimum*/
 			if(val < bestVal)
 			{
 				bestVal = val;
 			}
 
-			//recover board
+			/*recover board*/
 			memcpy(&game_board, &board, (BOARD_SIZE*BOARD_SIZE));
 			first_updating_MenKings_coordinate();
 		}
@@ -149,8 +161,14 @@ int rec_minimax(int depth, player_e player)
 	}
 }
 
+/**
+* rec_minimax
+* input : nothing
+* output : nothing
+* functionality : Initiate recursive call to minimax
+* 
+*/
 void minimax()
 {
-	// Initiate recursive call to minimax.
 	rec_minimax(Minimax_Depth, COMPUTER);
 }

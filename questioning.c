@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+* is_legal_move
+* input : path_t* user_input_path
+* output : TRUE/FALSE
+* functionality : returns TRUE if the move is legal else return FALSE
+*/
 bool is_legal_move(path_t* user_input_path)
 {
 	bool comparison;
@@ -27,6 +33,12 @@ bool is_legal_move(path_t* user_input_path)
 	return comparison;
 }
 
+/**
+* is_empty_position
+* input : int row, int col
+* output : TRUE/FALSE
+* functionality : returns TRUE if given position on game board is empty else return FALSE
+*/
 bool is_empty_position(int row, int col){
 	bool empty = TRUE;
 	if (game_board[row][col] != EMPTY)
@@ -36,6 +48,12 @@ bool is_empty_position(int row, int col){
 	return empty;
 }
 
+/**
+* is_at_the_edge
+* input : int row, int col
+* output : TRUE/FALSE
+* functionality : returns TRUE if given position on the edge of game board else return FALSE
+*/
 bool is_at_the_edge(int row, int col){
 	bool edge;
 	edge = FALSE;
@@ -58,6 +76,12 @@ bool is_at_the_edge(int row, int col){
 	return edge;
 }
 
+/**
+* is_a_winner
+* input : player_e turn
+* output : TRUE/FALSE
+* functionality : returns TRUE if given player is the winner of the game else return FALSE
+*/
 bool is_a_winner(player_e turn){
 	bool winner = FALSE;
 	coordinate_t* temp_king, *temp_man;
@@ -72,7 +96,7 @@ bool is_a_winner(player_e turn){
 		temp_king = creat_linkedList_pointer(KING, COMPUTER);
 		temp_man = creat_linkedList_pointer(MAN, COMPUTER);
 	}
-	if ((temp_king == NULL) && (temp_man == NULL)) // enemy don't have any tools.
+	if ((temp_king == NULL) && (temp_man == NULL)) /* enemy don't have any tools.*/
 	{
 		winner = TRUE;
 	}
@@ -88,17 +112,24 @@ bool is_a_winner(player_e turn){
 	return winner;
 }
 
+/**
+* is_valid_position
+* input : int row, int col
+* output : TRUE/FALSE
+* functionality : returns TRUE if given position in game board is valid else return FALSE
+* aposition is valis if (row + col) % 2) == 0 && ((row < 9) || (row> 0) || (col < 9) || (col > 0)) [not a white square , valid ranges]
+*/
 bool is_valid_position(int row, int col){
 
-	// define
+	/*define*/
 	bool b;
 
-	// initalize
+	/*initalize*/
 	b = TRUE;
 
-	//if (((col % 2 == 1) && (row % 2 == 0)) || ((col % 2 == 0) && (row % 2 == 1)))
+	
 
-	if (((row + col) % 2) != 0)      //assamption: indexes starts from ziro
+	if (((row + col) % 2) != 0)      /*assamption: indexes starts from zero*/
 	{
 		b = FALSE;
 	}
@@ -111,13 +142,20 @@ bool is_valid_position(int row, int col){
 	return b;
 }
 
+/**
+* is_valid_initialization
+* input : nothig
+* output : TRUE/FALSE
+* functionality : returns TRUE if the initializtion of game board is valid else return FALSE
+* an initializtion of game board is valid if - 20 palyer of each color
+*/
 bool is_valid_initialization()
 {
-	// define
+	/*define*/
 	bool b;
 	int num_of_white, num_of_black;
 
-	// initalize
+	/*initalize*/
 	b = TRUE;
 	if (user.color == WHITE)
 	{
@@ -138,6 +176,12 @@ bool is_valid_initialization()
 	return b;
 }
 
+/**
+* is_enemy_position
+* input : int row, int col
+* output : TRUE/FALSE
+* functionality : returns TRUE a given coordinate is enemy's coordinate else return FALSE
+*/
 bool is_enemy_position(int row, int col){
 	char tool;
 	bool enemy;
@@ -175,6 +219,12 @@ bool is_enemy_position(int row, int col){
 	return enemy;
 }
 
+/**
+* is_become_king
+* input : int row, int col, player_e turn
+* output : TRUE/FALSE
+* functionality : returns TRUE a the disc should be king (after a move) else return FALSE
+*/
 bool is_become_king(int row, int col, player_e turn){
 
 	bool king;

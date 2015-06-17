@@ -5,9 +5,16 @@
 #include <stdio.h>
 #include <ctype.h>
 
-// Functions that are used during the game
+/*Functions that are used during the game*/
 
-// move exsit disc to other position on the board
+/**
+* move
+* input : int row, int col, char* coo_stream
+* output : int move
+* functionality : move disc to other place on the board
+* return : -1 if the was memory allocation problems, 1 seccesfull movem , the was a mistake (wrong end posiotion, the was no disc at the given coordinate) but the game should go on
+* updates TURN's men/kings list
+*/
 int move(int row, int col, char* coo_stream){
 
 	char ch, source_slot;
@@ -26,7 +33,7 @@ int move(int row, int col, char* coo_stream){
 	i = 0;
 	len = strlen(coo_stream);
 	
-	//add source position to path.
+	/*add source position to path.*/
 	user_input_path->head_position = updating_linked_list(row, col, user_input_path->head_position);
 	head = user_input_path->head_position;
 
@@ -61,20 +68,20 @@ int move(int row, int col, char* coo_stream){
 		}
 	}
 
-	//Validate that all positions in the path are legal.
+	/*Validate that all positions in the path are legal.*/
 	iter = head;
 	while (iter != NULL)
 	{
 		if (!is_valid_position(iter->row, iter->col))
 		{
 			print_message(WRONG_POSITION);
-			free_path(&user_input_path); // rotem added
+			free_path(&user_input_path);
 			return 2;
 		}
 
 		iter = iter->next_coordinate;
 	}
-	//Validate source position.
+	/*Validate source position.*/
 	source_slot = game_board[row][col];
 	curr_color = user.color;
 	if (source_slot == EMPTY)
@@ -88,7 +95,7 @@ int move(int row, int col, char* coo_stream){
 		if (curr_color == BLACK)
 		{
 			print_message(NO_DICS);
-			free_path(&user_input_path); // rotem added
+			free_path(&user_input_path); 
 			return 2;
 		}
 	}
@@ -97,7 +104,7 @@ int move(int row, int col, char* coo_stream){
 		if (curr_color == WHITE)
 		{
 			print_message(NO_DICS);
-			free_path(&user_input_path); // rotem added
+			free_path(&user_input_path); 
 			return 2;
 		}
 	}
@@ -105,7 +112,7 @@ int move(int row, int col, char* coo_stream){
 	if (!is_legal_move(user_input_path))
 	{
 		print_message(ILLEGAL_MOVE);
-		free_path(&user_input_path); // rotem added
+		free_path(&user_input_path); 
 		return 2;
 	}
 	else
@@ -113,11 +120,17 @@ int move(int row, int col, char* coo_stream){
 		perform_move(user_input_path->head_position, Turn);
 	}
 	
-	free_path(&user_input_path); // rotem added
+	free_path(&user_input_path); 
 	return 1;
 }
 
-// preform specific move on the game board
+/**
+* perform_move
+* input : coordinate_t* move, player_e turn
+* output :noting
+* functionality : move disc to other place on the board and update turn's lists
+* help function to move
+*/
 void perform_move(coordinate_t* move, player_e turn)
 {
 	int row, col, colAvg, rowAvg;
@@ -147,7 +160,7 @@ void perform_move(coordinate_t* move, player_e turn)
 		row = move->row;
 		col = move->col;
 
-		if (move->previous_coordinate != NULL) //not first
+		if (move->previous_coordinate != NULL) /*not first*/
 		{
 			colAvg = (move->previous_coordinate->col + col) / 2;
 			rowAvg = (move->previous_coordinate->row + row) / 2;
@@ -214,9 +227,9 @@ void perform_move(coordinate_t* move, player_e turn)
 			}
 		}
 
-		if (move->next_coordinate == NULL) //last cordinate.
+		if (move->next_coordinate == NULL) /*last cordinate.*/
 		{
-			//Check if this is a King position.
+			/*Check if this is a King position.*/
 			if (is_become_king(move->row, move->col, turn))
 			{
 				if (tool == BLACK_M)
@@ -246,18 +259,24 @@ void perform_move(coordinate_t* move, player_e turn)
 	}
 }
 
-// get user's/computer's moves on game board
+/**
+* get_moves
+* input :player_e player
+* output :noting
+* functionality : returns all possible moves of given player (user or computer)
+* returns : -1 if the was memory allocation problems, 1 if there were no problems in the function  
+*/
 int get_moves(player_e player){
 
 	coordinate_t *iterator;
-	//releast the previouse arr.
+	/*releast the previouse arr.*/
 	free_paths_arr(TRUE);
 	maximal_path_weight = 0;
 
 	paths_arr = calloc(BOARD_SIZE, sizeof(path_t*));
 	if (paths_arr == NULL)
 	{
-		perror_message("get_moves");
+		perror_message("calloc");
 		return -1;
 	}
 	capacity = BOARD_SIZE;
@@ -271,7 +290,14 @@ int get_moves(player_e player){
 	return 1;
 }
 
-// helps function get moves
+/**
+* get_move_helper
+* input :coordinate_t *itereting_node, type_e tool,player_e turn
+* output :int get_move_helper
+* functionality : returns all possible moves of given player (user or computer)
+* returns : -1 if the was memory allocation problems, 1 if there were no problems in the function
+* helps to get_moves
+*/
 int get_move_helper(coordinate_t *itereting_node, type_e tool,player_e turn){
 
 	int return_val;
@@ -297,7 +323,14 @@ int get_move_helper(coordinate_t *itereting_node, type_e tool,player_e turn){
 	return 1;
 }
 
-// get men moves on the board
+/**
+* get_men_moves
+* input :int curr_row, int curr_col, player_e turn
+* output :int get_men_moves
+* functionality : returns all possible moves for given player (user or computer) from given man coordinate on game_board
+* returns : -1 if the was memory allocation problems, 1 if there were no problems in the function
+* helps to get_moves_helper
+*/
 int get_men_moves(int curr_row, int curr_col, player_e turn) {
 
 	path_t *new_path;
@@ -308,7 +341,7 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
 	{
-		perror_message("get_men_moves");
+		perror_message("malloc");
 		return -1;
 	}
 	new_path->path_weight = 0;
@@ -317,7 +350,7 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (new_path->head_position == NULL)
 	{
-		free_path(&new_path); // rotem added
+		free_path(&new_path); 
 		return -1;
 	}
 
@@ -371,7 +404,14 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 	return 1;
 }
 
-// function that helps to get_men_moves
+/**
+* get_man_moves_helper
+* input :direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn
+* output :int get_man_moves_helper
+* functionality : helps get_men_moves to return all possible moves to turn
+* returns : -1 if the was memory allocation problems, 1 if there were no problems in the function
+* helps to get_men_moves
+*/
 int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn) {
 
 	int returnval1, returnval2, returnval3;
@@ -380,7 +420,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 	returnval2 = 0;
 	returnval3 = 0;
 
-	//Halting conditions
+	/*Halting conditions*/
 	if (!is_valid_position(next_row, next_col))
 	{
 		free_path(&new_path);
@@ -412,7 +452,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 	
 	if ((step->is_first_step == TRUE) && (step->is_potntial_step == FALSE))
 	{
-		// arrive here if it the first step.
+		/*arrive here if it the first step.*/
 		step->is_first_step = FALSE;
 
 		if (is_enemy_position(next_row, next_col) && (!is_at_the_edge(next_row, next_col)))
@@ -445,7 +485,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			}
 
 		}
-		// not an enemy slot
+		/*not an enemy slot*/
 		else if (is_empty_position(next_row, next_col))
 		{
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
@@ -465,11 +505,11 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 	}
 	else if ((step->is_first_step == FALSE) && (step->is_potntial_step == TRUE))
 	{
-		//arrive here if the previouse slot is belongs to enemy
+		/*arrive here if the previouse slot is belongs to enemy*/
 
 		if (is_enemy_position(next_row, next_col))
 		{
-			// two enemy tools in a row can't go from here...
+			/*two enemy tools in a row can't go from here...*/
 			free_path(&new_path);
 			return 1;
 		}
@@ -482,7 +522,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 				free_path(&new_path);
 				return -1;
 			}
-			// Calculate path weight
+			/*Calculate path weight*/
 			new_path->path_weight += 1;
 			returnval1 = update_paths_array(clone_path(new_path));
 			if (returnval1 == -1)
@@ -490,11 +530,11 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 				free_path(&new_path);
 				return -1;
 			}
-			//continue looking for a eat in all direction
-			//clone the path four times
+			/*continue looking for a eat in all direction*/
+			/*clone the path four times*/
 
 
-			//Check if there are more enemies to kill.
+			/*Check if there are more enemies to kill.*/
 			switch (dir)
 			{
 			case UPRIGHT:
@@ -538,7 +578,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			}
 		}
 	}
-	else  //Arrive here when looking for another eat
+	else  /*Arrive here when looking for another eat*/
 	{
 		if (is_enemy_position(next_row, next_col) && (!is_at_the_edge(next_row, next_col)))
 		{
@@ -574,7 +614,14 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 	return 1;
 }
 
-// get user's or computer's kings moves
+/**
+* get_king_moves
+* input :int curr_row, int curr_col, player_e turn
+* output :int get_king_moves
+* functionality : returns all possible moves for given player (user or computer) from given king coordinate on game_board
+* returns : -1 if the was memory allocation problems, 1 if there were no problems in the function
+* helps to get_moves_helper
+*/
 int get_king_moves(int curr_row, int curr_col, player_e turn) {
 
 	path_t *new_path;
@@ -584,17 +631,17 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
 	{
-		perror_message("get_king_moves");
+		perror_message("malloc");
 		return -1;
 	}
 	new_path->head_position = NULL;
 	new_path->path_weight = 0;
 
-	//First coordinate is the starting slot.
+	/*First coordinate is the starting slot.*/
 	new_path->head_position = updating_linked_list(curr_row, curr_col, new_path->head_position);
 	if (new_path->head_position == NULL)
 	{
-		free_path(&new_path); // rotem added
+		free_path(&new_path); 
 		return -1;
 	}
 
@@ -612,14 +659,21 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 
 	if (return_val == -1)
 	{
-		free_path(&new_path); // rotem added
+		free_path(&new_path); 
 		return -1;
 	}
-	free_path(&new_path); // rotem added
+	free_path(&new_path); 
 	return 1;
 }
 
-// function that helps to get_men_moves
+/**
+* get_king_moves_helper
+* input :direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn
+* output :int get_king_moves_helper
+* functionality : helps get_men_moves to return all possible moves to turn
+* returns : -1 if the was memory allocation problems, 1 if there were no problems in the function
+* helps to get_king_moves
+*/
 int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn) {
 
 	int returnval1;
@@ -627,7 +681,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 	returnval1 = 0;
 
 
-	//Halting conditions
+	/*Halting conditions*/
 	if (!is_valid_position(next_row, next_col))
 	{
 		free_path(&new_path);
@@ -636,7 +690,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 	if ((step->is_first_step == TRUE) && (step->is_potntial_step == FALSE))
 	{
 
-		//arrive here if it first step or the previous slot is free
+		/*arrive here if it first step or the previous slot is free*/
 
 		if (is_enemy_position(next_row, next_col))
 		{
@@ -668,13 +722,13 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 				return -1;
 			}
 		}
-		// The slot is not belongs to enemy
+		/*The slot is not belongs to enemy*/
 		else if (is_empty_position(next_row, next_col))
 		{
 			new_path->head_position = updating_linked_list(next_row, next_col, new_path->head_position);
 			if (new_path->head_position == NULL)
 			{
-				free_path(&new_path); // rotem added
+				free_path(&new_path); 
 				return -1;
 			}
 
@@ -708,7 +762,7 @@ int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* s
 	}
 	else if ((step->is_first_step == FALSE) && (step->is_potntial_step == TRUE))
 	{
-		//arrive here if the previous slot is belong to enemy
+		/*arrive here if the previous slot is belong to enemy*/
 
 		returnval1 = get_man_moves_helper(dir, next_row, next_col, step, new_path, turn);
 		if (returnval1 == -1)

@@ -2,7 +2,7 @@
 #define DRAUGHTS_
 #include<stdio.h>
 
-//Defines
+/*Defines*/
 #define WHITE_M 'm'
 #define WHITE_K 'k'
 #define BLACK_M 'M'
@@ -15,7 +15,7 @@
 #define DEBUG		(TRUE)
 #define WHITESPACE  (" ")
 
-//type definition
+/*type definition*/
 typedef char** board_t;
 typedef unsigned char bool;
 
@@ -46,11 +46,11 @@ typedef enum direction {
 
 typedef struct step {
 	int is_first_step;
-	int is_potntial_step;    //comes after eatting
+	int is_potntial_step;    /*comes after eatting*/
 } step_t;
 
 typedef struct coordinate {
-	// current position
+	/*current position*/
 	int row;
 	int col;
 	struct coordinate * next_coordinate;
@@ -70,7 +70,7 @@ typedef struct player {
 	int num_of_kings;
 } player_t;
 
-// Massages
+/*Massages*/
 #define WELCOME_TO_DRAUGHTS "Welcome to Draughts!\n"
 #define ENTER_SETTINGS "Enter game settings:\n" 
 #define WRONG_MINIMAX_DEPTH "Wrong value for minimax depth. The value should be between 1 to 6\n"
@@ -86,13 +86,13 @@ typedef struct player {
 #define REMOVE_DISC_FAILD "Faild to remove disc . \n"
 #define COMPUTER_MOVE "Computer: move "
 
-//Macros
+/*Macros*/
 #define perror_message(func_name) (fprintf(stderr, "Error: standard function %s has failed\n", func_name))
 #define print_message(message) (printf("%s", message));
 #define alpha_to_num(character) (character - 97)
 #define num_to_alpha(int) (int + 97);
 
-//Externs
+/*Externs*/
 extern int Minimax_Depth;
 extern int capacity;
 extern int paths_number;
@@ -104,7 +104,7 @@ extern player_t user;
 extern player_t computer;
 extern state_e State;
 
-//Infrastructure Functions
+/*Infrastructure Functions*/
 void init_board();
 char* readline(void);
 int parsing(char* line);
@@ -112,7 +112,7 @@ int main_loop();
 int main();
 void free_all();
 
-//Settings Functions
+/*Settings Functions*/
 void set_minimax_depth(int x);
 int clear();
 int remove_disc(int row, int col, player_e list_to_change);
@@ -122,13 +122,13 @@ void set_user_color(color_e color);
 void print_board();
 void print_line();
 
-//Game Functions
-int scoring(player_e turn);                  //Uses the global board
+/*Game Functions*/
+int scoring(player_e turn);                  /*Uses the global board*/
 int get_moves(player_e player);
 int move(int row, int col, char* string);
 void minimax();
 
-// Help Game Functions
+/*Help Game Functions*/
 int get_move_helper(coordinate_t *itereting_node, type_e tool, player_e turn);
 int get_men_moves(int curr_row, int curr_col, player_e turn);
 int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn);
@@ -141,30 +141,28 @@ void return_player_to_original_satae();
 void initialize_step(step_t* step);
 void perform_move(coordinate_t* move, player_e turn);
 
-// Print Functions
+/*Print Functions*/
 void print_path_arr();
 void print_single_path(path_t* path);
 void print_path(path_t *path);
 
-// Boolean Functions
+/*Boolean Functions*/
 bool is_empty_position(int row, int col);
 bool is_a_winner(player_e turn);
 bool is_legal_move(path_t* user_input_path);
 bool is_enemy_position(int row, int col);
 bool is_become_king(int row, int col, player_e turn);
-bool is_safe_slot; // checks if anamy diagonaly lcated around this slot
-bool check_win(color_e color);
-bool is_valid_position(int row, int col);   //not a white square , ranges
-bool is_valid_initialization();            //empty, disc of one color , more then 20 discs of the same color
+bool is_valid_position(int row, int col); 
+bool is_valid_initialization();        
 bool is_at_the_edge(int row, int col);
 bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path);
 
-// Free Functions
+/* Free Functions*/
 void free_path(path_t **path);
 void free_linked_list(coordinate_t **linkedlist);
 void free_paths_arr(bool needToDeleteArr);
 
-// create & update linkes_ list/arrays/structs
+/* create & update linkes_ list/arrays/structs*/
 coordinate_t* creat_linkedList_pointer(type_e type, player_e player);
 coordinate_t* clone_linkedline(coordinate_t *to_clone);
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change);

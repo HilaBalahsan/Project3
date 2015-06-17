@@ -3,7 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+/**
+* clone_path_arr
+* input : nothing
+* output : path_t** clone_path_arr()
+* functionality : create's a copy of paths_arr ( clone's paths_arr) and returns the copy
+*/
 path_t** clone_path_arr()	{
 
 	path_t** cloned_path_arr;
@@ -18,6 +23,12 @@ path_t** clone_path_arr()	{
 	return cloned_path_arr;
 }
 
+/**
+* compare_two_paths
+* input : path_t* path_from_arr, path_t* user_input_path
+* output : TRUE/FALSE 
+* functionality : compers between 2 paths, if equal return TRUE else returns FALSE
+*/
 bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 	bool equal = TRUE;
 	coordinate_t *path, *userPath;
@@ -42,6 +53,13 @@ bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 	return equal;
 }
 
+/**
+* update_paths_array
+* input : ppath_t* new_path
+* output : int update_paths_array
+* functionality : updates paths_arr
+* return : -1 if the was memory allocation problems or the path that is given to update paths_arr is NULL, 1 - if the update was done 
+*/
 int update_paths_array(path_t* new_path)
 {
 	int index;
@@ -75,7 +93,7 @@ int update_paths_array(path_t* new_path)
 		paths_arr = (path_t**)realloc(paths_arr, sizeof(path_t*) * capacity);
 		if (paths_arr == NULL)
 		{
-			perror_message("update_paths_array");
+			perror_message("realloc");
 			return -1;
 		}
 		for (index = paths_number; index < capacity; index++)
@@ -86,6 +104,12 @@ int update_paths_array(path_t* new_path)
 	return 1;
 }
 
+/**
+* print_path_arr
+* input : nothig
+* output :nothig
+* functionality : prints paths_arr
+*/
 void print_path_arr(){
 	int i;
 	if (paths_arr != NULL)
@@ -97,6 +121,12 @@ void print_path_arr(){
 	}
 }
 
+/**
+* print_coordinate_list
+* input :coordinate_t* list_to_print
+* output : nothig
+* functionality : prints a given linked list (coordinat_t type)
+*/
 void print_coordinate_list(coordinate_t* list_to_print)
 {
 	char col;
@@ -120,13 +150,18 @@ void print_coordinate_list(coordinate_t* list_to_print)
 	printf("\n");
 }
 
+/**
+* print_single_path
+* input :path_t* path
+* output : nothig
+* functionality : prints a given linked list (path_t type)
+*/
 void print_single_path(path_t* path){
 	coordinate_t* iterator;
 	iterator = path->head_position;
 	char col;
 	int row, colAvg, rowAvg;
 	bool isSrc = TRUE,isSec = TRUE;
-	//bool isSec = TRUE;
 
 	while (iterator != NULL)
 	{
@@ -159,6 +194,12 @@ void print_single_path(path_t* path){
 	printf("\n");
 }
 
+/**
+* clone_linkedline
+* input :coordinate_t *to_clone
+* output : coordinate_t* clone_linkedline
+* functionality : create's a copy of given coordinate_t linked list and returns the copy
+*/
 coordinate_t* clone_linkedline(coordinate_t *to_clone){
 	coordinate_t* cloned_list;
 	cloned_list = NULL;
@@ -168,13 +209,19 @@ coordinate_t* clone_linkedline(coordinate_t *to_clone){
 		cloned_list = updating_linked_list(to_clone->row, to_clone->col, cloned_list);
 		if (cloned_list == NULL)
 		{
-			perror_message("clone_linkedline");
+			perror_message("melloc");
 		}
 		to_clone = to_clone->next_coordinate;
 	}
 	return cloned_list;
 }
 
+/**
+* clone_path
+* input :path_t* original_path
+* output : path_t* clone_path
+* functionality : create's a copy of given path_t linked list and returns the copy
+*/
 path_t* clone_path(path_t* original_path)
 {
 	path_t* cloned_path;
@@ -182,7 +229,7 @@ path_t* clone_path(path_t* original_path)
 	cloned_path = (path_t*)malloc(sizeof(path_t));
 	if (cloned_path == NULL)
 	{
-		perror_message("clone_path");
+		perror_message("malloc");
 		return NULL;
 	}
 	cloned_path->head_position = NULL;
@@ -192,18 +239,30 @@ path_t* clone_path(path_t* original_path)
 	return cloned_path;
 }
 
+/**
+* initialize_step
+* input :step_t* step
+* output : nothing
+* functionality : initailizing a given step_t*
+*/
 void initialize_step(step_t* step){
 	step->is_first_step = 1;
 	step->is_potntial_step = 0;
 }
 
+/**
+* free_linked_list
+* input :coordinate_t **linkedlist
+* output : nothing
+* functionality : free a given coordinat_t** from the memory
+*/
 void free_linked_list(coordinate_t **linkedlist)
 {
 	if ((*linkedlist) == NULL)
 	{
 		return;
 	}
-	//iterator = linkedlist;
+	/*iterator = linkedlist;*/
 	while ((*linkedlist)->next_coordinate != NULL)
 	{
 		if ((*linkedlist)->previous_coordinate != NULL)
@@ -220,6 +279,12 @@ void free_linked_list(coordinate_t **linkedlist)
 	*linkedlist = NULL;
 }
 
+/**
+* free_path
+* input :path_t** path
+* output : nothing
+* functionality : free a given path_t** from the memory
+*/
 void free_path(path_t** path)
 {
 	if ((*path) == NULL)
@@ -235,6 +300,12 @@ void free_path(path_t** path)
 	*path = NULL;
 }
 
+/**
+* free_paths_arr
+* input :bool needToDeleteArr
+* output : nothing
+* functionality : free paths_arr of TRUE 
+*/
 void free_paths_arr(bool needToDeleteArr)
 {
 	int i;
@@ -254,6 +325,12 @@ void free_paths_arr(bool needToDeleteArr)
 	}
 }
 
+/**
+* free_all
+* input :nothing
+* output : nothing
+* functionality : free paths_arr, user's and computer's men & kings linked lists
+*/
 void free_all(){
 	free_paths_arr(TRUE);
 	free_linked_list(&user.kings_coordinate);
