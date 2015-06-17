@@ -126,6 +126,7 @@ void print_single_path(path_t* path){
 	char col;
 	int row, colAvg, rowAvg;
 	bool isSrc = TRUE,isSec = TRUE;
+	//bool isSec = TRUE;
 
 	while (iterator != NULL)
 	{

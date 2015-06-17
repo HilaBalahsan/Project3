@@ -35,6 +35,7 @@ int main(){
 			line = readline();
 			if ((strcmp(line, "quit")) == 0) // zero for equal.
 			{
+				free_paths_arr(TRUE);
 				free(line);
 				break;
 			}
@@ -227,6 +228,14 @@ int parsing(char* input){
 
 	if (strcmp(userinput[0], "minimax_depth") == 0)
 	{
+		// ?
+		if (userinput[1] == NULL)
+		{
+			printf(ILLEGAL_COMMAND);
+			free(input);
+			free(inputCopy);
+			return 2;
+		}
 		depth = atoi(userinput[1]);
 		set_minimax_depth(depth);
 	}
@@ -673,6 +682,8 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 
 		//head_coordinate->next_coordinate = temp_coordinate;
 	}
+
+//	free_linked_list(&current_coordinate);
 	return head_coordinate;
 }
 
