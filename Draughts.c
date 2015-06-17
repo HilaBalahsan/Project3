@@ -662,7 +662,6 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 	if (head_coordinate == NULL)
 	{
 		head_coordinate = current_coordinate;
-		//temp_coordinate = current_coordinate;
 	}
 	else
 	{
@@ -680,10 +679,7 @@ coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordin
 		}
 		temp_coordinate->next_coordinate = current_coordinate;
 		current_coordinate->previous_coordinate = temp_coordinate;
-
-		//head_coordinate->next_coordinate = temp_coordinate;
 	}
-
 	return head_coordinate;
 }
 

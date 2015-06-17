@@ -360,13 +360,12 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 		step.is_potntial_step = FALSE;
 		return_val4 = get_man_moves_helper(UPLEFT, curr_row + 1, curr_col - 1, &step, clone_path(new_path), turn);
 	}
+	free_path(&new_path); 
 
 	if ((return_val1 == -1) || (return_val2 == -1) || (return_val3 == -1) || (return_val4 == -1))
 	{
-		free_path(&new_path); // rotem added
 		return -1;
 	}
-	free_path(&new_path); // rotem added
 	return 1;
 }
 
@@ -405,7 +404,8 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 			free_path(&new_path);
 			return -1;
 		}
-		free_path(&new_path); // rotem added
+
+		free_path(&new_path); 
 		return 1;
 	}
 	
