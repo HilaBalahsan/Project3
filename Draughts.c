@@ -31,18 +31,18 @@ int main(){
 			line = readline();
 			if ((strcmp(line, "quit")) == 0) // zero for equal.
 			{
-				free_paths_arr(TRUE);
 				free(line);
 				break;
 			}
 			pars_succeed = parsing(line);
 			if (pars_succeed == -1)
 			{
-				//
+				return -1;
 			}
 		}
 	}
-	//FUNCTION THAT FREES ALL	
+	free_all();
+
 	return 1;
 }
 
@@ -57,7 +57,6 @@ int main_loop(){                     //I changed here.
 			line = readline();
 			if ((strcmp(line, "quit")) == 0) // zero for equal.
 			{
-				free_paths_arr(TRUE);
 				free(line);
 				break;
 			}

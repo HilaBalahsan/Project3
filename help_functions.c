@@ -250,5 +250,10 @@ void free_paths_arr(bool needToDeleteArr)
 	}
 }
 
-
-
+void free_all(){
+	free_paths_arr(TRUE);
+	free_linked_list(&user.kings_coordinate);
+	free_linked_list(&user.men_coordinate);
+	free_linked_list(&computer.kings_coordinate);
+	free_linked_list(&computer.men_coordinate);
+}

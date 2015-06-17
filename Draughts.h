@@ -110,6 +110,7 @@ char* readline(void);
 int parsing(char* line);
 int main_loop();
 int main();
+void free_all();
 
 //Settings Functions
 void set_minimax_depth(int x);
