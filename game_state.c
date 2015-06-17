@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <ctype.h>
 
+// Functions that are used during the game
+
+// move exsit disc to other position on the board
 int move(int row, int col, char* coo_stream){
 
 	char ch, source_slot;
@@ -16,7 +19,7 @@ int move(int row, int col, char* coo_stream){
 	user_input_path = calloc(1, sizeof(path_t));
 	if (user_input_path == NULL)
 	{
-		perror_message("calloc");
+		perror_message("move");
 		return -1;
 	}
 
@@ -112,6 +115,7 @@ int move(int row, int col, char* coo_stream){
 	return 1;
 }
 
+// preform specific move on the game board
 void perform_move(coordinate_t* move, player_e turn)
 {
 	int row, col, colAvg, rowAvg;
@@ -240,6 +244,7 @@ void perform_move(coordinate_t* move, player_e turn)
 	}
 }
 
+// get user's/computer's moves on game board
 int get_moves(player_e player){
 
 	coordinate_t *iterator;
@@ -250,7 +255,7 @@ int get_moves(player_e player){
 	paths_arr = calloc(BOARD_SIZE, sizeof(path_t*));
 	if (paths_arr == NULL)
 	{
-		printf("get_move function - Failed to allocated memory");
+		perror_message("get_moves");
 		return -1;
 	}
 	capacity = BOARD_SIZE;
@@ -264,6 +269,7 @@ int get_moves(player_e player){
 	return 1;
 }
 
+// helps function get moves
 int get_move_helper(coordinate_t *itereting_node, type_e tool,player_e turn){
 
 	int return_val;
@@ -289,6 +295,7 @@ int get_move_helper(coordinate_t *itereting_node, type_e tool,player_e turn){
 	return 1;
 }
 
+// get men moves on the board
 int get_men_moves(int curr_row, int curr_col, player_e turn) {
 
 	path_t *new_path;
@@ -299,7 +306,7 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
 	{
-		printf("get_move function - Failed to allocated memory");
+		perror_message("get_men_moves");
 		return -1;
 	}
 	new_path->path_weight = 0;
@@ -363,6 +370,7 @@ int get_men_moves(int curr_row, int curr_col, player_e turn) {
 	return 1;
 }
 
+// function that helps to get_men_moves
 int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn) {
 
 	path_t *right_up_clone, *right_down_clone, *left_up_clone, *left_down_clone;
@@ -568,6 +576,7 @@ int get_man_moves_helper(direction_e dir, int next_row, int next_col, step_t* st
 	return 1;
 }
 
+// get user's or computer's kings moves
 int get_king_moves(int curr_row, int curr_col, player_e turn) {
 
 	path_t *new_path;
@@ -577,7 +586,7 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 	new_path = (path_t*)malloc(sizeof(path_t));
 	if (new_path == NULL)
 	{
-		printf("get_move function - Failed to allocated memory");
+		perror_message("get_king_moves");
 		return -1;
 	}
 	new_path->head_position = NULL;
@@ -612,6 +621,7 @@ int get_king_moves(int curr_row, int curr_col, player_e turn) {
 	return 1;
 }
 
+// function that helps to get_men_moves
 int get_king_moves_helper(direction_e dir, int next_row, int next_col, step_t* step, path_t *new_path, player_e turn) {
 
 	int returnval1;

@@ -24,7 +24,7 @@ void set_user_color(color_e color)
 void set_minimax_depth(int depth){
 	if ((depth > 6) || (depth < 1))
 	{
-		printf(WRONG_MINIMAX_DEPTH);
+		print_message(WRONG_MINIMAX_DEPTH);
 	}
 	else
 	{
@@ -38,7 +38,7 @@ int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e to
 
 	if ((!is_valid_position(row, col)))
 	{
-		printf(WRONG_POSITION);
+		print_message(WRONG_POSITION);
 		return 1;
 	}
 	game_board[row][col] = char_on_board;
@@ -100,7 +100,7 @@ int remove_disc(int row, int col, player_e rm_from_this_player){
 
 	if (!is_valid_position(row, col))
 	{
-		printf(WRONG_POSITION);
+		print_message(WRONG_POSITION);
 		return -1;
 	}
 
@@ -143,7 +143,7 @@ int start()
 	first_updating_MenKings_coordinate();
 	if (!is_valid_initialization())
 	{
-		printf(WROND_BOARD_INITIALIZATION);
+		print_message(WROND_BOARD_INITIALIZATION);
 		return -1;
 	}
 	State = GAME_STATE;

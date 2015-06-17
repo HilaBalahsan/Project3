@@ -75,7 +75,7 @@ int update_paths_array(path_t* new_path)
 		paths_arr = (path_t**)realloc(paths_arr, sizeof(path_t*) * capacity);
 		if (paths_arr == NULL)
 		{
-			printf("Error: fatal error during memory alocation, exiting.\n");
+			perror_message("update_paths_array");
 			return -1;
 		}
 		for (index = paths_number; index < capacity; index++)
@@ -168,7 +168,7 @@ coordinate_t* clone_linkedline(coordinate_t *to_clone){
 		cloned_list = updating_linked_list(to_clone->row, to_clone->col, cloned_list);
 		if (cloned_list == NULL)
 		{
-			printf("Didn't clone eatten_kings_coordinate ");
+			perror_message("clone_linkedline");
 		}
 		to_clone = to_clone->next_coordinate;
 	}
@@ -182,7 +182,7 @@ path_t* clone_path(path_t* original_path)
 	cloned_path = (path_t*)malloc(sizeof(path_t));
 	if (cloned_path == NULL)
 	{
-		printf("clone_path function - Failed to allocated memory");
+		perror_message("clone_path");
 		return NULL;
 	}
 	cloned_path->head_position = NULL;
