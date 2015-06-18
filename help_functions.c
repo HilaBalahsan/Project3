@@ -5,7 +5,6 @@
 
 /**
 * clone_path_arr
-* input : nothing
 * output : path_t** clone_path_arr()
 * functionality : create's a copy of paths_arr ( clone's paths_arr) and returns the copy
 */
@@ -26,8 +25,8 @@ path_t** clone_path_arr()	{
 /**
 * compare_two_paths
 * input : path_t* path_from_arr, path_t* user_input_path
-* output : TRUE/FALSE 
-* functionality : compers between 2 paths, if equal return TRUE else returns FALSE
+* output : Blooean variable, TRUE - identical paths , FALSE-otherwise.
+* functionality : Compares between 2 paths.
 */
 bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 	bool equal = TRUE;
@@ -55,10 +54,11 @@ bool compare_two_paths(path_t* path_from_arr, path_t* user_input_path) {
 
 /**
 * update_paths_array
-* input : ppath_t* new_path
+* input : path_t* new_path
 * output : int update_paths_array
-* functionality : updates paths_arr
-* return : -1 if the was memory allocation problems or the path that is given to update paths_arr is NULL, 1 - if the update was done 
+		-1: Failer of a standart function
+		 1: Update successfully.
+* functionality : updates paths_arr by adding a new path. Increasing the number of paths.
 */
 int update_paths_array(path_t* new_path)
 {
@@ -106,8 +106,6 @@ int update_paths_array(path_t* new_path)
 
 /**
 * print_path_arr
-* input : nothig
-* output :nothig
 * functionality : prints paths_arr
 */
 void print_path_arr(){
@@ -124,7 +122,6 @@ void print_path_arr(){
 /**
 * print_coordinate_list
 * input :coordinate_t* list_to_print
-* output : nothig
 * functionality : prints a given linked list (coordinat_t type)
 */
 void print_coordinate_list(coordinate_t* list_to_print)
@@ -153,8 +150,7 @@ void print_coordinate_list(coordinate_t* list_to_print)
 /**
 * print_single_path
 * input :path_t* path
-* output : nothig
-* functionality : prints a given linked list (path_t type)
+* functionality : prints a given path (path_t type)
 */
 void print_single_path(path_t* path){
 	coordinate_t* iterator;

@@ -42,7 +42,6 @@ int main(){
 		}
 	}
 	free_all();
-
 	return 1;
 }
 
@@ -117,7 +116,7 @@ int main_loop(){
 * readline
 * input : void
 * output : char* readline
-* functionality : reading what the user typed us, char by char and converting it to char array ( string ) and returns char array of the user command
+* functionality : read from consol and calls the relevant function.
 */
 char* readline(void) {
 
@@ -187,9 +186,11 @@ char* readline(void) {
 /**
 * parsing
 * input : string that we get from readline()
-* output : int parsing
+* output : int 
+			2: illigal command.
+		   -1: error is standart function.
+			1: function performed successfully.
 * functionality : parsing char array to find out what the used asked us to do
-* return : 2 -  if the command was properd corectly or there was an illigal command but the game still goes on, (-1) - if as a memory allocation problem, 1 if it's the end of the game
 */
 int parsing(char* input){
 
@@ -437,7 +438,9 @@ int parsing(char* input){
 	return 1;
 }
 
-
+/*
+* functionality : Global board initialization.
+*/
 void init_board(){
 	int i, j;
 
@@ -467,9 +470,7 @@ void init_board(){
 
 /**
 * first_updating_MenKings_coordinate
-* input : nothing
-* output : nothing
-* functionality : updates for the first time user's and computer's men and kings lists
+* functionality : updates user's and computer's men and kings lists by scanning the board.
 */
 void first_updating_MenKings_coordinate(){
 	coordinate_t *user_soldier, *user_kings, *comp_soldiers, *copm_kings;
@@ -566,7 +567,7 @@ void first_updating_MenKings_coordinate(){
 * pointer_to_link
 * input : int row, int col, coordinate_t* list_to_change
 * output : coordinate_t* pointer_to_link
-* functionality : changes the pointer to given linked list
+* functionality : Finds and returns a pointer to specific link in the linkedlist.
 */
 coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 
@@ -589,9 +590,9 @@ coordinate_t* pointer_to_link(int row, int col, coordinate_t* list_to_change){
 
 /**
 * creat_linkedList_pointer
-* input : type_e type, player_e player)
+* input : type_e type, player_e player
 * output : coordinate_t * creat_linkedList_pointer
-* functionality : creates pointer to linked list and returns it
+* functionality : Creates and return pointer to linked list.
 */
 coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 
@@ -624,8 +625,8 @@ coordinate_t * creat_linkedList_pointer(type_e type, player_e player){
 /**
 * delete_link_from_linked_list
 * input : coordinate_t* node_to_delete
-* output : TRUE/FALSE
-* functionality : deletes linked list, and free the elemnts if it was success returns TRUE else returns FALSE
+* output : Boolean variable. TRUE for succeeding and FALSE othterwise.
+* functionality : Deletes a link from the linkedlist.
 */
 bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 	coordinate_t* temp;
@@ -668,7 +669,7 @@ bool delete_link_from_linked_list(coordinate_t* node_to_delete){
 * updating_linked_list
 * input : int row, int col, coordinate_t *head_coordinate
 * output : coordinate_t * updating_linked_list
-* functionality : updates given linked list and returns the new linked list (the updated one)
+* functionality : Updating a given linkedlist by creating new link and join it.
 */
 coordinate_t * updating_linked_list(int row, int col, coordinate_t *head_coordinate){
 

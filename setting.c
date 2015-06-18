@@ -8,7 +8,7 @@
 * set_user_color
 * input : color_e color
 * output : nothig
-* functionality : updates computer's and user's color (and their struct as well)
+* functionality : updates computer's and user's color (and their structs as well)
 * updates turn according to the player with white color (player white white color starts first)
 */
 void set_user_color(color_e color)
@@ -30,9 +30,7 @@ void set_user_color(color_e color)
 /**
 * set_minimax_depth
 * input : int depth
-* output : nothig
-* functionality : sets minimax_depth and updating globle iny Minimax_depth
-* if depth > 6 or depth <1 it's not legal depth
+* functionality : checks if given depth is legal and sets minimax_depth and updating globle int Minimax_depth
 */
 void set_minimax_depth(int depth){
 	if ((depth > 6) || (depth < 1))
@@ -49,6 +47,8 @@ void set_minimax_depth(int depth){
 * set_disc
 * input : char char_on_board, int row, int col, color_e tool_color, type_e tool_type
 * output : int 
+			-1 standart function failed.
+			 1 seccesfull set on the board.
 * functionality : sets a given disc on the board updates compuer's and user's men and kings linked list
 * return : -1 if the was memory allocation problems, 1 seccesfull set on the board 
 */
@@ -100,10 +100,8 @@ int set_disc(char char_on_board, int row, int col, color_e tool_color, type_e to
 
 /**
 * clear
-* input : nothing
-* output : nothing
-* functionality : removes all discs from game board
-* return :  1 seccesfullclear of the board
+* output :  1 cleaning the board successfully.
+* functionality : removes all discs from game board. Updats user , computer structs.
 */
 int clear(){
 
@@ -127,8 +125,9 @@ int clear(){
 * remove_disc
 * input : int row, int col, player_e rm_from_this_player
 * output : int
+		-1 if the position is not valid.
+		 1 discwas removed successfully.
 * functionality : removes a given disc on the board 
-* return : -1 if the position is not valid, 1 seccesfull set on the board
 */
 int remove_disc(int row, int col, player_e rm_from_this_player){
 
@@ -175,9 +174,9 @@ void print_board()
 * start
 * input : noting
 * output : int
-* functionality : starts a game
-* return : -1 if the initiliztion of the board is not valid , 1 successfull start
-* changes State to setting state
+			-1 if the initiliztion of the board is not valid
+			 1 successfull start			
+* functionality : starts a game , changes State to setting state
 */
 int start()
 {

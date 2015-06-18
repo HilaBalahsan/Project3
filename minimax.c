@@ -7,7 +7,7 @@
 * scoring
 * input : player_e turn
 * output : int scoring
-* functionality : calculate turns score and returns it
+* functionality : calculate the board scores.
 */
 int scoring(player_e turn){ 
 
@@ -43,10 +43,9 @@ int scoring(player_e turn){
 
 /**
 * rec_minimax
-* input : int depth, player_e player
-* output : int rec_minimax
-* functionality : minimax algorithem to find the best move that the computer can do
-* return : the scoring of the board after the best move 
+* input : int depth, player_e player.
+* output : the scoring of the board. 
+* functionality : minimax algorithem to find the best move for the computer.
 */
 int rec_minimax(int depth, player_e player)
 {
@@ -163,8 +162,6 @@ int rec_minimax(int depth, player_e player)
 
 /**
 * rec_minimax
-* input : nothing
-* output : nothing
 * functionality : Initiate recursive call to minimax
 * 
 */
